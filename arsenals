@@ -441,12 +441,9 @@ public class testprog {
 
 * jenkins
 ```
-def sout = new StringBuffer(), serr = new StringBuffer()
-String ps = 'whoami'
-def proc = ps.execute()
-proc.consumeProcessOutput(sout, serr)
-proc.waitForOrKill(1000)
-println "out> $sout err> $serr" 
+def command = "whoami"
+def proc = command.execute()
+println(proc.in.text)
 ```
 
 [ld preload privilege escalation]
