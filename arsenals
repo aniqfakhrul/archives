@@ -268,7 +268,7 @@ kerberos::tgt
 kerberos::purge
 
 [grep: recursive]
-grep -iRl "One Piece" /home /usr 2>/dev/null
+grep -Hnri "One Piece" /home /usr 2>/dev/null
 
 [asterisk call manager: login]
 Action:login
