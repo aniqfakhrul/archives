@@ -503,7 +503,7 @@ https://github.com/TBGSecurity/splunk_shells
 https://www.n00py.io/2018/10/popping-shells-on-splunk/
 
 [responder: LLMNR poisoning]
-responder -i tun0 -rdwv
+responder -I tun0 -rdwv
 
 [wpscan]
 * enumerate user and plugins(passive)
