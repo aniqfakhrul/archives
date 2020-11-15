@@ -270,6 +270,9 @@ kerberos::purge
 [grep: recursive]
 grep -Hnri "One Piece" /home /usr 2>/dev/null
 
+[ad-ldap-enum]
+python ad-ldap-enum.py -l 10.10.10.169 -d megabank.local
+
 [asterisk call manager: login]
 Action:login
 Username:admin
