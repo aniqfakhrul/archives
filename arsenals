@@ -542,3 +542,24 @@ sudo 2to3-2.7 -w -n light.py --output=/root/script
 > sudo ln -sf /tmp/ln /usr/bin/ln
 * the file now being redirected to malicious binary
 > sudo /usr/bin/ln
+
+```
+[Command stablise shell that don't have python:]
+
+    `$ script -qc /bin/bash /dev/null`
+for python;
+    `$ python -c "import pty;pty.spawn('/bin/bash')"` 
+
+[command to get only 6 character in wordlist;]
+
+`$ grep -x '[a-z0-9]\{6\}' /usr/share/wordlists/fasttrack.txt`
+
+[Command to stabilise the shell;]
+
+- In reverse shell, hit `CTRL + Z` to background
+- Then, `$ stty raw -echo`
+- Then, type `fg` and hit `enter` twice until it back to reverse shell;
+
+[Command to make shell can be CLEAR;]
+
+ `$ export TERM=xterm`
