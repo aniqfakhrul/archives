@@ -563,3 +563,7 @@ for python;
 [Command to make shell can be CLEAR;]
 
  `$ export TERM=xterm`
+
+[Json Brute Force]
+python3 jsonbrute.py --url http://management.test.local/api/login --wordlist rockyou.txt --data "username=admin, password=FUZZ, recaptcha= " --code 200 --verbose
+#https://github.com/Jake-Ruston/JSONBrute
