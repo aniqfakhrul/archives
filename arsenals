@@ -577,6 +577,8 @@ python3 jsonbrute.py --url http://management.test.local/api/login --wordlist roc
 /usr/sbin/hping3 -1 127.0.0.1 -9 signature -I lo
 
 [sqlmap]
+# enter specific parameter
+-p username,password
 # view privilege
 --privilege
 # enter os command/upload webshell
