@@ -604,3 +604,16 @@ Reference: https://www.ush.it/2009/02/08/php-filesystem-attack-vectors/
 ciccio.php/.
 ciccio.php/
 ```
+
+[redis-cli]
+# check info
+info
+# select db
+select <index>
+# select available keys
+keys *
+# view items
+get <item>
+
+[bypassing cheatsheet]
+https://github.com/w181496/Web-CTF-Cheatsheet/blob/master/README.md
