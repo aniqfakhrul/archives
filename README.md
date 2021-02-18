@@ -1,4 +1,6 @@
-# File Transfer Chectsheet
+# Arsenals
+
+## File Transfer Cheatsheet
 
 | **Command** | **Description** |
 | --------------|-------------------|
