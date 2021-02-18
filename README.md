@@ -1,5 +1,9 @@
 # Arsenals
 
+This is my personal safe for arsenals. Feel free to refer and use at anytime. You can also refer to this [arsenals](arsenals) for any extra commands
+
+**_Disclaimer: Do not use this command for illegal use. All illegal actions are your own responsibilities. Use this at your own risk_**
+
 ## File Transfer Cheatsheet
 
 | **Command** | **Description** |
