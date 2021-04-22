@@ -10,7 +10,7 @@ This is my personal safe for arsenals. Feel free to refer and use at anytime. Yo
 * [File Transfer](#file-transfer)
 
 ## Generate .NET dropper (APC process injection)
-Download [GadgetToJScript](https://github.com/med0x2e/GadgetToJScript.git) and [Donut](https://github.com/TheWover/donut.git).
+_Requirements:_Make sure to ownload [GadgetToJScript](https://github.com/med0x2e/GadgetToJScript.git) and [Donut](https://github.com/TheWover/donut.git).
 ### Cobalt Strike Beacon
 For cobalt strike, this aggressor script called [**ShellCode Generator**](https://github.com/RCStep/CSSG) is very useful to generate shellcode with custom formatting. This cna also helps to obfuscate with XOR or AES method. 
 
