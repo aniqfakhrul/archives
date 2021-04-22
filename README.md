@@ -6,7 +6,7 @@ This is my personal safe for arsenals. Feel free to refer and use at anytime. Yo
 
 * [Unconstrained Delegation](#unconstrained-delegation)
 	* [Printer Bug](#printer-bug)
-	* [Extract TGTs](#extract-tgt]
+	* [Extract TGTs](#extract-tgt)
 * [Generate VBScript dropper (APC process injection)](#generate-vbscript-dropper-apc-process-injection)
 	* [Cobalt Strike Beacon](#cobalt-strike-beacon)
 	* [Covenant Grunt](#convenant-grunt)
