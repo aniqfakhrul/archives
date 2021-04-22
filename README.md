@@ -4,7 +4,7 @@ This is my personal safe for arsenals. Feel free to refer and use at anytime. Yo
 
 **_Disclaimer: Do not use this command for illegal use. Any action you take upon the information on this repo is strictly at your own risk_**
 
-* [Generate VBScript dropper (APC process injection)](generate-vbscript-dropper-(apc-process-injection))
+* [Generate VBScript dropper (APC process injection)](#generate-vbscript-dropper-apc-process-injection)
 	* [Cobalt Strike Beacon](#cobalt-strike-beacon)
 	* [Covenant Grunt](#convenant-grunt)
 * [File Transfer](#file-transfer)
@@ -14,9 +14,13 @@ Make sure to download [GadgetToJScript](https://github.com/med0x2e/GadgetToJScri
 ### Cobalt Strike Beacon
 For cobalt strike, this aggressor script called [**ShellCode Generator**](https://github.com/RCStep/CSSG) is very useful to generate shellcode with custom formatting. This cna also helps to obfuscate with XOR or AES method. 
 
-1. Use [this](https://gist.githubusercontent.com/3xpl01tc0d3r/ecf5e1ac09935c674a9c6939c694da13/raw/238ed3339a458ce0260f98dc18a38fdbed420457/Payload.txt) script and paste those hex bytes in `shellcode` variable
+1. Generate shellcode and this is my default configuration
+![SG](src/images/shellcode_generator.png)
 
-2. Compile with **GadgetToJScript**
+2. Use [this](https://gist.githubusercontent.com/3xpl01tc0d3r/ecf5e1ac09935c674a9c6939c694da13/raw/238ed3339a458ce0260f98dc18a38fdbed420457/Payload.txt) script and paste those hex bytes in `shellcode` variable
+![b64var](src/images/b64var.png)
+
+3. Compile with **GadgetToJScript**
 
 ```powershell
 GadgetToJScript.exe -b -w vbs -o beacon -c .\real.cs
