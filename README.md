@@ -10,7 +10,7 @@ This is my personal safe for arsenals. Feel free to refer and use at anytime. Yo
 * [File Transfer](#file-transfer)
 
 ## Generate VBScript dropper (APC process injection)
-Make sure to download [GadgetToJScript](https://github.com/med0x2e/GadgetToJScript.git) and [Donut](https://github.com/TheWover/donut.git).
+Make sure to download [GadgetToJScript](https://github.com/med0x2e/GadgetToJScript.git) and [Donut](https://github.com/TheWover/donut.git)._Note:This method probably won't 100% bypass EDR/AV._
 ### Cobalt Strike Beacon
 For cobalt strike, this aggressor script called [**ShellCode Generator**](https://github.com/RCStep/CSSG) is very useful to generate shellcode with custom formatting. This cna also helps to obfuscate with XOR or AES method. 
 
@@ -26,7 +26,7 @@ For cobalt strike, this aggressor script called [**ShellCode Generator**](https:
 GadgetToJScript.exe -b -w vbs -o beacon -c .\real.cs
 ```
 
-3. Execute with `wscript.exe beacon.cs`
+4. Execute with `wscript.exe beacon.cs`
 
 ### Covenant Grunt
 For covenant, since its already has its built in .NET generator. You can use donut to further obfuscate the assembly/
