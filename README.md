@@ -4,11 +4,11 @@ This is my personal safe for arsenals. Feel free to refer and use at anytime. Yo
 
 **_Disclaimer: Do not use this command for illegal use. Any action you take upon the information on this repo is strictly at your own risk_**
 
-* Delegation
+* **Delegation**
 	* [Unconstrained Delegation](#unconstrained-delegation)
 		* [Printer Bug](#printer-bug)
 		* [Extract TGTs](#extract-tgt)
-* [Generate VBScript dropper (APC process injection)](#generate-vbscript-dropper-apc-process-injection)
+* **[Generate VBScript dropper (APC process injection)](#generate-vbscript-dropper-apc-process-injection)**
 	* [Cobalt Strike Beacon](#cobalt-strike-beacon)
 	* [Covenant Grunt](#convenant-grunt)
 * [File Transfer](#file-transfer)
