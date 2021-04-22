@@ -18,7 +18,7 @@ For cobalt strike, this aggressor script called [**ShellCode Generator**](https:
 ![SG](src/images/shellcode_generator.png)
 
 2. Use [this](https://gist.githubusercontent.com/3xpl01tc0d3r/ecf5e1ac09935c674a9c6939c694da13/raw/238ed3339a458ce0260f98dc18a38fdbed420457/Payload.txt) script and paste those hex bytes in `shellcode` variable
-![b64var](/src/images/b64var.png)
+![b64var](src/images/b64var.png)
 
 3. Compile with **GadgetToJScript**
 
