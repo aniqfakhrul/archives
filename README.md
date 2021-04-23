@@ -167,6 +167,7 @@ Add-DomainObjectAcl -TargetIdentity "DC=contoso,DC=local" -PrincipalIdentity stu
 ```
 
 ## SQL Server Enumeration and Code Execution
+I did most of my SQL Server Enumeration by using this [PowerUpSQL.ps1](https://github.com/NetSPI/PowerUpSQL) script. Refer to more commands in this [PowerUpSQL Cheatsheet](https://github.com/NetSPI/PowerUpSQL/wiki/PowerUpSQL-Cheat-Sheet)
 ### Get SQL Instances
 This method will allow you to enumerate local or domain sql servers(if any).
 ```
