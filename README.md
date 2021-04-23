@@ -34,7 +34,7 @@ This is my personal safe for arsenals. Feel free to refer and use at anytime. Yo
 	* [SID History](#sid-history)
 	* [Shadow Principal](#shadow-principal)
 	* [Foreign Principal](#foreign-principal)
-* **[Lateral Movement](#lateral-movement--post-exploitation)**
+* **[Lateral Movement / Post Exploitation](#lateral-movement--post-exploitation)**
 	* [Overpass-The-Hash](#overpass-the-hash-opth)
 	* [Request TGT](#request-tgt)
 	* [runas](#runas)
