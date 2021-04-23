@@ -34,6 +34,10 @@ This is my personal safe for arsenals. Feel free to refer and use at anytime. Yo
 	* [SID History](#sid-history)
 	* [Shadow Principal](#shadow-principal)
 	* [Foreign Principal](#foreign-principal)
+* **[Remote Authentication Between Computers](#remote-authentication-protocol)**
+	* PSRemoting(#psremoting)
+	* Winrs(#winrs)
+	* PsExec(#psexec)
 * **[Generate VBScript dropper (APC process injection)](#generate-vbscript-dropper-apc-process-injection)**
 	* [Cobalt Strike Beacon](#cobalt-strike-beacon)
 	* [Covenant Grunt](#convenant-grunt)
@@ -238,6 +242,37 @@ Find-ForeignUser
 
 # Get foreign group principals
 Find-ForeignGroup
+```
+
+## Remote Authentication Between Computers
+### PSRemoting
+**PSRemoting** stands for PowerShell remoting, this will enable users to authenticate between powershell session in remote computers by using `*-PSSession`.
+```
+# Create New PSRemoting Session (with current user privilege/no PSCredential needed)
+$sess = New-PSSession -ComputerName dc01
+
+# Creare New PSRemoting Session (with plain-text password/PSCredential needed)
+$username = 'contoso\studentadmin'
+$password = ConvertTo-SecureString -AsPlainText -Force 'P@$$w0rd!'
+$cred = New-Object System.Management.Automation.PSCredential($username,$password)
+$sess = New-PSSession -ComputerName dc01 -Credential $cred
+
+# Get Interactive Remote Session
+Enter-PSSession -ComputerName dc01
+Enter-PSSession -ComputerName dc01 -Credential $cred
+Enter-PSSession -Session $sess
+```
+
+### Winrs
+Winrs requires a plain-text password in order to authenticate to other computers
+```
+winrs -u:dc01.contoso.local -u:contoso\administrator -p:P@$$w0rd! "hostname"
+```
+
+### PsExec
+This requires you to download MS Signed Binary (`PsExec.exe`) in PsTools bundle. It can be downloaded [here](https://download.sysinternals.com/files/PSTools.zip).
+```
+PsExec.exe -accepteula \\dc01.contoso.local powershell
 ```
 
 ## Generate VBScript dropper (APC process injection)
