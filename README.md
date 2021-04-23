@@ -7,6 +7,7 @@ This is my personal safe for arsenals. Feel free to refer and use at anytime. Yo
 * **[ACLs/ACEs permissions](#acls-possible-abuse)**
 * **Enumeration**
 	* **[Domain Enumeration](#powerview-enumeration)**
+		* [Forest Trust](#forest-trust)
 		* [ASREP Roasting](#asrep-roasting)
 		* [Kerberoasting](#kerberoasting)
 		* [Unconstrained / Constrained Object](#unconstrained--constrained-object)
