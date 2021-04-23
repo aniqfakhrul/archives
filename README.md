@@ -35,9 +35,9 @@ This is my personal safe for arsenals. Feel free to refer and use at anytime. Yo
 	* [Shadow Principal](#shadow-principal)
 	* [Foreign Principal](#foreign-principal)
 * **[Remote Authentication Between Computers](#remote-authentication-protocol)**
-	* PSRemoting(#psremoting)
-	* Winrs(#winrs)
-	* PsExec(#psexec)
+	* [PSRemoting](#psremoting)
+	* [Winrs](#winrs)
+	* [PsExec](#psexec)
 * **[Generate VBScript dropper (APC process injection)](#generate-vbscript-dropper-apc-process-injection)**
 	* [Cobalt Strike Beacon](#cobalt-strike-beacon)
 	* [Covenant Grunt](#convenant-grunt)
