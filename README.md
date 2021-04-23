@@ -9,7 +9,7 @@ This is my personal safe for arsenals. Feel free to refer and use at anytime. Yo
 	* **[Domain Enumeration](#powerview-enumeration)**
 		* [ASREP Roasting](#asrep-roasting)
 		* [Kerberoasting](#kerberoasting)
-		* [Unconstrained / Constrained Object](#unconstrained-/-constrained-object)
+		* [Unconstrained / Constrained Object](#unconstrained--constrained-object)
 	* **[Constrained Language Mode](#constrained-language-mode)**
 		* [CLM Enumeration](#clm-enumeration)
 		* [Dump lsass with rundll32](#dump-lsass-process-with-signed-binary)
