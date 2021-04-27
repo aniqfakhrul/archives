@@ -52,7 +52,7 @@ This is my personal safe for arsenals. Feel free to refer and use at anytime. Yo
 * **[File Transfer](#file-transfer)**
 * **[Reverse Shells](#reverse-shells)**
 	* [php](#php)
-	* [perl] (#perl)
+	* [perl](#perl)
 	* [nodejs](#nodejs)
 	* [c](#c)
 	* [c#](#c-sharp)
