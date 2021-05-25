@@ -73,8 +73,8 @@ ACL/ACE | Object | Permission | Abuse | ScreenShot
 **WriteDACL** | Domain | modify object's ACE (full control) | [Give owned users DCsync Privilege](#add-dcsync-to-object) | 
 **WriteOwner** | User  | change owner/password | [Change user's password with credential](#change-password-with-credential) |
 **Self-Membership/Self** | Group | ability to add ourself to the group | [Self add to group](#add-users-to-group) | 
-**AllExtendedRights/ExtendedRights** | User  | change user's password | [Force change user's password](#force-change-user-password) |
-**AllExtendedRights/ExtendedRights** | Group  | Read LAPS Password | [Read LAPS Password](#read-laps-local-administrator-password) |
+**ExtendedRights** | User  | change user's password | [Force change user's password](#force-change-user-password) |
+**ExtendedRights** | Group  | Read LAPS Password | [Read LAPS Password](#read-laps-local-administrator-password) |
 **User-Force-Change-Password** | User | change user's password | [Force change user's password](#force-change-user-password) |
 
 ## Domain Enumeration
