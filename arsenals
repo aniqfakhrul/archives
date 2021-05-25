@@ -165,7 +165,7 @@ https://github.com/nidem/kerberoast
 
 [kerbrute]
 ## userenum
-kerbrute userenum -d spookysec.local --dc AttacktiveDirectory.spookysec.local users.txt
+kerbrute userenum -d spookysec.local --dc 10.10.10.10 users.txt
 ## bruteuser
 kerbrute bruteuser -d spookysec.loccal --dc 172.0.0.1 passwords.txt <user>
 
