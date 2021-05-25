@@ -67,15 +67,15 @@ ACL/ACE | Object | Permission | Abuse | ScreenShot
 **GenericAll** | User  | full rights | [Force change user's password](#force-change-user-password), [Targeted Kerberoast](#targeted-kerberoast) | ![](./src/images/GenericAll_user.PNG)
 **GenericAll** | Group  | full rights | [Self add to group](#add-users-to-group) | 
 **GenericAll** | Computer  | full rights | [RBCD](#resource-based-contrained-delegation) | ![](./src/images/GenericAll_Computer.PNG)
-**GenericWrite/WriteProperty** | User | Write/update object's attributes | [Targeted Kerberoast](#targeted-kerberoast), [Overwrite Logon Script](#overwrite-logon-script) | 
-**GenericWrite** | Group | ability to self add to group | [Self add to group](#add-users-to-group) |
+**GenericWrite/WriteProperty** | User | Write/update object's attributes | [Targeted Kerberoast](#targeted-kerberoast), [Overwrite Logon Script](#overwrite-logon-script) | ![](./src/images/GenericWrite.PNG)
+**GenericWrite** | Group | ability to self add to group | [Self add to group](#add-users-to-group) | ![](./src/images/GenericWrite_Group.PNG)
 **GenericWrite/WriteProperty** | Computer | Write/update object's attributes | [RBCD](#resource-based-constrained-delegation) |
 **WriteDACL** | Domain | modify object's ACE (full control) | [Give owned users DCsync Privilege](#add-dcsync-to-object) | 
 **WriteOwner** | User  | change owner/password | [Change user's password with credential](#change-password-with-credential) |
 **Self-Membership/Self** | Group | ability to add ourself to the group | [Self add to group](#add-users-to-group) | 
-**ExtendedRights** | User  | change user's password | [Force change user's password](#force-change-user-password) |
+**ExtendedRights** | User  | change user's password | [Force change user's password](#force-change-user-password) | ![](./src/images/AllExtendedRights.PNG)
 **ExtendedRights** | Group  | Read LAPS Password | [Read LAPS Password](#read-laps-local-administrator-password) |
-**User-Force-Change-Password** | User | change user's password | [Force change user's password](#force-change-user-password) |
+**User-Force-Change-Password** | User | change user's password | [Force change user's password](#force-change-user-password) | ![](./src/images/Force-Change-User-Password.PNG)
 
 ## Domain Enumeration
 ### Forest Trust
