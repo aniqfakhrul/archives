@@ -63,6 +63,7 @@ ssh user@10.10.10.51 sh
 
 [sshutle]
 sshuttle -vr sshuser@10.10.110.74 192.168.20.0/24
+sshuttle -vr root@10.200.48.200 --ssh-cmd "ssh -i id_rsa.bak" 10.200.48.200/24
 
 [autosolve crypto]
 https://scwf.dima.ninja/
