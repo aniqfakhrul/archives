@@ -49,6 +49,9 @@ This is my personal safe for arsenals. Feel free to refer and use at anytime. Yo
 * **[Generate VBScript dropper (APC process injection)](#generate-vbscript-dropper-apc-process-injection)**
 	* [Cobalt Strike Beacon](#cobalt-strike-beacon)
 	* [Covenant Grunt](#convenant-grunt)
+* **[Low Hanging Fruits](#low-hanging-fruits)**
+	* [ZeroLogon](#zerologon)
+	* [PrintNightmare](#printnightmare)
 * **[File Transfer](#file-transfer)**
 * **[Reverse Shells](#reverse-shells)**
 	* [php](#php-reverse-shell)
@@ -453,6 +456,16 @@ wscript.exe .\realtest.vbs
 * [MacroPack](https://github.com/sevagas/macro_pack) - Generate obfuscated Office Macro
 * [ThreatCheck](https://github.com/rasta-mouse/ThreatCheck) - Check for signature based detection, this support AMSI check as well
 * [ADConnect Dump](https://github.com/fox-it/adconnectdump) - Dumps Azure On-Prem ADConnect
+
+## Low Hanging Fruits
+### ZeroLogon
+
+### PrintNightmare
+Available POC can be found here
+| Link          | Authors         |Language|
+| ------------- | ------------- | ----- |
+| https://github.com/cube0x0/CVE-2021-1675      | [@cube0x0](https://twitter.com/cube0x0) | python, c# |
+| https://github.com/calebstewart/CVE-2021-1675      | [@calebsteward](https://twitter.com/calebjstewart)      |  PowerShell |
 
 ## File Transfer
 
