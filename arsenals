@@ -767,6 +767,10 @@ $username = 'CORP.local\cleark'
 $password = convertto-securestring -Force -AsPlainText "P@$$w0rd!"
 $cred = New-Object System.Management.Automation.PSCredential($username,$password)
 
+[PS Credential Decode]
+cred = Import-CliXml -Path file.xml; $cred.GetNetworkCredential() | Format-List *
+$secretStuff = Get-Content  -Path secretstuff.txt | ConvertTo-SecureString; [Runtime.InteropServices.Marshal]::PtrToStringAuto([Runtime.InteropServices.Marshal]::SecureStringToBSTR((($secretStuff))))
+
 [PSDrive]
 New-PSDrive -Credential $cred -PSProvider FileSystem -Name ch4rm \\10.10.10.10\C$
 
