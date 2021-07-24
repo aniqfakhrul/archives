@@ -978,3 +978,6 @@ smtp-user-enum -M VRFY -U /usr/share/seclists/Usernames/xato-net-10-million-user
 # check if vulnerable
 rpcdump.py @10.10.120.242 | egrep 'MS-RPRN|MS-PAR
 
+[smb change password]
+smbpasswd -U bhult -r 10.10.10.193
+
