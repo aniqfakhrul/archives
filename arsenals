@@ -836,6 +836,12 @@ echo '$ANSIBLE_VAULT;1.1;AES256
 # method 2 
 ansible-vault view --ask-vault-pass encrypted.txt
 
+[password cracking]
+## johntheripper
+john --wordlist=/opt/rockyou.txt hash
+## hashcat
+hashcat -a 0 -m 13100 hash.txt /opt/rockyou.txt
+
 [Rubeus]
 #### Retrieve hash from plain-text
 $ Rubeus.exe hash /password:P@$$w0rd! /user:studentuser /domain:DEV
