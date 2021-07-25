@@ -517,7 +517,7 @@ mimikatz# lsadump::sam /system:\\?\GLOBALROOT\Device\HarddiskVolumeShadowCopy1\W
 secretsdump.py -sam SAM-file -system SYSTEM-file LOCAL
 ```
 
-Note that the above methods is the manual way. This has been implemented in a automated C# code called [HiveNightmare](https://github.com/GossiTheDog/HiveNightmare) Once you retrieve admin's ntlm, you can do lots of stuff including changing its password or [Pass The Hash](#overpass-the-hash-opth)/PsExec/Evil-Winrm...
+Note that the above methods is the manual way. This has been implemented in a automated C# code called [HiveNightmare](https://github.com/GossiTheDog/HiveNightmare). Once you retrieve admin's ntlm, you can do lots of stuff including [changing password](https://twitter.com/gentilkiwi/status/1417467063883476992) or [Pass The Hash](#overpass-the-hash-opth)/PsExec/Evil-Winrm...
 
 ## File Transfer
 
