@@ -76,8 +76,8 @@ ACL/ACE | Object | Permission | Abuse | ScreenShot
 **GenericAll** | Computer  | Full rights | [RBCD](#resource-based-contrained-delegation) | ![](./src/images/GenericAll_Computer.PNG)
 **GenericWrite/WriteProperty** | User | Write/update object's attributes | [Targeted Kerberoast](#targeted-kerberoast), [Overwrite Logon Script](#overwrite-logon-script) | ![](./src/images/GenericWrite.PNG)
 **GenericWrite** | Group | ability to self add to group | [Self add to group](#add-users-to-group) | ![](./src/images/GenericWrite_Group.PNG)
-**<ul><li>GenericWrite</li><li>WriteProperty</li></ul>** | Computer | Write/update object's attributes | [RBCD](#resource-based-constrained-delegation) |
-**GenericWrite/AllExtendedWrite/GenericAll** | GPO | Write object's properties | [Add self to local admin](#abuse-weak-gpo-with-powerview) |
+**GenericWrite</br>WriteProperty** | Computer | Write/update object's attributes | [RBCD](#resource-based-constrained-delegation) |
+**GenericWrite</br>AllExtendedWrite</br>GenericAll** | GPO | Write object's properties | [Add self to local admin](#abuse-weak-gpo-with-powerview) |
 **WriteDACL** | Domain | modify object's ACE (full control) | [Give owned users DCsync Privilege](#add-dcsync-to-object) | 
 **WriteOwner** | User  | change owner/password | [Change user's password with credential](#change-password-with-credential) |
 **Self-Membership/Self** | Group | ability to add ourself to the group | [Self add to group](#add-users-to-group) | 
