@@ -5,6 +5,7 @@ This is my personal safe for arsenals. Feel free to refer and use at anytime. Yo
 **_Disclaimer: Do not use this command for illegal use. Any action you take upon the information on this repo is strictly at your own risk_**
 
 * **[ACLs/ACEs permissions](#acls-possible-abuse)**
+* **[LDAP Filters as alternative](#ldap-filters)**
 * **Enumeration**
 	* **[Domain Enumeration](#powerview-enumeration)**
 		* [Forest Trust](#forest-trust)
@@ -84,6 +85,21 @@ ACL/ACE | Object | Permission | Abuse | ScreenShot
 **ExtendedRights** | User  | change user's password | [Force change user's password](#force-change-user-password) | ![](./src/images/AllExtendedRights.PNG)
 **ExtendedRights** | Group  | Read LAPS Password | [Read LAPS Password](#read-laps-local-administrator-password) |
 **User-Force-Change-Password** | User | change user's password | [Force change user's password](#force-change-user-password) | ![](./src/images/Force-Change-User-Password.PNG)
+
+## LDAP Filters
+| PowerView | Description                    | LDAP Filter
+| ------------- | --------------- | ------------ |
+| `Get-DomainController`| Get current domain controller      |`(userAccountControl:1.2.840.113556.1.4.803:=8192)`|
+| `Get-Forest` |Get current forest|`[System.DirectoryServices.ActiveDirectory.Domain]::GetCurrentDomain()`|
+| `Get-DomainUser` | Get all domain users |`(&(samAccountType=805306368))`
+| `Get-DomainUser -TrustedToAuth` |Get trusted users for delegation|`(&(samAccountType=805306368)(msds-allowedtodelegateto=*))`
+| `Get-DomainUser -SPN` |Get non-null users' SPN|`(&(samAccountType=805306368)(servicePrincipalName=*))`
+| `Get-DomainUser -PreAuthNotRequired` |Get users that disable preauth|`(&(samAccountType=805306368)(userAccountControl:1.2.840.113556.1.4.803:=4194304))`
+| `Get-DomainGroup` |Get all domain groups|`(&(objectCategory=group))`
+| `Get-DomainGroup *admin*` |Get specific domain group identity|`(&(samAccountType=805306368)(|(samAccountName=*admin*)))`
+| `Get-DomainComputer` |Get all domain computers|`(&(samAccountType=805306369))`
+| `Get-DomainComputer -Unconstrained` | Get all unconstrained domain computers|`(&(samAccountType=805306369)(userAccountControl:1.2.840.113556.1.4.803:=524288))`
+| `Get-DomainGPO` | Get all domain GPO|`(&(objectCategory=groupPolicyContainer))`
 
 ## Domain Enumeration
 ### Forest Trust
