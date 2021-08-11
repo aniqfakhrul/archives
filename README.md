@@ -101,7 +101,7 @@ ACL/ACE | Object | Permission | Abuse | ScreenShot
 | `Get-DomainComputer -Unconstrained` | Get all unconstrained domain computers|`(&(samAccountType=805306369)(userAccountControl:1.2.840.113556.1.4.803:=524288))`
 | `Get-DomainGPO` | Get all domain GPO|`(&(objectCategory=groupPolicyContainer))`
 
-_Note: These LDAP filters can be used with `[adsisearcher]` builtin function in powershell_
+_Note: These LDAP filters can be used with `[adsisearcher]` builtin function in powershell. Any extra commands can be found [here](https://mlcsec.com/active-directory-domain-enumeration-part-2). Amazing cheatsheet by [@mlcsec](https://twitter.com/mlcsec)_
 Example use: 
 ```
 ([adsisearcher]"<ldapfilter>").FindAll()
