@@ -104,7 +104,7 @@ ACL/ACE | Object | Permission | Abuse | ScreenShot
 _Note: These LDAP filters can be used with `[adsisearcher]` builtin function in powershell_
 Example use: 
 ```
-([adsisearcher]"<ldapfilter>")
+([adsisearcher]"<ldapfilter>").FindAll()
 ```
 
 ## Domain Enumeration
