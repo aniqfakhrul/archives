@@ -102,7 +102,8 @@ ACL/ACE | Object | Permission | Abuse | ScreenShot
 | `Get-DomainGPO` | Get all domain GPO|`(&(objectCategory=groupPolicyContainer))`
 
 _Note: These LDAP filters can be used with `[adsisearcher]` builtin function in powershell_
-Example use: ```
+Example use: 
+```
 ([adsisearcher]"<ldapfilter>")
 ```
 
