@@ -96,7 +96,7 @@ ACL/ACE | Object | Permission | Abuse | ScreenShot
 | `Get-DomainUser -SPN` |Get non-null users' SPN|`(&(samAccountType=805306368)(servicePrincipalName=*))`
 | `Get-DomainUser -PreAuthNotRequired` |Get users that disable preauth|`(&(samAccountType=805306368)(userAccountControl:1.2.840.113556.1.4.803:=4194304))`
 | `Get-DomainGroup` |Get all domain groups|`(&(objectCategory=group))`
-| `Get-DomainGroup *admin*` |Get specific domain group identity|`(&(samAccountType=805306368)(|(samAccountName=*admin*)))`
+| `Get-DomainGroup *admin*` |Get specific domain group identity|<code>(&(samAccountType>(&(samAccountType=805306368)(&#124;(samAccountName=*admin*)))</code>
 | `Get-DomainComputer` |Get all domain computers|`(&(samAccountType=805306369))`
 | `Get-DomainComputer -Unconstrained` | Get all unconstrained domain computers|`(&(samAccountType=805306369)(userAccountControl:1.2.840.113556.1.4.803:=524288))`
 | `Get-DomainGPO` | Get all domain GPO|`(&(objectCategory=groupPolicyContainer))`
