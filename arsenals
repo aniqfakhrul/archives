@@ -505,7 +505,8 @@ curl -s localhost:8080/containers/json -H "Content-Type: json" | jq .[].Names
 curl -s localhost:8080/images/json -H "Content-Type: json" | jq .[].Names
 
 [mounting shares]
-mount -f cifs '//172.16.1.31/Shares' mnt/
+mount -t cifs '//172.16.1.31/Shares' mnt/
+mount -t cifs -o username=bob,password=bob '//172.16.1.31/Shares' mnt/
 mount -o vers=3 -t nfs 10.10.10.10:/home/mark mnt
 
 [attach tmux socket]
