@@ -570,7 +570,7 @@ python3 CVE-2021-1675.py testlab/testuser:'P@$$w0rd!'@10.10.10.10 '\\10.10.10.10
 ```
 
 ## PKI Abuse
-It is recommended to below commands with `-k` option with .cacche file. Please refer [Request TGT](#request-tgt) section
+It is recommended to use below commands with `-k` option and .cacche file. Please refer [Request TGT](#request-tgt) section
 
 ### Enumerate CA(s) on the domain
 ```
