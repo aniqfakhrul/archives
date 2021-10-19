@@ -1103,3 +1103,15 @@ netsh interface portproxy add v4tov4 listenaddress=127.0.0.1 listenport=443 conn
 ssh -L 8888:127.0.0.1:8888 sshuser@10.10.10.10
 ssh -R 8888:127.0.0.1:8888 sshuser@10.10.10.10
 >> socat
+
+[yara rule example]
+```
+rule CaseInsensitiveTextExample
+{
+    strings:
+        $text_string = "THM" nocase
+
+    condition:
+        $text_string
+}
+```
