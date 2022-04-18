@@ -53,7 +53,7 @@ This is my personal safe for arsenals. Feel free to refer and use at anytime. Yo
 	* [msDS-AllowedToDelegateTo](#msds-allowedtodelegateto)
 	* Scheduled Tasks
 	* AdminSDHolder
-	* Registry Keys(#registry-keys)
+	* [Registry Keys](#registry-keys)
 		* [Execute on startup](#execute-on-startup)
 		* Recycle Bin
 	* [krbtgt Constrained Delegation](#krbtgt-constrained-delegation)
