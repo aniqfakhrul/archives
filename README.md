@@ -381,7 +381,6 @@ Find-ForeignGroup
 ```
 
 ## Lateral Movement / Post Exploitation
-***
 ### Overpass-The-Hash (OPTH)
 _Note: This requires local administrator privilege_
 ```
