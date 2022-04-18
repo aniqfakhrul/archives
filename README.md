@@ -50,7 +50,7 @@ This is my personal safe for arsenals. Feel free to refer and use at anytime. Yo
 	* Golden Ticket
 	* Skeleton Keys
 	* Shortcuts
-	* msDS-AllowedToDelegateTo(#msds-allowedtodelegateto)
+	* [msDS-AllowedToDelegateTo](#msds-allowedtodelegateto)
 	* Scheduled Tasks
 	* AdminSDHolder
 	* Registry Keys(#registry-keys)
