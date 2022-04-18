@@ -381,6 +381,7 @@ Find-ForeignGroup
 ```
 
 ## Lateral Movement / Post Exploitation
+***
 ### Overpass-The-Hash (OPTH)
 _Note: This requires local administrator privilege_
 ```
@@ -452,8 +453,9 @@ lsadump::dcsync /domain:contoso.local /dc:dc01 /user:administrator /authuser:dc0
 
 ## Persistence
 
-## Registry Keys
-### Execute on startup
+### Registry Keys
+
+i. Execute on startup
 There are several registry keys can be added to execute binary on startup based on your need and current user context. 
 ```
 HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Run 
