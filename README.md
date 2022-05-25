@@ -851,6 +851,7 @@ What makes a template vulnerable to ESC1 is when the following requirements are 
 --- | --- |
 |`msPKI-Certificate-Name-Flag`|`(0x1) ENROLLEE_SUPPLIES_SUBJECT`|
 |`pKIExtendedKeyUsage`|Client Authentication|
+|`msPKI-Certificate-Application-Policy`| Client Authentication|
 |Enrollment Rights|Domain Users|
 
 _Note that you would require one valid user to enroll the certificate_
