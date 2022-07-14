@@ -223,7 +223,7 @@ Rubeus.exe ptt /ticket:ticket.kirbi
 
 ## Constrained Delegation
 ### s4u delegation
-This attack is possible if _msds-AllowedToDelegateTo_ is set.
+This attack is possible if `msds-AllowedToDelegateTo` is set.
 * with rc4 hash in hand
 ```
 # Request TGT + TGS
