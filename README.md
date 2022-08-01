@@ -1120,10 +1120,10 @@ For the details explanation of the vulnerability (CVE-2022-26923), you may read 
 # DLL Sideloading
 These are all some of my personal favorite sideloading tricks collected from various platforms. 
 
-| Binary | Location | Reference DLL | Export Function |
-|-------|---------|----------|-----|
-|NisSrv.exe|`C:\Program Files\Windows Defender\NisSrv.exe`|mpclient.dll|[Source](https://raw.githubusercontent.com/Sh0ckFR/Lockbit3.0-MpClient-Defender-PoC/main/dllmain-NisSrv.cpp)|
-|MpCmdRun.exe|`C:\Program Files\Windows Defender\MpCmdRun.exe`|mpclient.dll|[Source](https://raw.githubusercontent.com/Sh0ckFR/Lockbit3.0-MpClient-Defender-PoC/main/dllmain-mpcmdrun.cpp)|
+| Binary | Location | Reference DLL | Export Function | Reference |
+|-------|---------|----------|-----|-----|
+|NisSrv.exe|`C:\Program Files\Windows Defender\NisSrv.exe`|mpclient.dll|[Source](https://raw.githubusercontent.com/Sh0ckFR/Lockbit3.0-MpClient-Defender-PoC/main/dllmain-NisSrv.cpp)|[Link](https://twitter.com/Sh0ckFR/status/1554021948967079936)|
+|MpCmdRun.exe|`C:\Program Files\Windows Defender\MpCmdRun.exe`|mpclient.dll|[Source](https://raw.githubusercontent.com/Sh0ckFR/Lockbit3.0-MpClient-Defender-PoC/main/dllmain-mpcmdrun.cpp)|[Link](https://twitter.com/Sh0ckFR/status/1554021948967079936)|
 
 # Reverse Shells
 _Credits: These reverse shells examples are reffered to [EzpzShell](https://github.com/H0j3n/EzpzShell) by [@h0j3n](https://twitter.com/h0j3n)_
