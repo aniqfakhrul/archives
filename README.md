@@ -81,7 +81,7 @@ This is my personal safe for arsenals. Feel free to refer and use at anytime. Yo
 	* [Certifried](#certifried)
 * **[Relay Notes](#relay-notes)**
 * **[File Transfer](#file-transfer)**
-* **[DLL Sideloading](#dll-sideload)**
+* **[DLL Sideloading](#dll-sideloading)**
 * **[Reverse Shells](#reverse-shells)**
 	* [php](#php-reverse-shell)
 	* [perl](#perl-reverse-shell)
