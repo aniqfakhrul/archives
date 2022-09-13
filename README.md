@@ -779,6 +779,7 @@ wscript.exe .\realtest.vbs
 Instead of directly interacting victims and C2 server. This is actually a neat trick to just use a redirector to be a middle man and route all the C2 traffic to your C2 server (in your local network)
 
 ### SSH Remote Tunnel
+_Caveat: This method is not 100% reliable since it accepts all traffic coming through a single forwarded port. This will create more rubbish traffic comming into teamserver's IP_
 1. Uncheck this line in `/etc/ssh/sshd_config` and restart ssh server
 ```
 GatewayPorts clientspecified
