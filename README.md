@@ -77,7 +77,7 @@ This is my personal safe for arsenals. Feel free to refer and use at anytime. Yo
 	* [HiveNightmare](#hivenightmare)
 * **[NTLMv1 Shenanigans](#ntlmv1-shenanigans)**
 	* [NTLM Downgrade](#ntlm-downgrade)
-	* [Relay SMB to LDAP](#relay-smb-to-ldap)
+	* [Relay SMB to LDAP(S)](#relay-smb-to-ldap(s))
 * **[PrintNightmare](#printnightmare)**
 * **[noPac](#nopac)**
 * **[Active Directory Certificate Service](#ADCS)**
@@ -855,7 +855,7 @@ python3 ntlmv1.py --ntlmv1 'DC01$::RANGE:B8154B285809096F4AA9D8285846C401CDE8D2F
 ```
 4. Submit hash to https://crack.sh/get-cracking and wait for the result (should be retrieved via email within seconds)
 
-### Relay SMB to LDAP
+### Relay SMB to LDAP(S)
 This is only possible if **NTLMv1 is enabled** but you will need to specify `--remove-mic` flag when firing up _ntlmrelayx.py_ to set `NTLMSSP_NEGOTIATE_SIGN` flag to false. Read details explanation [here](https://www.praetorian.com/blog/ntlmv1-vs-ntlmv2/)
 > Relaying from SMB to the LDAP service is quite straightforward and simply requires an attacker to specify the –remove-mic flag when performing a relaying attack. Originally, this flag was added to support exploitation of the “Drop the MIC” vulnerability. However, it also has the benefit of setting the NTLMSSP_NEGOTIATE_SIGN flag to false. This allows relaying from SMB to the LDAP service to work since NTLMv1 doesn’t include a message integrity code (MIC).
 
@@ -1191,6 +1191,10 @@ addcomputer.py range.net/Administrator:'Password123' -computer-name 'WIN-EAZXIGM
 
 For the details explanation of the vulnerability (CVE-2022-26923), you may read the full article [here](https://research.ifcr.dk/certifried-active-directory-domain-privilege-escalation-cve-2022-26923-9e098fe298f4)
 
+### ADCS References
+* https://luemmelsec.github.io/Skidaddle-Skideldi-I-just-pwnd-your-PKI/
+* https://www.thehacker.recipes/ad/movement/ad-cs/
+
 ## Relay Notes
 ![Relay Roadmap](./src/relay_list.png)
 * [KrbRelayUP](https://twitter.com/an0n_r0/status/1519344255143141376?s=20&t=nk-MeM42nRevaMPNOvQDoA)
@@ -1202,6 +1206,8 @@ For the details explanation of the vulnerability (CVE-2022-26923), you may read 
 * [NTLMv1 Downgrade Requirements](https://ppn.snovvcrash.rocks/pentest/infrastructure/ad/ntlm/ntlmv1-downgrade)
 * https://www.fortalicesolutions.com/posts/keeping-up-with-the-ntlm-relay
 * https://www.trustedsec.com/blog/a-comprehensive-guide-on-relaying-anno-2022/
+* [All Relay attacks covered by @vendetce (pdf)](https://www.blackhillsinfosec.com/wp-content/uploads/2022/09/Coercions-and-Relays-The-First-Cred-is-the-Deepest.pdf)
+* [All Relay attacks covered by @vendetce (youtube)](https://www.youtube.com/watch?v=b0lLxLJKaRs)
 
 # File Transfer
 
