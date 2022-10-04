@@ -61,6 +61,7 @@ This is my personal safe for arsenals. Feel free to refer and use at anytime. Yo
 	* [ESC8](#esc8)
 	* [Webdav to LDAP(S)](#webdav-to-ldap(s))
 	* [NetNTLMv1 to LDAP](#netntlmv1-to-ldap)
+* **[Kerberos Relay](#kerberos-relay)**
 * **[Persistence](#persistence)**
 	* [Golden Ticket](#golden-ticket)
 	* [Diamond Ticket](#diamond-ticket)
@@ -737,8 +738,15 @@ python3 PetitPotam.py 192.168.86.193 192.168.86.182
 * [All Relay attacks covered by @vendetce (youtube)](https://www.youtube.com/watch?v=b0lLxLJKaRs)
 * https://www.youtube.com/watch?v=b0lLxLJKaRs
 * https://www.blackhillsinfosec.com/wp-content/uploads/2022/09/Coercions-and-Relays-The-First-Cred-is-the-Deepest.pdf
-# Persistence
 
+# Kerberos Relay
+### KrbRelayUp
+KrbRelayUp is a one off toll that automate all the kerberos relaying steps to coerce DCOM authentication from system user. This can be abused by doing [RBCD](#resource-based-constrained-delegation) or [Shadow Credentials](#shadow-credentials) attack. The tool can be found in the original repository [here](https://github.com/Dec0ne/KrbRelayUp)and a compiled version can be found in Flangvik's [SharpCollections](https://github.com/Flangvik/SharpCollection) repo.
+```
+KrbRelayUp.exe full -m [rbcd|shadowcred] -f
+```
+
+# Persistence
 ### Golden Ticket
 A golden ticket is signed and encrypted by the hash of krbtgt account which makes it a valid TGT ticket. The krbtgt user hash could be used to impersonate any user with any privileges from even a non-domain machine
 | Attribute   | Value                                  |
