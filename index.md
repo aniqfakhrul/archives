@@ -1,7 +1,6 @@
 ---
 title: "Active Directory CheatSheet"
 date: 2022-10-21T09:30:10+08:00
-toc: true
 tags:
   - active directory
 ---
@@ -161,7 +160,7 @@ ACL/ACE | Object | Permission | Abuse | ScreenShot
 | `Get-DomainGPO`                      | Get all domain GPO                     | `(&(objectCategory=groupPolicyContainer))`                                                   |
 
 Example use:
-```
+```powershell
 # Current domain context
 ([adsisearcher]"<ldap-filter>").FindAll()
 
