@@ -15,9 +15,9 @@ I have setup two domain controllers which assigned to their respective forest. T
 ```
 mimikatz# lsadump::trust /patch
 ```
-![[Pasted image 20220718095631.png]]
-![[Pasted image 20220718095835.png]]
-![[Pasted image 20220718101634.png]]
+![](Pasted%20image%2020220718095631.png)
+![](Pasted%20image%2020220718095835.png)
+![](Pasted%20image%2020220718101634.png)
 ## Conclusion
 
 ## Credits
