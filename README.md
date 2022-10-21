@@ -1,3 +1,9 @@
+---
+title: "Active Directory CheatSheet"
+date: 2022-10-21T09:30:10+08:00
+toc: true
+---
+
 This is my personal safe for arsenals. Feel free to refer and use at anytime. You can also refer to this [arsenals](arsenals) for any extra commands (`Ctrl+f` will definitely help)
 
 **_Disclaimer: Do not use this command for illegal use. Any action you take upon the information on this repo is strictly at your own risk_**
