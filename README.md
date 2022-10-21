@@ -1,1 +1,1 @@
-Active Directory CheatSheet is moved [here](index.md)
+Active Directory CheatSheet is moved [here](notes/ad/index.md)
