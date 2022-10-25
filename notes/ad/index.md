@@ -1528,7 +1528,7 @@ For the details explanation of the vulnerability (CVE-2022-26923), you may read 
 ### ADCS References
 * https://luemmelsec.github.io/Skidaddle-Skideldi-I-just-pwnd-your-PKI/
 * https://www.thehacker.recipes/ad/movement/ad-cs/
-* https://find-sec-bugs.github.io/
+* https://mayfly277.github.io/posts/GOADv2-pwning-part6/
 
 # File Transfer
 
