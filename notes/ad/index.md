@@ -1197,6 +1197,7 @@ wmiexec.py range.net/Administrator@ws01.range.net -no-pass -k
 ### References
 * https://www.praetorian.com/blog/ntlmv1-vs-ntlmv2/
 - https://twitter.com/an0n_r0/status/1571598587439775745?s=20&t=q3-YgJ7LcZATARKd0JnlKQ
+- https://www.trustedsec.com/blog/practical-attacks-against-ntlmv1/?utm_content=221361665&utm_medium=social&utm_source=twitter&hss_channel=tw-403811306
 
 # PrintNightmare
 Abusing printer spooler service (CVE-2021-34527) to load malicious DLL and execute as SYSTEM. Available POCs can be found here
