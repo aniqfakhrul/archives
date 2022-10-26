@@ -246,6 +246,7 @@ There are multiple simple ways to bypass this lockdown mechanism. One of the coo
 2. **Name your script to contain "System32" string**
 As referred to this [article](https://www.blackhillsinfosec.com/constrained-language-mode-bypass-when-pslockdownpolicy-is-used/), Microsoft has mentioned that when applying CLM using `__PSLockdownPolicy` variable, there are ways to bypass since the system only checks if the path contains the "System32" string.
 > In addition, there are also file naming conventions that enable FullLanguage mode on a script, effectively bypassing Constrained Language.
+
 ![](./src/images/clm1.png)
 ### View AppLocker Rules
 ```powershell
