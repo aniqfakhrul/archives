@@ -13,7 +13,7 @@ tags:
 	- [EXE](#exe)
 	- [LNK](#lnk)
 	- [VBS](#vbs)
-- **[Bypassing MOTW[(#bypassing-motw)**
+- **[Bypassing MOTW](#bypassing-motw)**
 	- [ZippyReads](#ZippyReads-(CVE-2022-41091))
 - **[Payload Creation](#payload-creation)**
 	- [VBScript dropper](#vbscript-dropper)
