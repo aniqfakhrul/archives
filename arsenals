@@ -1160,3 +1160,7 @@ netsh interface portproxy delete v4tov4 listenaddress=0.0.0.0 listenport=4444
 [Encrypt file with openssl]
 openssl enc -aes-256-cbc -pbkdf2 -k strongPass <input.txt >input.txt.enc
 openssl enc -d -aes-256-cbc -pbkdf2 -k strongPass <input.txt.enc >input.txt
+
+[Validate domain password with powershell]
+$principalContext = New-Object System.DirectoryServices.AccountManagement.PrincipalContext([System.DirectoryServices.AccountManagement.ContextType]::Domain, 'range.net')
+$principalContext.ValidateCredentials('Administrator', 'Password1234')
