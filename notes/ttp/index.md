@@ -308,6 +308,14 @@ attrib +r file.exe
 ![](src/Pasted%20image%2020221201224938.png)
 2. Double clicking on the object will prompt this prompt. Click on Run and cmd should appears.
 ![](src/Pasted%20image%2020221201225040.png)
+
+# Bypassing Policy
+
+### Executing EXE with oleObject
+1. Click on *Insert Object* and choose your binary under *Create from file* option.
+![](src/Pasted%20image%2020221201224938.png)
+2. Double clicking on the object will prompt this prompt. Click on Run and cmd should appears.
+![](src/Pasted%20image%2020221201225040.png)
 # Payload Creation
 
 ## VBScript dropper
