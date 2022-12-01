@@ -15,6 +15,8 @@ tags:
 	- [VBS](#vbs)
 - **[Bypassing MOTW](#bypassing-motw)**
 	- [ZippyReads](#ZippyReads-(CVE-2022-41091))
+- **[Bypassing Policy](#bypassing-policy)**
+	- [Executing EXE with oleObject](#executing-exe-with-oleObject)
 - **[Payload Creation](#payload-creation)**
 	- [VBScript dropper](#vbscript-dropper)
 - **[File Transfer](#file-transfer)**
@@ -299,6 +301,13 @@ attrib +r file.exe
 **References**
 - https://twitter.com/wdormann/status/1590044005395357697?s=20&t=6DFV1gLeBZvd-grQawp87A
 
+# Bypassing Policy
+
+### Executing EXE with oleObject
+1. Click on *Insert Object* and choose your binary under *Create from file* option.
+![](src/Pasted%20image%2020221201224938.png)
+2. Double clicking on the object will prompt this prompt. Click on Run and cmd should appears.
+![](src/Pasted%20image%2020221201225040.png)
 # Payload Creation
 
 ## VBScript dropper
