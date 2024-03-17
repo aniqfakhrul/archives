@@ -201,10 +201,10 @@ This attack will require you to arp spoof and wait for AS-REQ and perform kerber
 ritm -i eth0 -t 192.168.86.184 -g 192.168.86.1 -d 192.168.86.182 -u /tmp/users.lst
 ```
 
->[!References]
->- https://www.semperis.com/blog/new-attack-paths-as-requested-sts/
->- https://github.com/Tw1sm/RITM
->- https://twitter.com/_nwodtuhs/status/1575082377189429250?s=20&t=iS5ugj6lp5GyL6QF4jWn0Q
+>**References**
+>1. https://www.semperis.com/blog/new-attack-paths-as-requested-sts/
+>2. https://github.com/Tw1sm/RITM
+>3.  https://twitter.com/_nwodtuhs/status/1575082377189429250?s=20&t=iS5ugj6lp5GyL6QF4jWn0Q
 
 ### Unconstrained / Constrained Object
 ```powershell
@@ -277,9 +277,9 @@ mimikatz# sekurlsa::tickets /export
 Rubeus.exe ptt /ticket:ticket.kirbi
 ```
 
->[!References]
->- https://www.thehacker.recipes/a-d/movement/kerberos/delegations/unconstrained
->- https://dirkjanm.io/krbrelayx-unconstrained-delegation-abuse-toolkit/
+>**References**
+>1. https://www.thehacker.recipes/a-d/movement/kerberos/delegations/unconstrained
+>2. https://dirkjanm.io/krbrelayx-unconstrained-delegation-abuse-toolkit/
 
 ## Constrained Delegation
 ### s4u delegation
@@ -335,9 +335,9 @@ Rubeus.exe s4u /user:mycomputer$ /rc4:<rc4/ntlm hash> /impersonateuser:administr
 getST.py range.net/mssqlsvc:'Range2022!' -dc-ip 192.168.86.182 -spn cifs/dc01.range.net -impersonate Administrator
 ```
 
->[!References]
->- [Harmj0y's gist on abusing RBCD with PowerShell/PowerView/PowerMad](https://gist.github.com/HarmJ0y/224dbfef83febdaf885a8451e40d52ff)
->- [ired.team](https://www.ired.team/offensive-security-experiments/active-directory-kerberos-abuse/resource-based-constrained-delegation-ad-computer-object-take-over-and-privilged-code-execution)
+>**References**
+>1. [Harmj0y's gist on abusing RBCD with PowerShell/PowerView/PowerMad](https://gist.github.com/HarmJ0y/224dbfef83febdaf885a8451e40d52ff)
+>2. [ired.team](https://www.ired.team/offensive-security-experiments/active-directory-kerberos-abuse/resource-based-constrained-delegation-ad-computer-object-take-over-and-privilged-code-execution)
 
 
 
@@ -421,11 +421,11 @@ py pywhisker.py -d "range.net" -u "rangeadm" -p "Password123" -t "lowpriv" --act
 
 Once you have obtained the certificate, it can further use the [Pass-The-Certificate](#pass-the-certificate) attack to authenticate. 
 
-> [!References]
->- https://pentestlab.blog/2022/02/07/shadow-credentials/
->- https://www.thehacker.recipes/ad/movement/kerberos/shadow-credentials
->- https://github.com/ShutdownRepo/pywhisker
->- https://github.com/eladshamir/Whisker
+> **References**
+>1. https://pentestlab.blog/2022/02/07/shadow-credentials/
+>2. https://www.thehacker.recipes/ad/movement/kerberos/shadow-credentials
+>3. https://github.com/ShutdownRepo/pywhisker
+>4. https://github.com/eladshamir/Whisker
 
 # Weak GPO Permission
 ### Enumerate weak GPO Permission
@@ -888,10 +888,10 @@ python pyForgeCert.py -i cert.pfx -o admin.pfx -pfx -p admin
 3. Use Pass-The-Certificate and win!
 ```
 
->[!References]
->- https://pentestlab.blog/2021/11/15/golden-certificate/
->- https://github.com/Ridter/pyForgeCert
->- https://github.com/ly4k/Certipy
+>**References**
+>1. https://pentestlab.blog/2021/11/15/golden-certificate/
+>2. https://github.com/Ridter/pyForgeCert
+>3. https://github.com/ly4k/Certipy
 
 ### Sapphire Ticket
 As mentioned in [hacker.recipes](https://www.thehacker.recipes/ad/movement/kerberos/forged-tickets/sapphire)
@@ -1128,10 +1128,10 @@ getST.py range.net/lowpc2\$:Password123 -spn http/ws01.range.net -impersonate Ad
 wmiexec.py range.net/Administrator@ws01.range.net -no-pass -k
 ```
 
->[!References]
->- https://www.praetorian.com/blog/ntlmv1-vs-ntlmv2/
->- https://twitter.com/an0n_r0/status/1571598587439775745?s=20&t=q3-YgJ7LcZATARKd0JnlKQ
->- https://www.trustedsec.com/blog/practical-attacks-against-ntlmv1/?utm_content=221361665&utm_medium=social&utm_source=twitter&hss_channel=tw-403811306
+>**References**
+>1. https://www.praetorian.com/blog/ntlmv1-vs-ntlmv2/
+>2. https://twitter.com/an0n_r0/status/1571598587439775745?s=20&t=q3-YgJ7LcZATARKd0JnlKQ
+>3. https://www.trustedsec.com/blog/practical-attacks-against-ntlmv1/?utm_content=221361665&utm_medium=social&utm_source=twitter&hss_channel=tw-403811306
 
 # PrintNightmare
 Abusing printer spooler service (CVE-2021-34527) to load malicious DLL and execute as SYSTEM. Available POCs can be found here
@@ -1516,12 +1516,10 @@ addcomputer.py range.net/Administrator:'Password123' -computer-name 'WIN-EAZXIGM
 
 For the details explanation of the vulnerability (CVE-2022-26923), you may read the full article [here](https://research.ifcr.dk/certifried-active-directory-domain-privilege-escalation-cve-2022-26923-9e098fe298f4)
 
-{{% callout note %}}
-**ADCS References**
-- https://luemmelsec.github.io/Skidaddle-Skideldi-I-just-pwnd-your-PKI/
-- https://www.thehacker.recipes/ad/movement/ad-cs/
-- https://mayfly277.github.io/posts/GOADv2-pwning-part6/
-{{% /callout %}}
+> **ADCS References**
+>1. https://luemmelsec.github.io/Skidaddle-Skideldi-I-just-pwnd-your-PKI/
+>2. https://www.thehacker.recipes/ad/movement/ad-cs/
+>3. https://mayfly277.github.io/posts/GOADv2-pwning-part6/
 
 
 # References
