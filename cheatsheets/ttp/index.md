@@ -295,7 +295,7 @@ This is the technique discovered by [Will Dormann](https://twitter.com/wdormann)
 ```
 attrib +r file.exe
 ```
-![](src/Pasted%20image%2020221116085831.png)
+![](Pasted%20image%2020221116085831.png)
 2. Zip the file with any zip utility that you prefer. In this case, i'll normally use native zip utility on windows to zip the file.
 
 **References**
@@ -305,17 +305,17 @@ attrib +r file.exe
 
 ### Executing EXE with oleObject
 1. Click on *Insert Object* and choose your binary under *Create from file* option.
-![](src/Pasted%20image%2020221201224938.png)
+![](Pasted%20image%2020221201224938.png)
 2. Double clicking on the object will prompt this prompt. Click on Run and cmd should appears.
-![](src/Pasted%20image%2020221201225040.png)
+![](Pasted%20image%2020221201225040.png)
 
 # Bypassing Policy
 
 ### Executing EXE with oleObject
 1. Click on *Insert Object* and choose your binary under *Create from file* option.
-![](src/Pasted%20image%2020221201224938.png)
+![](Pasted%20image%2020221201224938.png)
 2. Double clicking on the object will prompt this prompt. Click on Run and cmd should appears.
-![](src/Pasted%20image%2020221201225040.png)
+![](Pasted%20image%2020221201225040.png)
 # Payload Creation
 
 ## VBScript dropper
@@ -324,10 +324,10 @@ Make sure to download [GadgetToJScript](https://github.com/med0x2e/GadgetToJScri
 For cobalt strike, this aggressor script called [**ShellCode Generator**](https://github.com/RCStep/CSSG) is very useful to generate shellcode with custom formatting. This cna also helps to obfuscate with XOR or AES method.
 
 1. Generate shellcode and this is my default configuration
-![SG](src/images/shellcode_generator.png)
+![SG](shellcode_generator.png)
 
 2. Use [this](https://gist.githubusercontent.com/3xpl01tc0d3r/ecf5e1ac09935c674a9c6939c694da13/raw/238ed3339a458ce0260f98dc18a38fdbed420457/Payload.txt) script and paste those hex bytes in `shellcode` variable
-![b64var](src/images/b64var.png)
+![b64var](b64var.png)
 
 3. Compile with **GadgetToJScript**
 
