@@ -1,4 +1,6 @@
 ---
 title: $ whoami
+enableToc: "true"
 ---
-This is still empty
+- [[cheatsheets/index|Cheatsheets]]
+- [[posts/index|Posts]]
